@@ -12,7 +12,7 @@ We use `volta` to manage `node` and `npm` version. Install [volta](https://docs.
 
 - Install gloud CLI SDK https://cloud.google.com/sdk/docs/install
 - Execute `gcloud auth application-default login` to login to GCP if you have not, this will give you default credentials file
-on your local.
+  on your local.
 - Now do `gcloud config set project indigo-computer-272415`
 - Then `gcloud auth login`
 - To verify if logged in to gcp do `gcloud auth list`
@@ -33,7 +33,7 @@ To install all dependencies, and link the shared `shared` package, from root run
 ```bash
   sh install.sh
 ```
- 
+
 ### Database setup
 
 If you install Postgresql from Homebrew then you need to create `postgresql` role.
