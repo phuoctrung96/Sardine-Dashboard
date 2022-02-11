@@ -3,9 +3,7 @@
   "private": true,
   "description": "Codebase for sardine's device intelligence dashboard",
   "scripts": {
-    "format": "prettier --write \"*.{yaml,yml,md}\" \"shared/*.ts\" \"frontend/**/*.{ts,tsx,js,css,scss,html,json}\" \"server/**/*.{ts,js,json}\" --loglevel=warn",
-    "prepare": "husky install",
-    "pre-commit": "lint-staged"
+    "format": "prettier --write \"*.{yaml,yml,md}\" \"shared/*.ts\" \"frontend/**/*.{ts,tsx,js,css,scss,html,json}\" \"server/**/*.{ts,js,json}\" --loglevel=warn"
   },
   "devDependencies": {
     "husky": "^7.0.2",
