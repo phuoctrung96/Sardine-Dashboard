@@ -28,6 +28,7 @@ const TextWrapper = styled.div`
 `;
 
 const InputGroupWrapper = styled.div`
+  background-color: white;
   display: flex;
   justify-content: space-between;
   .search-btn {

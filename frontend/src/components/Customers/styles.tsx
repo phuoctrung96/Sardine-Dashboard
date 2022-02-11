@@ -62,9 +62,28 @@ const StyledCard = styled(Card)`
     border: none;
     padding: 20px;
     background-color: transparent;
+    display: flex;
+    gap: 20px;
   };
   & > .card-body {
     background-color: white;
+  }
+`;
+
+const StyleCircularBadge = styled.div`
+  position: relative;
+  & > div {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    & #session_level {
+      font-size: 20px;
+    };
+    & #session_level_label {
+      font-size: 12px;
+      color: #141A39;
+    };
   }
 `;
 
@@ -209,6 +228,7 @@ const StyledTh = styled.th`
 
 const DetailsHeaderParent = styled.div`
   display: flex;
+  align-items: center;
   grid-template-columns: repeat(auto-fill, 250px);
   grid-auto-rows: auto;
 `;
@@ -239,6 +259,7 @@ export {
   InputGroupWrapper,
   StyledMainDiv,
   UserProfilePic,
+  StyleCircularBadge,
   StyledCard,
   StyledCardBody,
   StyledTableCell,

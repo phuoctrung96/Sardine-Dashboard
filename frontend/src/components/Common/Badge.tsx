@@ -46,7 +46,7 @@ const Badge: React.FC<IProps> = (props) => {
 
   return (
     <Container style={{ backgroundColor: `${colorCode}10`, ...style }}>
-      <div style={{ marginLeft: 10, width: 10, height: 10, borderRadius: 3, backgroundColor: colorCode }} />
+      <div style={{ marginLeft: 10, width: 8, height: 8, borderRadius: "50%", backgroundColor: colorCode }} />
       <Title style={{ color: colorCode }}>{title}</Title>
     </Container>
   );
