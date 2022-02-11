@@ -118,14 +118,13 @@ const ExecutedRulesList: React.FC<IProps> = (props) => {
   }, [isDataLoaded, date, sessionKey, clientID, clientRules, executedRules]);
 
 
-  // return isLoading ? (
-  //   <TdValue>Loading...</TdValue>
-  // ) : error.length > 0 ? (
-  //   <TdValue style={{ color: "grey" }}>{error}</TdValue>
-  // ) : rulesData.length === 0 ? (
-  //   <TdValue style={{ color: "grey" }}>No data available!</TdValue>
-  // ) : (
-  return (    
+  return isLoading ? (
+    <TdValue>Loading...</TdValue>
+  ) : error.length > 0 ? (
+    <TdValue style={{ color: "grey" }}>{error}</TdValue>
+  ) : rulesData.length === 0 ? (
+    <TdValue style={{ color: "grey" }}>No data available!</TdValue>
+  ) : (
     <StyledRulesWrapper
       id="executed_rules"
     >
