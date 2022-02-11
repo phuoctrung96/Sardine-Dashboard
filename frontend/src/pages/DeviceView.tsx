@@ -19,7 +19,7 @@ import { StyledMainDiv, InputGroupWrapper, PinContainer } from "../components/Fr
 import { ActionTypes } from "../utils/store/actionTypes";
 import { fetchDeviceProfile } from "../utils/api";
 import { FraudListProps } from "../utils/store/interface";
-import { DetailsHeaderParent, StyledTableCell, StyledCard, DetailsHeaderChild, DetailsHeaderValue, DetailsHeaderTile } from "../components/Customers/styles";
+import { DetailsHeaderParent, BorderHide, StyledTableCell, StyledCard, DetailsHeaderChild, DetailsHeaderValue, DetailsHeaderTile } from "../components/Customers/styles";
 import CircularRiskLevel from "../components/Common/CircularRiskLevel";
 import Badge from "../components/Common/Badge";
 import ExecutedRulesList from "../components/Common/ExecutedRulesList";
@@ -355,17 +355,12 @@ const DeviceView: React.FC = () => {
                         navigate(`${RULE_DETAILS_PATH}?${PARAM_KEYS.RULE_ID}=${id}&${PARAM_KEYS.CLIENT_ID}=${clientID}`);
                       }}
                     />
+                    <BorderHide />
                   </Card.Body>
                 ) : (
-                  <Card.Body
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(auto-fill, 250px)",
-                      gridAutoRows: "auto",
-                    }}
-                  >
+                  <Card.Body>
                     {data.value.map((d) => (
-                      <div style={{ margin: "10px 20px" }} key={d.name}>
+                      <div key={d.name} className="grid-view">
                         <OverlayTrigger placement="top" overlay={<Tooltip id={d.name}> {d.description} </Tooltip>}>
                           <div
                             style={{
@@ -379,6 +374,7 @@ const DeviceView: React.FC = () => {
                                 marginBottom: 5,
                                 textTransform: "capitalize",
                                 color: "#ABA69A",
+                                fontWeight: "normal"
                               }}
                               className="font-weight-normal"
                               id={`${d.name}_title`}
@@ -410,6 +406,7 @@ const DeviceView: React.FC = () => {
                         </div>
                       </div>
                     ))}
+                    <BorderHide />
                   </Card.Body>
                 )}
               </StyledCard>

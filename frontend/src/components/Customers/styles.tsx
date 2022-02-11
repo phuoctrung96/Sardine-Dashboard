@@ -63,11 +63,45 @@ const StyledCard = styled(Card)`
     padding: 20px;
     background-color: transparent;
     display: flex;
+    align-items: center;
     gap: 20px;
+    font-weight: 600;
   };
   & > .card-body {
+    position: relative;
     background-color: white;
+    display: flex;
+    flex-wrap: wrap;
+    & > div {
+      width: 100%;
+      padding: 16px;
+      border-bottom: 1px solid #F2F6FF;
+    }
   }
+  @media (min-width: 1600px) {
+    & > .card-body > div.grid-view {
+      width: 25%;
+    }
+  }
+  @media only screen and (max-width: 1600px) and (min-width: 1200px) {
+    & > .card-body > div.grid-view {
+      width: 33.333333333%;
+    }
+  }
+  @media only screen and (max-width: 1200px) and (min-width: 800px) {
+    & > .card-body > div.grid-view {
+      width: 50%;
+    }
+  }
+`;
+
+const BorderHide = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  background-color: white;
 `;
 
 const StyleCircularBadge = styled.div`
@@ -263,6 +297,7 @@ export {
   StyledCard,
   StyledCardBody,
   StyledTableCell,
+  BorderHide,
   UserCard,
   ScoreWrapper,
   PinContainer,

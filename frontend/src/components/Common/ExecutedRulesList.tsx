@@ -13,21 +13,13 @@ const StyledTable = styled.table`
 `;
 
 const StyledTh = styled.th`
-  height: 16px;
   padding: 10px;
   font-family: IBM Plex Sans;
   font-style: normal;
-  font-weight: 600;
   font-size: 14px;
-  line-height: 19px;
-  /* identical to box height */
-
-  letter-spacing: 0.14em;
-
-  /* Secondary */
-
-  color: #325078;
-  background: #f7f9fc;
+  font-weight: normal;
+  color: #ABA69A;
+  background: white;
 `;
 
 const StyledTr = styled.tr`
@@ -40,11 +32,11 @@ const StyledTr = styled.tr`
   font-size: 14px;
   line-height: 140%;
   font-feature-settings: "ss02" on, "zero" on;
-  color: grey;
+  color: #141A39;
   padding: 9px 0px;
   background-color: #ffffff;
-  border: solid 2px transparent;
-  border-bottom-color: #F7F9FC;
+  border: solid 1px transparent;
+  border-bottom-color: #F2F6FF;
   width: auto;
   :hover {
     background-color: #F7F9FC;
@@ -61,7 +53,7 @@ const Cell = styled.td`
   font-weight: 500;
   font-size: 14px;
   line-height: 18px;
-  color: #325078;
+  color: #141A39;
 `;
 const TdValue = styled.div`
   font-family: IBM Plex Sans;
@@ -69,12 +61,12 @@ const TdValue = styled.div`
   font-weight: 500;
   font-size: 13px;
   line-height: 14px;
-  color: #001932;
+  color: #141A39;
 `;
 
 const RuleName = styled(TdValue)`
   font-size: 15px;
-  color: #325078;
+  color: #141A39;
   text-decoration-line: underline;
 `;
 
@@ -124,6 +116,7 @@ const ExecutedRulesList: React.FC<IProps> = (props) => {
     }
   }, [isDataLoaded, date, sessionKey, clientID, clientRules, executedRules]);
 
+
   return isLoading ? (
     <TdValue>Loading...</TdValue>
   ) : error.length > 0 ? (
@@ -135,16 +128,15 @@ const ExecutedRulesList: React.FC<IProps> = (props) => {
       id="executed_rules"
       style={{
         maxHeight: 400,
-        overflowY: "scroll",
       }}
     >
       <StyledTable>
         <thead style={{ height: 50 }}>
-          <tr>
+          <StyledTr>
             {headers.map((ele) => (
-              <StyledTh key={ele}>{ele.toUpperCase()}</StyledTh>
+              <StyledTh key={ele}>{ele}</StyledTh>
             ))}
-          </tr>
+          </StyledTr>
         </thead>
         <tbody>
           {orderRulesByRiskLevel(rulesData).map((d) => (

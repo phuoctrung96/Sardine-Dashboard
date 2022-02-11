@@ -5,7 +5,7 @@ import { withStyles } from "@material-ui/styles";
 import clsx from "clsx";
 import { Card, Col, Container, Row, Tooltip as TooltipBT, OverlayTrigger } from "react-bootstrap";
 import { BehaviorBiometricsPerFlow, BiometricField, AnyTodo } from "sardine-dashboard-typescript-definitions";
-import { StyledCard, StyledCardBody } from "../Customers/styles";
+import { StyledCard, StyledCardBody, BorderHide } from "../Customers/styles";
 
 export interface BehaviorBiometricsProps {
   behavior_biometrics: Array<BehaviorBiometricsPerFlow>;
@@ -74,6 +74,7 @@ const BehaviorBiometrics = (props: BehaviorBiometricsProps) => {
           .map((bb) => (
             <BehaviorBiometric {...bb} key={bb.created_at} />
           ))}
+          <BorderHide />
       </StyledCardBody>
     </StyledCard>
   );
