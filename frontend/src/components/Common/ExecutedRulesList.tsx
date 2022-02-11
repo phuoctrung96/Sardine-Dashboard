@@ -19,7 +19,7 @@ const StyledTh = styled.th`
   font-style: normal;
   font-size: 14px;
   font-weight: normal;
-  color: #ABA69A;
+  color: #aba69a;
   background: white;
 `;
 
@@ -54,7 +54,7 @@ const Cell = styled.td`
   font-weight: 500;
   font-size: 14px;
   line-height: 18px;
-  color: #141A39;
+  color: #141a39;
 `;
 const TdValue = styled.div`
   font-family: IBM Plex Sans;
@@ -62,12 +62,12 @@ const TdValue = styled.div`
   font-weight: 500;
   font-size: 13px;
   line-height: 14px;
-  color: #141A39;
+  color: #141a39;
 `;
 
 const RuleName = styled(TdValue)`
   font-size: 15px;
-  color: #141A39;
+  color: #141a39;
   text-decoration: none;
 `;
 
@@ -125,9 +125,7 @@ const ExecutedRulesList: React.FC<IProps> = (props) => {
   ) : rulesData.length === 0 ? (
     <TdValue style={{ color: "grey" }}>No data available!</TdValue>
   ) : (
-    <StyledRulesWrapper
-      id="executed_rules"
-    >
+    <StyledRulesWrapper id="executed_rules">
       <StyledTable>
         <thead style={{ height: 50 }}>
           <StyledTr>

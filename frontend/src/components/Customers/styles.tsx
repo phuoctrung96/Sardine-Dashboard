@@ -66,7 +66,7 @@ const StyledCard = styled(Card)`
     align-items: center;
     gap: 20px;
     font-weight: 600;
-  };
+  }
   & > .card-body {
     position: relative;
     background-color: white;
@@ -75,7 +75,7 @@ const StyledCard = styled(Card)`
     & > div {
       width: 100%;
       padding: 16px;
-      border-bottom: 1px solid #F2F6FF;
+      border-bottom: 1px solid #f2f6ff;
     }
   }
   @media (min-width: 1600px) {
@@ -107,7 +107,7 @@ const StyledRulesWrapper = styled.div`
     box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   }
   &::-webkit-scrollbar-thumb {
-    background-color: #141A39;
+    background-color: #141a39;
     border-radius: 2px;
     outline: 1px solid slategrey;
   }
@@ -130,12 +130,15 @@ const StyleCircularBadge = styled.div`
     left: 50%;
     transform: translate(-50%, -50%);
     & #session_level {
+      text-transform: capitalize;
       font-size: 20px;
-    };
+      color: #f7b904;
+      text-align: center;
+    }
     & #session_level_label {
       font-size: 12px;
-      color: #141A39;
-    };
+      color: #141a39;
+    }
   }
 `;
 
@@ -148,20 +151,20 @@ const StyledCardBody = styled(Card.Body)`
       flex-direction: row;
       align-items: center;
       gap: 10px;
-    };
+    }
     & .MuiStepLabel-label.MuiStepLabel-alternativeLabel {
       margin-top: 0;
-    };
+    }
     & .MuiStepConnector-alternativeLabel {
       position: unset;
-    };
+    }
     & .MuiStep-alternativeLabel {
       flex: 0;
-    };
+    }
     & .MuiStepConnector-vertical {
       padding: 0;
       margin-left: 8px;
-    };
+    }
     & .MuiStepConnector-lineVertical {
       min-height: 50px;
     }
