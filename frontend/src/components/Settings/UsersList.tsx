@@ -1,15 +1,13 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { getSuccessResult, isFailure, OrganizationUser } from "sardine-dashboard-typescript-definitions";
 
 import { useUserStore } from "store/user";
 import { TableWrapper } from "../Admin/styles";
 import { DataTable } from "../Common/DataTable";
 import { getOrganizationUsers } from "../../utils/api";
-import { StoreCtx } from "../../utils/store";
 import { captureException, captureFailure } from "../../utils/errorUtils";
 
 const UsersList = (): JSX.Element => {
-  const { state } = useContext(StoreCtx);
   const [isLoading, setIsLoading] = useState(false);
   const [users, setUsers] = useState<Array<OrganizationUser>>([]);
   const organisation = useUserStore(({ organisation }) => organisation);

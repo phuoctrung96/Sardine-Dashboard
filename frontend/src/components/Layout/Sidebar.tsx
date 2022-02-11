@@ -1,6 +1,7 @@
 import { useState } from "react";
 import moment from "moment"; // TODO: Stop using moment.js because it is obsolete.
 import { Link, useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import styled from "styled-components";
 import { Badge, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { WEBHOOK_PATH } from "components/Webhooks";
@@ -16,12 +17,15 @@ import {
   QUEUES_PATH,
   FRAUD_SCORE_PATH,
   CUSTOMERS_PATH,
+  RULES_PATH,
 } from "modulePaths";
 import { Line } from "components/RulesModule/styles";
 import { useUserStore, selectIsAdmin, selectIsSuperAdmin } from "store/user";
-import { DATE_FORMATS } from "../../constants";
+import { CLIENT_QUERY_FIELD } from "utils/constructFiltersQueryParams";
+import { DATE_FORMATS, ORGANIZATION_QUERY_FIELD } from "../../constants";
 import firebaseClient from "../../utils/firebase";
 import { captureException } from "../../utils/errorUtils";
+import { replaceAllSpacesWithUnderscores } from "../../utils/stringUtils";
 import PopUp from "../Common/PopUp";
 import deviceIntelligence from "../../utils/logo/deviceIntelligence.svg";
 import adminLogo from "../../utils/logo/admin.svg";
@@ -215,6 +219,7 @@ const ciDefaultPath = `${CUSTOMERS_PATH}?risk_level=high&start_date=${filterStar
 
 const Sidebar = (): JSX.Element => {
   const navigate = useNavigate();
+  const [cookies] = useCookies(["organization"]);
   const { isSuperAdmin, logout, userName } = useUserStore((state) => {
     const { logout, name } = state;
     return {
@@ -296,7 +301,10 @@ const Sidebar = (): JSX.Element => {
         <StyledUpcomingDiv>
           <Image src={docsLogo} />
           <StyledSubItem>
-            <StyledLink to={DOCUMENT_VERIFICATIONS_PATH} data-tid="sidebar_link_document_verifications">
+            <StyledLink
+              to={`${DOCUMENT_VERIFICATIONS_PATH}${cookies.organization ? `?${CLIENT_QUERY_FIELD}=${cookies.organization}` : ""}`}
+              data-tid="sidebar_link_document_verifications"
+            >
               Document Verifications
             </StyledLink>
           </StyledSubItem>
@@ -305,7 +313,10 @@ const Sidebar = (): JSX.Element => {
         <StyledUpcomingDiv>
           <Image alt="transactions" src={transactionsLogo} />
           <StyledSubItem>
-            <StyledLink to={TRANSACTIONS_PATH} data-tid="sidebar_link_transaction_intelligence">
+            <StyledLink
+              to={`${TRANSACTIONS_PATH}${cookies.organization ? `?${CLIENT_QUERY_FIELD}=${cookies.organization}` : ""}`}
+              data-tid="sidebar_link_transaction_intelligence"
+            >
               Transaction Intelligence
             </StyledLink>
           </StyledSubItem>
@@ -328,7 +339,10 @@ const Sidebar = (): JSX.Element => {
         <StyledUpcomingDiv>
           <Image alt="" src={rulesLogos} />
           <StyledSubItem>
-            <StyledLink to="/rules" data-tid="sidebar_link_rules">
+            <StyledLink
+              to={`${RULES_PATH}${cookies.organization ? `?${CLIENT_QUERY_FIELD}=${cookies.organization}` : ""}`}
+              data-tid="sidebar_link_rules"
+            >
               Rules
             </StyledLink>
           </StyledSubItem>
@@ -337,7 +351,10 @@ const Sidebar = (): JSX.Element => {
         <StyledUpcomingDiv>
           <Image alt="" src={blocklist} />
           <StyledSubItem>
-            <StyledLink to={BLOCK_ALLOW_LIST_PATH} data-tid="sidebar_link_block_allow_list">
+            <StyledLink
+              to={`${BLOCK_ALLOW_LIST_PATH}${cookies.organization ? `?${ORGANIZATION_QUERY_FIELD}=${cookies.organization}` : ""}`}
+              data-tid="sidebar_link_block_allow_list"
+            >
               Blocklist/Allowlist
             </StyledLink>
           </StyledSubItem>
@@ -346,7 +363,10 @@ const Sidebar = (): JSX.Element => {
         <StyledUpcomingDiv>
           <Image alt="queues" src={queuesLogo} />
           <StyledSubItem>
-            <StyledLink to={QUEUES_PATH} data-tid="sidebar_link_queues">
+            <StyledLink
+              to={`${QUEUES_PATH}${cookies.organization ? `?${ORGANIZATION_QUERY_FIELD}=${cookies.organization}` : ""}`}
+              data-tid="sidebar_link_queues"
+            >
               Queues
             </StyledLink>
           </StyledSubItem>
@@ -369,7 +389,9 @@ const Sidebar = (): JSX.Element => {
           <StyledUpcomingDiv>
             <Image src={infoLogo} />
             <StyledSubItem>
-              <StyledLink to={INTEGRATION_STATUS_PATH}>Integration Status</StyledLink>
+              <StyledLink to={INTEGRATION_STATUS_PATH} data-tid="sidebar_link_integration_status">
+                Integration Status
+              </StyledLink>
             </StyledSubItem>
           </StyledUpcomingDiv>
         )}
@@ -378,7 +400,9 @@ const Sidebar = (): JSX.Element => {
           <StyledUpcomingDiv>
             <Image alt="admin" src={adminLogo} />
             <StyledSubItem>
-              <StyledLink to="/admin">Admin</StyledLink>
+              <StyledLink to="/admin" data-tid="sidebar_link_admin">
+                Admin
+              </StyledLink>
             </StyledSubItem>
           </StyledUpcomingDiv>
         )}
@@ -387,7 +411,9 @@ const Sidebar = (): JSX.Element => {
           <StyledUpcomingDiv>
             <Image alt="sar" src={docsLogo} />
             <StyledSubItem>
-              <StyledLink to={SAR_PATH}>File A SAR</StyledLink>
+              <StyledLink to={SAR_PATH} data-tid="sidebar_link_file_a_sar">
+                File A SAR
+              </StyledLink>
             </StyledSubItem>
           </StyledUpcomingDiv>
         )}
@@ -397,12 +423,19 @@ const Sidebar = (): JSX.Element => {
             <Line />
             <StyledUpcomingDiv>
               <Image src={adminLogo} />
-              <StyledSubItem style={{ fontWeight: 500, color: "var(--dark-14)" }}>Sardine Admin</StyledSubItem>
+              <StyledSubItem style={{ fontWeight: 500, color: "var(--dark-14)" }} data-tid="sidebar_sardine_admin">
+                Sardine Admin
+              </StyledSubItem>
             </StyledUpcomingDiv>
             {superAdminMenu.map((menu) => (
               <StyledUpcomingDiv key={menu.path} style={{ marginTop: 5 }}>
                 <StyledSubItem style={{ paddingLeft: 20 }}>
-                  <StyledLink to={menu.path}>{menu.title}</StyledLink>
+                  <StyledLink
+                    to={menu.path}
+                    data-tid={`sidebar_link_sardine_admin_${replaceAllSpacesWithUnderscores(menu.title.toLowerCase())}`}
+                  >
+                    {menu.title}
+                  </StyledLink>
                 </StyledSubItem>
               </StyledUpcomingDiv>
             ))}

@@ -23,6 +23,7 @@ export const DATA_TYPES = {
 export type DataType = typeof DATA_TYPES[keyof typeof DATA_TYPES];
 
 export const JARO_WINKLER_DISTANCE = "Jaro-Winkler distance";
+export const EQUALS_TO_FUNCTION = "EqualsTo";
 
 export interface FunctionChild {
   title: string;
@@ -55,6 +56,7 @@ const functionChild = (
 });
 
 export const FUNCTIONS = "Functions";
+export const MULTI_FEATURE_FUNCTIONS: string[] = [JARO_WINKLER_DISTANCE, EQUALS_TO_FUNCTION];
 export const supportedFunctions: FunctionChild[] = [
   functionChild(
     JARO_WINKLER_DISTANCE,
@@ -81,6 +83,14 @@ export const supportedFunctions: FunctionChild[] = [
     false
   ),
   functionChild("HasSuffix", "", "HasSuffix", "HasSuffix is the function to check suffix of the value", DATA_TYPES.string, false),
+  functionChild(
+    EQUALS_TO_FUNCTION,
+    "",
+    EQUALS_TO_FUNCTION,
+    "EqualsTo is the function to compare two values",
+    DATA_TYPES.bool,
+    true
+  ),
 ];
 
 const DURATION_VALUES = ["all", "min", "mins", "hrs", "day", "days", "mth", "mths"] as const;
@@ -183,10 +193,11 @@ const CUSTOMER_CHECKPOINTS = [
   CHECK_POINTS.Onboarding,
   CHECK_POINTS.Payment,
   CHECK_POINTS.Withdrawal,
+  CHECK_POINTS.ACH,
 ];
 const arrayCustomerCheckpoints = CUSTOMER_CHECKPOINTS.map((c) => c.toLowerCase());
 
-const issuingCheckpoints = [CHECK_POINTS.IssuingRisk, CHECK_POINTS.IssuingAML].map((c) => c.toLowerCase());
+const issuingCheckpoints = [CHECK_POINTS.IssuingRisk].map((c) => c.toLowerCase());
 
 const shouldVisible = (i: ItemModel, isDemoMode: boolean, isSuperAdmin: boolean): boolean => {
   if (isDemoMode) {
@@ -580,6 +591,10 @@ export const getRulesData = (isDemoMode: boolean, checkpoint: string, isSuperAdm
       stringChild("Hash", "hash of card number as passed in API"),
       stringChild("Brand", "card brand. eg VISA or MASTERCARD"),
       stringChild("Issuer", "name of card issuer. eg CITIBANK"),
+      stringChild(
+        "Level",
+        "Level of the card. Some common values are - Some common examples are - PREPAID,BUSINESS, PREMIUM, PLATINUM"
+      ),
       stringChild("Type", "Type of card - credit or debit"),
       stringChild("Country", "card issuer country"),
       stringChild("Zip", "card issuer zip code"),

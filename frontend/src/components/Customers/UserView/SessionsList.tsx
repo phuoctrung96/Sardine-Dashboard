@@ -108,7 +108,7 @@ const SessionsList: React.FC<IProps> = (props) => {
               </Cell>
               <Cell>{d.flow || "-"}</Cell>
               <Cell style={{ lineBreak: "auto" }}>
-                <Badge title={d.checkpointOutput.customer_risk_level || "unknown"} />
+                <Badge title={d.risk_level || "unknown"} />
               </Cell>
               <Cell>{moment(d.timestamp * 1000).format("LLL") || "-"}</Cell>
             </TableRow>

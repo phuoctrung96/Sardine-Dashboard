@@ -4,7 +4,7 @@ import { Spinner } from "react-bootstrap";
 import styled from "styled-components";
 import { captureException } from "utils/errorUtils";
 import { getRuleFeatureStats } from "../../utils/api";
-import { DATA_TYPES } from "../../utils/dataProviderUtils";
+import { DATA_TYPES, FunctionChild, supportedFunctions } from "../../utils/dataProviderUtils";
 
 const Container = styled.div`
   margin: 10px 50px;
@@ -90,10 +90,16 @@ export const DescriptionAndStats = (props: IProps) => {
   const { rule, organisation, description } = props;
   const [data, setData] = useState(undefined);
   const [loadError, setLoadError] = useState(undefined);
+
+  const functionFilter = supportedFunctions.filter((func: FunctionChild) => rule.rule.includes(func.value));
+
   useEffect(() => {
     async function loadStats() {
       setData(undefined);
       setLoadError(undefined);
+      if (functionFilter.length > 0) {
+        return;
+      }
       const val = await getRuleFeatureStats(
         {
           feature: rule.rule,
@@ -123,6 +129,7 @@ export const DescriptionAndStats = (props: IProps) => {
         </span>
         <span>{rule.datatype}</span>
       </div>
+      <br />
       {loadError && <div>Error loading data trends</div>}
       {data && <Trend rule={rule} data={data} />}
     </Container>

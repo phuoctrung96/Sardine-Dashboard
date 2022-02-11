@@ -14,6 +14,7 @@ export const RULE_ENV_MODES = {
 
 export const CHECKPOINTS = {
   AML: "AML",
+  ACH: "ach",
   AMLBank: "aml_bank",
   AMLIssuer: "aml_issuer",
   AMLCrypto: "aml_crypto",
@@ -24,7 +25,6 @@ export const CHECKPOINTS = {
   Payment: "payment",
   Withdrawal: "withdrawal",
   IssuingRisk: "issuingRisk",
-  IssuingAML: "issuingAML",
 } as const;
 export type Checkpoint = typeof CHECKPOINTS[keyof typeof CHECKPOINTS];
 

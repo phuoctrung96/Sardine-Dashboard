@@ -28,10 +28,10 @@ import {
   TRANSACTION_DETAILS_PATH,
   SEARCH_PARAM_KEYS,
 } from "modulePaths";
-import { createGmapsLinkFromAddress } from "components/Customers/UserView";
 import DeviceInfo from "components/Common/Customer/DeviceInfo";
 import PaymentMethod from "components/Common/Customer/PaymentMethod";
 import { useUserStore } from "store/user";
+import { CLIENT_ID_QUERY_FIELD } from "utils/constructFiltersQueryParams";
 import Layout from "../components/Layout/Main";
 import { StyledNavTitle, StyledStickyNav, StyledTitleName } from "../components/Dashboard/styles";
 import { captureException, captureFailure } from "../utils/errorUtils";
@@ -67,7 +67,11 @@ import AccessControlPopUp from "../components/Customers/UserView/AccessControlPo
 import { getRandomColor, timeDifferenceFromNow } from "../components/Common/Functions";
 import { SubmitButton } from "../components/Common/Components";
 import CommentList, { ICommentProps } from "../components/Queues/Components/CommentList";
-import { convertDatastoreSessionToCustomerResponse } from "../utils/customerSessionUtils";
+import {
+  convertDatastoreSessionToCustomerResponse,
+  getLatestAddressFromCustomerResponse,
+  getLatestMapUrlFromCustomerResponse,
+} from "../utils/customerSessionUtils";
 import CustomerDetails from "../components/Common/Customer/CustomerDetails";
 import CustomerLocation from "../components/Common/Customer/CustomerLocation";
 import CustomerPhone from "../components/Common/Customer/CustomerPhone";
@@ -76,7 +80,6 @@ import CustomerTaxDetails from "../components/Common/Customer/CustomerTaxDetails
 import Transaction from "../components/Common/Transaction";
 import { KEY_EXECUTED_RULES } from "../constants";
 import { useDeviceProfileFetchResult } from "../hooks/fetchHooks";
-import { CLIENT_ID_QUERY_FIELD } from "utils/constructFiltersQueryParams";
 import FeedbackPopUp from "../components/Customers/UserView/FeedbackPopUp";
 import FeedbackList from "../components/Queues/Components/FeedbackList";
 
@@ -315,10 +318,14 @@ const SessionsDetails = (): JSX.Element => {
     if (deviceProfileFetchResult.data !== undefined) {
       const { hits, profile } = deviceProfileFetchResult.data;
       // eslint-disable-next-line no-underscore-dangle
-      const deviceProfileList = hits.hits.map((item) => item._source);
-      if (deviceProfileList.length > 0) {
-        const deviceProfile = deviceProfileList[0];
-        setDeviceData(deviceProfile);
+      if (profile) {
+        setDeviceData(profile);
+      } else if (hits && hits.hits) {
+        const deviceProfileList = hits.hits.map((item) => item._source);
+        if (deviceProfileList.length > 0) {
+          const deviceProfile = deviceProfileList[0];
+          setDeviceData(deviceProfile);
+        }
       }
     }
   }, [deviceProfileFetchResult.data]);
@@ -339,7 +346,7 @@ const SessionsDetails = (): JSX.Element => {
         if (session !== null) {
           setCustom(session.custom);
 
-          const val = createGmapsLinkFromAddress(convertDatastoreSessionToCustomerResponse(session));
+          const val = convertDatastoreSessionToCustomerResponse(session);
           setCustomerData(val);
           actions.forEach((a, ind) => {
             const v = Object.entries(val).filter((f) => f[0] === a.key);
@@ -735,12 +742,28 @@ const SessionsDetails = (): JSX.Element => {
                       </DataCard>
                     )}
                     <CustomerLocation
-                      address={customerData?.address || ""}
-                      city={customerData?.city || ""}
-                      postalCode={customerData?.postal_code || ""}
-                      regionCode={customerData?.region_code || ""}
-                      countryCode={customerData?.country_code || ""}
-                      mapAddress={customerData?.address_google_maps_url || undefined}
+                      address={customerData === undefined ? "" : getLatestAddressFromCustomerResponse(customerData)}
+                      city={
+                        customerData === undefined || customerData.address_fields_list.length === 0
+                          ? ""
+                          : customerData.address_fields_list[0].city
+                      }
+                      postalCode={
+                        customerData === undefined || customerData.address_fields_list.length === 0
+                          ? ""
+                          : customerData.address_fields_list[0].postal_code
+                      }
+                      regionCode={
+                        customerData === undefined || customerData.address_fields_list.length === 0
+                          ? ""
+                          : customerData.address_fields_list[0].region_code
+                      }
+                      countryCode={
+                        customerData === undefined || customerData.address_fields_list.length === 0
+                          ? ""
+                          : customerData.address_fields_list[0].country_code
+                      }
+                      mapUrl={customerData === undefined ? "" : getLatestMapUrlFromCustomerResponse(customerData)}
                     />
                     <CustomerPhone
                       phoneLevel={customerData?.phone_level || ""}

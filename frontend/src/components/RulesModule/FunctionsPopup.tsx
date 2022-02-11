@@ -5,12 +5,12 @@ import { Title, StyledUl } from "./styles";
 import {
   getRulesData,
   CHECK_POINTS,
-  JARO_WINKLER_DISTANCE,
   supportedFunctions,
   FUNCTIONS,
   ItemModel,
   FunctionChild,
   DATA_TYPES,
+  MULTI_FEATURE_FUNCTIONS,
 } from "../../utils/dataProviderUtils";
 import RecursiveDropdown, { DataProps } from "../Common/RecursiveDropdown";
 
@@ -136,7 +136,7 @@ const FunctionsPopup: React.FC<Props> = (props) => {
           <>
             <StyledUl style={{ justifyContent: "left", marginLeft: 20 }}>
               <div style={{ marginRight: 10 }}>
-                {selectedFunction === JARO_WINKLER_DISTANCE ? DROPDOWN_TYPE.Feature1 : "Select Feature"}
+                {MULTI_FEATURE_FUNCTIONS.includes(selectedFunction) ? DROPDOWN_TYPE.Feature1 : "Select Feature"}
               </div>
               <RecursiveDropdown
                 show={visibleDropDown === DROPDOWN_TYPE.Feature1}
@@ -150,7 +150,7 @@ const FunctionsPopup: React.FC<Props> = (props) => {
                 value={feature1}
                 data={getDropdownData(rulesData)}
               />
-              {functionData && !functionData?.hasOperator ? (
+              {functionData && !functionData?.hasOperator && !MULTI_FEATURE_FUNCTIONS.includes(selectedFunction) ? (
                 <FormControl
                   placeholder="Value"
                   aria-describedby="basic-addon2"
@@ -161,10 +161,10 @@ const FunctionsPopup: React.FC<Props> = (props) => {
                 />
               ) : null}
             </StyledUl>
-            {selectedFunction === JARO_WINKLER_DISTANCE ? (
+            {MULTI_FEATURE_FUNCTIONS.includes(selectedFunction) ? (
               <StyledUl style={{ justifyContent: "left", marginLeft: 20 }}>
                 <div style={{ marginRight: 10 }}>
-                  {selectedFunction === JARO_WINKLER_DISTANCE ? DROPDOWN_TYPE.Feature2 : "Select Feature"}
+                  {MULTI_FEATURE_FUNCTIONS.includes(selectedFunction) ? DROPDOWN_TYPE.Feature2 : "Select Feature"}
                 </div>
                 <RecursiveDropdown
                   show={visibleDropDown === DROPDOWN_TYPE.Feature2}
@@ -189,7 +189,7 @@ const FunctionsPopup: React.FC<Props> = (props) => {
               <Button
                 style={{ width: 80 }}
                 disabled={
-                  selectedFunction === JARO_WINKLER_DISTANCE
+                  MULTI_FEATURE_FUNCTIONS.includes(selectedFunction)
                     ? feature1.length === 0 || feature2.length === 0
                     : feature1.length === 0
                 }
@@ -203,7 +203,7 @@ const FunctionsPopup: React.FC<Props> = (props) => {
                     }
 
                     const val = `${functionData.value}(${
-                      selectedFunction === JARO_WINKLER_DISTANCE
+                      MULTI_FEATURE_FUNCTIONS.includes(selectedFunction)
                         ? `${feature1},${feature2}`
                         : functionData.hasOperator
                         ? `${feature1}`

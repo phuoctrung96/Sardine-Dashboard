@@ -21,7 +21,7 @@ import { DataTable, DataCell, DataColumn, MaterialTableComponents, ToolBarWithTi
 import FilterField, { FilterData, getFilters } from "../components/Common/FilterField";
 import { StyledMainDiv, TableWrapper } from "../components/Customers/styles";
 import { DATASTORE_START_DATE, DATE_FORMATS, TIMEZONE_TYPES, TIME_UNITS } from "../constants";
-import { constructAddress, convertDatastoreSessionToCustomerResponse } from "../utils/customerSessionUtils";
+import { convertDatastoreSessionToCustomerResponse, sessionToAddressFields } from "../utils/customerSessionUtils";
 import { openUrlNewTabWithHistoryState } from "../utils/openUrlNewTabWithHistoryState";
 import { datetimeToTimestamp } from "../utils/timeUtils";
 import Badge from "../components/Common/Badge";
@@ -32,6 +32,7 @@ interface TableLocalization {
   };
 }
 
+// TODO: Move it to customerSessionUtils.ts
 export function convertToCustomerResponse(r: AnyTodo): CustomersResponse {
   let timestamp: string;
   if (r.timestamp) {
@@ -51,10 +52,6 @@ export function convertToCustomerResponse(r: AnyTodo): CustomersResponse {
     is_phone_verified: r.isPhoneVerified || true,
     device_id: r.device_id || "",
     date_of_birth: r.dateOfBirth || "",
-    postal_code: r.postal_code || "",
-    city: r.city || "",
-    region_code: r.region_code || "",
-    country_code: r.country_code || "",
     customer_score: `${r.customer_score || 0}`,
     email_reason_codes: `${r.email_reason_codes || ""}`,
     phone_reason_codes: `${r.phone_reason_codes || ""}`,
@@ -63,8 +60,6 @@ export function convertToCustomerResponse(r: AnyTodo): CustomersResponse {
     email_domain_level: `${r.emailDomainLevel || ""}`,
     risk_level: `${r.risk_level || ""}`,
     reason_codes: [],
-    street1: `${r.street1 || ""}`,
-    street2: `${r.street2 || ""}`,
     session_key: `${r.session_key || ""}`,
     created_date: `${r.created_date ? r.created_date.value : ""}`,
     customer_risk_level: `${r.customer_risk_level || ""}`,
@@ -81,8 +76,7 @@ export function convertToCustomerResponse(r: AnyTodo): CustomersResponse {
     proxy: `${r.proxy || ""}`,
     ip_type: `${r.IpType || ""}`,
     vpn: `${r.vpn || ""}`,
-    address: constructAddress(r),
-    address_google_maps_url: r.address_google_maps_url || "",
+    address_fields_list: [sessionToAddressFields(r)] || [],
     timestamp,
 
     // Tax ID and sentilink

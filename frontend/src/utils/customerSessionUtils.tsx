@@ -1,6 +1,7 @@
 import { uniq } from "lodash-es";
-import { SessionKind as Session, CustomersResponse } from "sardine-dashboard-typescript-definitions";
+import { SessionKind as Session, CustomersResponse, AddressFields } from "sardine-dashboard-typescript-definitions";
 import { timestampToISODateIfZeroEmptyString } from "./timeUtils";
+import { GOOGLE_MAPS_URL } from "../constants";
 
 const filterAndJoin = (values: string[]): string => uniq(values.filter((val) => val !== "")).join(", ");
 
@@ -52,6 +53,18 @@ const getPhoneDetails = (response: Session[]) => {
 
 export const constructAddress = (response: Session): string =>
   [response.street_1, response.street_2, response.city, response.region_code, response.postal_code, response.country_code]
+    .filter((a) => a?.trim())
+    .join(", ");
+
+const constructAddressFromAddressField = (addressFields: AddressFields): string =>
+  [
+    addressFields.street1,
+    addressFields.street2,
+    addressFields.city,
+    addressFields.region_code,
+    addressFields.postal_code,
+    addressFields.country_code,
+  ]
     .filter((a) => a?.trim())
     .join(", ");
 
@@ -215,8 +228,18 @@ const getEmailDetails = (respone: Session[]) => {
   return EMPTY_DETAILS;
 };
 
+export const sessionToAddressFields = (s: Session): AddressFields => ({
+  street1: s.street_1 || "",
+  street2: s.street_2 || "",
+  city: s.city || "",
+  postal_code: s.postal_code || "",
+  region_code: s.region_code || "",
+  country_code: s.country_code || "",
+});
+
 export function convertDatastoreSessionToCustomerResponse(r: Session): CustomersResponse {
   return {
+    address_fields_list: [sessionToAddressFields(r)],
     client_id: r.client_id || "",
     session_key: r.session_key || "",
     customer_id: r.customer_id || "",
@@ -224,14 +247,6 @@ export function convertDatastoreSessionToCustomerResponse(r: Session): Customers
     first_name: r.first_name || "",
     last_name: r.last_name || "",
     phone: r.phone || "",
-    address: constructAddress(r),
-    address_google_maps_url: "",
-    street1: r.street_1 || "",
-    street2: r.street_2 || "",
-    city: r.city || "",
-    postal_code: r.postal_code || "",
-    region_code: r.region_code || "",
-    country_code: r.country_code || "",
     location: "",
     email_address: r.email_address || "",
     is_email_verified: r.is_email_verified || false,
@@ -281,6 +296,34 @@ export function convertDatastoreSessionToCustomerResponse(r: Session): Customers
   };
 }
 
+export const extractStreetWords = (customerData: CustomersResponse): string[] => {
+  const street1Words = customerData.address_fields_list.map((addressField) => addressField.street1).filter((s) => s); // Filter empty string
+  const street2Words = customerData.address_fields_list.map((addressField) => addressField.street2).filter((s) => s); // Filter empty string
+  return [...street1Words, ...street2Words];
+};
+
+// We might want to change the path from /search to /place in the future.
+export const generateGoogleMapsUrlFromAddress = (address: string): string =>
+  address === "" ? "" : `${GOOGLE_MAPS_URL}/search/${encodeURIComponent(address)}`;
+
+export const getAddressListFromCustomerResponse = (customer: CustomersResponse): string[] => {
+  if (customer.address_fields_list && customer.address_fields_list.length > 0) {
+    return customer.address_fields_list.map((a) => constructAddressFromAddressField(a));
+  }
+  return [];
+};
+
+// Get the latest address
+export const getLatestAddressFromCustomerResponse = (customer: CustomersResponse): string => {
+  if (customer.address_fields_list && customer.address_fields_list.length > 0) {
+    return constructAddressFromAddressField(customer.address_fields_list[0]);
+  }
+  return "";
+};
+
+export const getLatestMapUrlFromCustomerResponse = (customer: CustomersResponse): string =>
+  generateGoogleMapsUrlFromAddress(getLatestAddressFromCustomerResponse(customer));
+
 export function convertDatastoreSessionsToCustomerResponse(sessions: Session[]): CustomersResponse {
   const firstSession = sessions[0];
   const userStatuses = filterAndJoin(sessions.map((s) => s.status || "pending"));
@@ -288,6 +331,7 @@ export function convertDatastoreSessionsToCustomerResponse(sessions: Session[]):
   const isProgress = userStatuses.includes("in-progress");
 
   return {
+    address_fields_list: sessions.map(sessionToAddressFields),
     client_id: firstSession.client_id || "",
     customer_id: firstSession.customer_id || "",
     session_key: filterAndJoin(sessions.map((s) => s.session_key || "")),
@@ -295,13 +339,6 @@ export function convertDatastoreSessionsToCustomerResponse(sessions: Session[]):
     first_name: filterAndJoin(sessions.map((s) => `${s.first_name || ""} ${s.last_name || ""}`)),
     last_name: "",
     phone: filterAndJoin(sessions.map((s) => s.phone || "")),
-    address: uniq(sessions.map((s) => constructAddress(s))).join("\n"),
-    street1: filterAndJoin(sessions.map((s) => s.street_1 || "")),
-    street2: filterAndJoin(sessions.map((s) => s.street_2 || "")),
-    city: filterAndJoin(sessions.map((s) => s.city || "")),
-    postal_code: filterAndJoin(sessions.map((s) => s.postal_code || "")),
-    region_code: filterAndJoin(sessions.map((s) => s.region_code || "")),
-    country_code: filterAndJoin(sessions.map((s) => s.country_code || "")),
     email_address: filterAndJoin(sessions.map((s) => s.email_address || "")),
     is_email_verified: sessions.map((s) => s.is_email_verified).includes(true) || false,
     is_phone_verified: sessions.map((s) => s.is_phone_verified).includes(true) || false,
@@ -345,7 +382,6 @@ export function convertDatastoreSessionsToCustomerResponse(sessions: Session[]):
     transaction_amount: "",
     transaction_currency_code: "",
     location: "",
-    address_google_maps_url: "",
     rules_executed: [],
     reason_codes: uniq(sessions.map((s) => s.reason_codes).flat()),
     third_party_synthetic_score: filterAndJoin(
