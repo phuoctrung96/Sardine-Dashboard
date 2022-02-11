@@ -51,7 +51,6 @@ export const StyledTitleName = styled.div`
   margin: auto 0px;
   font-family: IBM Plex Sans;
   font-style: normal;
-  font-weight: 600;
   font-size: 16px;
   line-height: 26px;
   color: var(--dark-14);

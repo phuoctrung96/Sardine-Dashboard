@@ -5,6 +5,8 @@ import { withStyles } from "@material-ui/styles";
 import clsx from "clsx";
 import { Card, Col, Container, Row, Tooltip as TooltipBT, OverlayTrigger } from "react-bootstrap";
 import { BehaviorBiometricsPerFlow, BiometricField, AnyTodo } from "sardine-dashboard-typescript-definitions";
+import { StyledCard, StyledCardBody, BorderHide } from "../Customers/styles";
+import biometricsIcon from "../../utils/logo/biometrics.svg";
 
 export interface BehaviorBiometricsProps {
   behavior_biometrics: Array<BehaviorBiometricsPerFlow>;
@@ -32,8 +34,8 @@ const BehaviorBiometrics = (props: BehaviorBiometricsProps) => {
   const renderStepper = () => {
     if (behaviorBiometrics.length > 1) {
       return (
-        <Row style={{ overflowX: "scroll", marginBottom: 15 }} id="biometrics_steps">
-          <Stepper alternativeLabel activeStep={stepToFlow[inFocusFlow]} connector={<QontoConnector />}>
+        <Row style={{ marginBottom: 15 }} id="biometrics_steps">
+          <Stepper alternativeLabel orientation="vertical" activeStep={stepToFlow[inFocusFlow]} connector={<QontoConnector />}>
             {behaviorBiometrics.map((bb) => (
               <Step id={bb.flow} key={bb.flow} onClick={() => setInFocusFlow(bb.flow)}>
                 <Tooltip title={bb.flow} placement="top">
@@ -58,11 +60,12 @@ const BehaviorBiometrics = (props: BehaviorBiometricsProps) => {
   };
 
   return (
-    <Card style={{ marginTop: 15 }}>
+    <StyledCard style={{ marginTop: 15 }}>
       <Card.Header id="biometrics_title" style={{ color: "var(--dark-14)" }}>
-        Behavior Biometrics
+        <img src={biometricsIcon} />
+        <span>Behavior Biometrics</span>
       </Card.Header>
-      <Card.Body>
+      <StyledCardBody>
         {renderNoBiometricsDetailsFound()}
         {renderStepper()}
         {behaviorBiometrics
@@ -70,8 +73,9 @@ const BehaviorBiometrics = (props: BehaviorBiometricsProps) => {
           .map((bb) => (
             <BehaviorBiometric {...bb} key={bb.created_at} />
           ))}
-      </Card.Body>
-    </Card>
+        <BorderHide />
+      </StyledCardBody>
+    </StyledCard>
   );
 };
 
@@ -97,28 +101,35 @@ const renderFields = (fields: Array<BiometricField>) => {
 
 const Attribute: React.FC<{ property: string; value: AnyTodo; description?: string }> = (props) => {
   const { property, value, description } = props;
-  return (
-    <Row>
-      <Col>
-        <OverlayTrigger placement="top" overlay={<TooltipBT id={`tooltip-${property}`}> {description || ""} </TooltipBT>}>
-          <Card.Title
-            style={{
-              fontSize: 15,
-              marginBottom: 5,
-              textTransform: "capitalize",
-            }}
-            className="font-weight-normal"
-            id={`${property}_title`}
-          >
-            {property}:
-          </Card.Title>
-        </OverlayTrigger>
-      </Col>
-      <Col className="text-center" id={`${property}_value`}>
-        {String(value)}{" "}
-      </Col>
-    </Row>
-  );
+
+  if (property !== "Flow") {
+    return (
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+        <div>
+          <OverlayTrigger placement="top" overlay={<TooltipBT id={`tooltip-${property}`}> {description || ""} </TooltipBT>}>
+            <p
+              style={{
+                fontSize: 14,
+                textTransform: "capitalize",
+                fontWeight: "normal",
+                margin: 0,
+              }}
+              id={`${property}_title`}
+            >
+              {property}:
+            </p>
+          </OverlayTrigger>
+        </div>
+        <div id={`${property}_value`}>{String(value)} </div>
+      </div>
+    );
+  } else {
+    return (
+      <Row>
+        <p style={{ fontSize: 20, fontWeight: "semibold" }}>{String(value)} </p>
+      </Row>
+    );
+  }
 };
 
 const BehaviorBiometric: React.FC<BehaviorBiometricsPerFlow> = (props) => {
@@ -126,7 +137,7 @@ const BehaviorBiometric: React.FC<BehaviorBiometricsPerFlow> = (props) => {
   return (
     <Container>
       <Row>
-        <Col>
+        <Col xs={12} lg={6} style={{ padding: "0 20px" }}>
           <Attribute property="Flow" value={flow} description="Flow provided by you" />
           <Attribute
             property="Num Distraction Events"
@@ -139,9 +150,11 @@ const BehaviorBiometric: React.FC<BehaviorBiometricsPerFlow> = (props) => {
             description="No of context switches"
           />
         </Col>
-        <Col className="overflow-auto" style={{ height: "200px" }}>
+        <Col xs={12} lg={6} style={{ padding: "0 20px" }}>
           <Row className="text-center">
-            <h6 id="input_field_title">Input Fields</h6>
+            <p id="input_field_title" style={{ fontSize: 20, fontWeight: "semibold" }}>
+              Input Fields
+            </p>
           </Row>
           {renderFields(fields)}
         </Col>

@@ -6,20 +6,7 @@ const TableWrapper = styled.div`
 `;
 
 const StyledMainDiv = styled.div`
-  @media (min-width: 1400px) {
-    max-width: 90%;
-    padding-left: 2%;
-    padding-right: 5%;
-  }
-  @media only screen and (max-width: 1400px) and (min-width: 1300px) {
-    width: 90%;
-    padding-left: 5%;
-    padding-right: 5%;
-  }
-  @media only screen and (max-width: 1300px) and (min-width: 700px) {
-    margin: 20px 10px;
-    width: 80%;
-  }
+  padding: 0 5%;
 `;
 
 const TextWrapper = styled.div`
@@ -27,6 +14,7 @@ const TextWrapper = styled.div`
 `;
 
 const InputGroupWrapper = styled.div`
+  background-color: white;
   display: flex;
   justify-content: space-between;
   .search-btn {

@@ -49,6 +49,128 @@ const UserProfilePic = styled.div`
   font-weight: 700;
 `;
 
+const StyledTableCell = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+const StyledCard = styled(Card)`
+  background-color: transparent;
+  border: none;
+  & > .card-header {
+    border: none;
+    padding: 20px;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-weight: 600;
+  }
+  & > .card-body {
+    position: relative;
+    background-color: white;
+    display: flex;
+    flex-wrap: wrap;
+    & > div {
+      width: 100%;
+      padding: 16px;
+      border-bottom: 1px solid #f2f6ff;
+    }
+  }
+  @media (min-width: 1600px) {
+    & > .card-body > div.grid-view {
+      width: 25%;
+    }
+  }
+  @media only screen and (max-width: 1600px) and (min-width: 1200px) {
+    & > .card-body > div.grid-view {
+      width: 33.333333333%;
+    }
+  }
+  @media only screen and (max-width: 1200px) and (min-width: 800px) {
+    & > .card-body > div.grid-view {
+      width: 50%;
+    }
+  }
+`;
+
+const StyledRulesWrapper = styled.div`
+  max-height: 700px;
+  overflow-y: auto;
+  padding: 0;
+  &::-webkit-scrollbar {
+    width: 2px;
+    border-radius: 2px;
+  }
+  &::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #141a39;
+    border-radius: 2px;
+    outline: 1px solid slategrey;
+  }
+`;
+
+const BorderHide = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  background-color: white;
+`;
+
+const StyleCircularBadge = styled.div`
+  position: relative;
+  & > div {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    & #session_level {
+      text-transform: capitalize;
+      font-size: 20px;
+      color: #f7b904;
+      text-align: center;
+    }
+    & #session_level_label {
+      font-size: 12px;
+      color: #141a39;
+    }
+  }
+`;
+
+const StyledCardBody = styled(Card.Body)`
+  display: flex;
+  gap: 20px;
+  & #biometrics_steps {
+    width: 40%;
+    & .MuiStepLabel-root.MuiStepLabel-alternativeLabel {
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+    }
+    & .MuiStepLabel-label.MuiStepLabel-alternativeLabel {
+      margin-top: 0;
+    }
+    & .MuiStepConnector-alternativeLabel {
+      position: unset;
+    }
+    & .MuiStep-alternativeLabel {
+      flex: 0;
+    }
+    & .MuiStepConnector-vertical {
+      padding: 0;
+      margin-left: 8px;
+    }
+    & .MuiStepConnector-lineVertical {
+      min-height: 50px;
+    }
+  }
+`;
+
 const UserCard = styled(Card)`
   align-items: center;
   justify-content: center;
@@ -160,7 +282,8 @@ const StyledTh = styled.th`
 `;
 
 const DetailsHeaderParent = styled.div`
-  display: grid;
+  display: flex;
+  align-items: center;
   grid-template-columns: repeat(auto-fill, 250px);
   grid-auto-rows: auto;
 `;
@@ -169,7 +292,7 @@ const DetailsHeaderChild = styled.div`
   margin: 10px 10px;
 `;
 
-const DetailsHeaderValue = styled.div`
+const DetailsHeaderValue = styled.span`
   font-family: IBM Plex Sans;
   letter-spacing: 0em;
   text-align: left;
@@ -182,6 +305,8 @@ const DetailsHeaderTile = styled(StyledTitleName)`
   font-size: 14px;
   color: rgb(144, 155, 173);
   font-weight: normal;
+  display: inline;
+  margin-right: 18px;
 `;
 
 export {
@@ -189,6 +314,12 @@ export {
   InputGroupWrapper,
   StyledMainDiv,
   UserProfilePic,
+  StyledRulesWrapper,
+  StyleCircularBadge,
+  StyledCard,
+  StyledCardBody,
+  StyledTableCell,
+  BorderHide,
   UserCard,
   ScoreWrapper,
   PinContainer,

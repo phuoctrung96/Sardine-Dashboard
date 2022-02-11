@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { Card, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { GrLocation } from "react-icons/gr";
 import { HeaderOnlyError } from "components/Error/HeaderOnlyError";
 import { BehaviorBiometricsPerFlow, DeviceProfile, AnyTodo } from "sardine-dashboard-typescript-definitions";
 import { DeviceProfileHit } from "utils/api_response/deviceResponse";
@@ -18,13 +19,26 @@ import { StyledMainDiv, InputGroupWrapper, PinContainer } from "../components/Fr
 import { ActionTypes } from "../utils/store/actionTypes";
 import { fetchDeviceProfile } from "../utils/api";
 import { FraudListProps } from "../utils/store/interface";
-import { DetailsHeaderParent, DetailsHeaderChild, DetailsHeaderValue, DetailsHeaderTile } from "../components/Customers/styles";
+import {
+  DetailsHeaderParent,
+  BorderHide,
+  StyledTableCell,
+  StyledCard,
+  DetailsHeaderChild,
+  DetailsHeaderValue,
+  DetailsHeaderTile,
+} from "../components/Customers/styles";
+import CircularRiskLevel from "../components/Common/CircularRiskLevel";
 import Badge from "../components/Common/Badge";
 import ExecutedRulesList from "../components/Common/ExecutedRulesList";
 import { useGetFallbackHistoryState } from "../utils/openUrlNewTabWithHistoryState";
 import { getSourceFromQueryParams } from "../components/FraudScore";
 import { getClientFromQueryParams } from "../utils/getClientFromQueryParams";
 import { CLIENT_ID_QUERY_FIELD } from "../utils/constructFiltersQueryParams";
+import deviceIcon from "../utils/logo/device.svg";
+import executedRulesIcon from "../utils/logo/executed_rules.svg";
+import cloudIcon from "../utils/logo/cloud.svg";
+import osIcon from "../utils/logo/os.svg";
 
 const PARAM_KEYS = SEARCH_PARAM_KEYS[RULE_DETAILS_PATH];
 
@@ -35,11 +49,13 @@ interface StateData {
 
 interface DefinitionObject {
   key: string;
+  icon: string;
   value: { [key: string]: string };
 }
 
 interface DeviceObject {
   name: string;
+  icon: string;
   value: FeatureObject[];
 }
 
@@ -95,6 +111,7 @@ const DeviceView: React.FC = () => {
   const definitions: DefinitionObject[] = [
     {
       key: "Device Details",
+      icon: deviceIcon,
       value: {
         browser: "Browser used for the session",
         created_at: "Date when device was first seen",
@@ -113,10 +130,12 @@ const DeviceView: React.FC = () => {
     },
     {
       key: "Executed Rules",
+      icon: executedRulesIcon,
       value: {},
     },
     {
       key: "Network Details",
+      icon: cloudIcon,
       value: {
         ip_address: "The last IP address seen in the session",
         ip_type: "Type of IP like Corporate, Fixed Line ISP",
@@ -130,6 +149,7 @@ const DeviceView: React.FC = () => {
     },
     {
       key: "OS Details",
+      icon: osIcon,
       value: {
         os: "OS installed in device",
         os_anomaly: "Is  there an anomaly between TrueOS and OS?",
@@ -174,6 +194,7 @@ const DeviceView: React.FC = () => {
 
         const data: DeviceObject[] = definitions.map((def) => {
           const name = def.key;
+          const icon = def.icon;
           const value = Object.entries(def.value);
           if (name === "Executed Rules") {
             value.sort();
@@ -182,6 +203,7 @@ const DeviceView: React.FC = () => {
 
           return {
             name,
+            icon,
             value: value
               .filter((_d) => deviceProfile[_d[0]] !== undefined)
               .map((_d) => ({
@@ -274,8 +296,9 @@ const DeviceView: React.FC = () => {
             }}
           >
             <StyledNavTitle style={{ width: "100%" }}>
-              <StyledTitleName id="page_title" style={{ fontSize: 14, fontWeight: "bold" }}>
-                {"Device Intelligence > Device Details"}
+              <StyledTitleName id="page_title" style={{ fontSize: 20 }}>
+                {"< Device Intelligence "}
+                <span style={{ fontWeight: "bold" }}>{"/ Device Details"}</span>
               </StyledTitleName>
             </StyledNavTitle>
           </StyledStickyNav>
@@ -283,52 +306,46 @@ const DeviceView: React.FC = () => {
             <div style={{ width: "100%", margin: "10px 10px" }}>
               <DetailsHeaderParent>
                 <DetailsHeaderChild>
-                  <DetailsHeaderTile id="session_key_title">Session Key</DetailsHeaderTile>
-                  <DetailsHeaderValue id="session_key_value"> {session_key || "-"} </DetailsHeaderValue>
-                </DetailsHeaderChild>
-                <DetailsHeaderChild>
-                  <DetailsHeaderTile id="user_id_title">UserID</DetailsHeaderTile>
-                  <DetailsHeaderValue id="user_id_value">
-                    {userId ? <CustomerProfileLink clientId={clientID} customerId={userId} text={userId} /> : "-"}
-                  </DetailsHeaderValue>
-                </DetailsHeaderChild>
-                <DetailsHeaderChild>
-                  <DetailsHeaderTile id="risk_level_title">Risk level</DetailsHeaderTile>
                   <DetailsHeaderValue id="risk_level_value">
-                    <Badge title={sessionRisk} style={{ marginLeft: -10 }} />
+                    <CircularRiskLevel risk_level={sessionRisk} />
                   </DetailsHeaderValue>
                 </DetailsHeaderChild>
+                <DetailsHeaderParent>
+                  <DetailsHeaderChild>
+                    <DetailsHeaderTile id="user_id_title">UserID</DetailsHeaderTile>
+                    <DetailsHeaderValue id="user_id_value">
+                      {userId ? <CustomerProfileLink clientId={clientID} customerId={userId} text={userId} /> : "-"}
+                    </DetailsHeaderValue>
+                  </DetailsHeaderChild>
+                  <DetailsHeaderChild>
+                    <DetailsHeaderTile id="session_key_title">Session Key</DetailsHeaderTile>
+                    <DetailsHeaderValue id="session_key_value"> {session_key || "-"} </DetailsHeaderValue>
+                  </DetailsHeaderChild>
+                </DetailsHeaderParent>
               </DetailsHeaderParent>
             </div>
           </InputGroupWrapper>
           <br />
           <PinContainer style={{ marginBottom: 30 }}>
             {deviceData.map((data) => (
-              <Card style={{ marginTop: 15 }} key={data.name}>
+              <StyledCard style={{ marginTop: 15 }} key={data.name}>
                 <Card.Header id={`header_${data.name}`} style={{ color: "var(--dark-14)" }}>
-                  {data.name}
+                  <img src={data.icon} />
+                  <span>{data.name}</span>
                 </Card.Header>
                 {data.name.toLowerCase().includes("rules") ? (
-                  <Card.Body>
-                    <ExecutedRulesList
-                      sessionKey={session_key}
-                      date={createdAt}
-                      clientID={clientID}
-                      onClick={(id) => {
-                        navigate(`${RULE_DETAILS_PATH}?${PARAM_KEYS.RULE_ID}=${id}&${PARAM_KEYS.CLIENT_ID}=${clientID}`);
-                      }}
-                    />
-                  </Card.Body>
-                ) : (
-                  <Card.Body
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(auto-fill, 250px)",
-                      gridAutoRows: "auto",
+                  <ExecutedRulesList
+                    sessionKey={session_key}
+                    date={createdAt}
+                    clientID={clientID}
+                    onClick={(id) => {
+                      navigate(`${RULE_DETAILS_PATH}?${PARAM_KEYS.RULE_ID}=${id}&${PARAM_KEYS.CLIENT_ID}=${clientID}`);
                     }}
-                  >
+                  />
+                ) : (
+                  <Card.Body>
                     {data.value.map((d) => (
-                      <div style={{ margin: "10px 20px" }} key={d.name}>
+                      <div key={d.name} className="grid-view">
                         <OverlayTrigger placement="top" overlay={<Tooltip id={d.name}> {d.description} </Tooltip>}>
                           <div
                             style={{
@@ -338,9 +355,11 @@ const DeviceView: React.FC = () => {
                           >
                             <Card.Title
                               style={{
-                                fontSize: 15,
+                                fontSize: 14,
                                 marginBottom: 5,
                                 textTransform: "capitalize",
+                                color: "#ABA69A",
+                                fontWeight: "normal",
                               }}
                               className="font-weight-normal"
                               id={`${d.name}_title`}
@@ -349,13 +368,16 @@ const DeviceView: React.FC = () => {
                             </Card.Title>
                           </div>
                         </OverlayTrigger>
-                        <div id={`${d.name}_value`} style={{ fontSize: 15, lineBreak: "anywhere" }}>
+                        <div id={`${d.name}_value`} style={{ fontSize: 14, lineBreak: "anywhere" }}>
                           {d.name.includes("location") && Object.entries(d.value).length > 0 ? (
                             <Link
                               id={`link_${d.name}`}
                               href={`https://www.google.com/maps/search/?api=1&query=${d.value.lat},${d.value.lon}`}
                             >
-                              {Object.values(d.value).toString()}
+                              <StyledTableCell>
+                                <GrLocation />
+                                <span>{`${d.value.lat.toFixed(2)}, ${d.value.lon.toFixed(2)}`}</span>
+                              </StyledTableCell>
                             </Link>
                           ) : d.name.includes("referrer") ? (
                             <Link id={`link_${d.name}`} href={d.value}>
@@ -369,9 +391,10 @@ const DeviceView: React.FC = () => {
                         </div>
                       </div>
                     ))}
+                    <BorderHide />
                   </Card.Body>
                 )}
-              </Card>
+              </StyledCard>
             ))}
           </PinContainer>
           <BehaviorBiometrics behavior_biometrics={behaviorBiometrics} />
