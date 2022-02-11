@@ -346,17 +346,14 @@ const DeviceView: React.FC = () => {
                   )}
                 </Card.Header>
                 {data.name.toLowerCase().includes("rules") ? (
-                  <Card.Body>
-                    <ExecutedRulesList
-                      sessionKey={session_key}
-                      date={createdAt}
-                      clientID={clientID}
-                      onClick={(id) => {
-                        navigate(`${RULE_DETAILS_PATH}?${PARAM_KEYS.RULE_ID}=${id}&${PARAM_KEYS.CLIENT_ID}=${clientID}`);
-                      }}
-                    />
-                    <BorderHide />
-                  </Card.Body>
+                  <ExecutedRulesList
+                    sessionKey={session_key}
+                    date={createdAt}
+                    clientID={clientID}
+                    onClick={(id) => {
+                      navigate(`${RULE_DETAILS_PATH}?${PARAM_KEYS.RULE_ID}=${id}&${PARAM_KEYS.CLIENT_ID}=${clientID}`);
+                    }}
+                  />
                 ) : (
                   <Card.Body>
                     {data.value.map((d) => (

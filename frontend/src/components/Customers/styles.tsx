@@ -95,6 +95,24 @@ const StyledCard = styled(Card)`
   }
 `;
 
+const StyledRulesWrapper = styled.div`
+  max-height: 700px;
+  overflow-y: auto;
+  padding: 0;
+  &::-webkit-scrollbar {
+    width: 2px;
+    border-radius: 2px;
+  }
+  &::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #141A39;
+    border-radius: 2px;
+    outline: 1px solid slategrey;
+  }
+`;
+
 const BorderHide = styled.div`
   position: absolute;
   bottom: 0;
@@ -293,6 +311,7 @@ export {
   InputGroupWrapper,
   StyledMainDiv,
   UserProfilePic,
+  StyledRulesWrapper,
   StyleCircularBadge,
   StyledCard,
   StyledCardBody,

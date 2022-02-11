@@ -4,6 +4,7 @@ import { Rule } from "sardine-dashboard-typescript-definitions";
 import { captureException } from "utils/errorUtils";
 import { orderRulesByRiskLevel } from "utils/orderRulesByRiskLevel";
 import { getExecutedRules } from "../../utils/api";
+import { StyledRulesWrapper } from "../Customers/styles";
 
 const StyledTable = styled.table`
   border-collapse: collapse;
@@ -67,7 +68,7 @@ const TdValue = styled.div`
 const RuleName = styled(TdValue)`
   font-size: 15px;
   color: #141A39;
-  text-decoration-line: underline;
+  text-decoration: none;
 `;
 
 interface IProps {
@@ -117,18 +118,16 @@ const ExecutedRulesList: React.FC<IProps> = (props) => {
   }, [isDataLoaded, date, sessionKey, clientID, clientRules, executedRules]);
 
 
-  return isLoading ? (
-    <TdValue>Loading...</TdValue>
-  ) : error.length > 0 ? (
-    <TdValue style={{ color: "grey" }}>{error}</TdValue>
-  ) : rulesData.length === 0 ? (
-    <TdValue style={{ color: "grey" }}>No data available!</TdValue>
-  ) : (
-    <div
+  // return isLoading ? (
+  //   <TdValue>Loading...</TdValue>
+  // ) : error.length > 0 ? (
+  //   <TdValue style={{ color: "grey" }}>{error}</TdValue>
+  // ) : rulesData.length === 0 ? (
+  //   <TdValue style={{ color: "grey" }}>No data available!</TdValue>
+  // ) : (
+  return (    
+    <StyledRulesWrapper
       id="executed_rules"
-      style={{
-        maxHeight: 400,
-      }}
     >
       <StyledTable>
         <thead style={{ height: 50 }}>
@@ -161,7 +160,7 @@ const ExecutedRulesList: React.FC<IProps> = (props) => {
           ))}
         </tbody>
       </StyledTable>
-    </div>
+    </StyledRulesWrapper>
   );
 };
 
