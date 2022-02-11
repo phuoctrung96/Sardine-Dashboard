@@ -28,7 +28,6 @@ import {
   TRANSACTION_DETAILS_PATH,
   SEARCH_PARAM_KEYS,
 } from "modulePaths";
-import { createGmapsLinkFromAddress } from "components/Customers/UserView";
 import DeviceInfo from "components/Common/Customer/DeviceInfo";
 import PaymentMethod from "components/Common/Customer/PaymentMethod";
 import { useUserStore } from "store/user";
@@ -68,7 +67,11 @@ import AccessControlPopUp from "../components/Customers/UserView/AccessControlPo
 import { getRandomColor, timeDifferenceFromNow } from "../components/Common/Functions";
 import { SubmitButton } from "../components/Common/Components";
 import CommentList, { ICommentProps } from "../components/Queues/Components/CommentList";
-import { convertDatastoreSessionToCustomerResponse } from "../utils/customerSessionUtils";
+import {
+  convertDatastoreSessionToCustomerResponse,
+  getLatestAddressFromCustomerResponse,
+  getLatestMapUrlFromCustomerResponse,
+} from "../utils/customerSessionUtils";
 import CustomerDetails from "../components/Common/Customer/CustomerDetails";
 import CustomerLocation from "../components/Common/Customer/CustomerLocation";
 import CustomerPhone from "../components/Common/Customer/CustomerPhone";
@@ -343,7 +346,7 @@ const SessionsDetails = (): JSX.Element => {
         if (session !== null) {
           setCustom(session.custom);
 
-          const val = createGmapsLinkFromAddress(convertDatastoreSessionToCustomerResponse(session));
+          const val = convertDatastoreSessionToCustomerResponse(session);
           setCustomerData(val);
           actions.forEach((a, ind) => {
             const v = Object.entries(val).filter((f) => f[0] === a.key);
@@ -739,12 +742,28 @@ const SessionsDetails = (): JSX.Element => {
                       </DataCard>
                     )}
                     <CustomerLocation
-                      address={customerData?.address || ""}
-                      city={customerData?.city || ""}
-                      postalCode={customerData?.postal_code || ""}
-                      regionCode={customerData?.region_code || ""}
-                      countryCode={customerData?.country_code || ""}
-                      mapAddress={customerData?.address_google_maps_url || undefined}
+                      address={customerData === undefined ? "" : getLatestAddressFromCustomerResponse(customerData)}
+                      city={
+                        customerData === undefined || customerData.address_fields_list.length === 0
+                          ? ""
+                          : customerData.address_fields_list[0].city
+                      }
+                      postalCode={
+                        customerData === undefined || customerData.address_fields_list.length === 0
+                          ? ""
+                          : customerData.address_fields_list[0].postal_code
+                      }
+                      regionCode={
+                        customerData === undefined || customerData.address_fields_list.length === 0
+                          ? ""
+                          : customerData.address_fields_list[0].region_code
+                      }
+                      countryCode={
+                        customerData === undefined || customerData.address_fields_list.length === 0
+                          ? ""
+                          : customerData.address_fields_list[0].country_code
+                      }
+                      mapUrl={customerData === undefined ? "" : getLatestMapUrlFromCustomerResponse(customerData)}
                     />
                     <CustomerPhone
                       phoneLevel={customerData?.phone_level || ""}

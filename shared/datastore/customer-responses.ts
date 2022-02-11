@@ -29,6 +29,15 @@ export interface OwnerProps {
   organisation_id?: string;
 }
 
+export interface AddressFields {
+  street1: string;
+  street2: string;
+  city: string;
+  region_code: string;
+  postal_code: string;
+  country_code: string;
+}
+
 export interface CustomersResponse {
   client_id: string;
   session_key: string;
@@ -37,14 +46,7 @@ export interface CustomersResponse {
   first_name: string;
   last_name: string;
   phone: string;
-  address: string;
-  address_google_maps_url: string;
-  street1: string;
-  street2: string;
-  city: string;
-  postal_code: string;
-  region_code: string;
-  country_code: string;
+  address_fields_list: AddressFields[];
   email_address: string;
   is_email_verified: boolean;
   is_phone_verified: boolean;
@@ -124,9 +126,6 @@ export interface CustomersResponse {
   status?: string;
   owner?: OwnerProps;
   decision?: string;
-
-  // used in user profile
-  mapUrls?: string[];
 
   // queue ids
   queue_id?: string[];

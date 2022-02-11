@@ -3,6 +3,7 @@ import { AmlPostalAddress, CustomersResponse, AnyTodo } from "sardine-dashboard-
 import { Tabs, Tab, Modal } from "react-bootstrap";
 import Badge from "components/Common/Badge";
 import Highlighter from "react-highlight-words";
+import { extractStreetWords } from "utils/customerSessionUtils";
 import { Table } from "./DetailsTable";
 import { DataTable, DataColumn } from "../../../../Common/DataTable";
 import { Sections } from "../AMLSection";
@@ -12,7 +13,6 @@ import { Attribute } from "./Attribute";
 import { ListItemSepByComa } from "../../../../../styles/List";
 import { NameHighlighter } from "../Highlighters/NameHighlighter";
 import { mapStateByCode } from "../Highlighters/AddressHighlighter/mapStateByCode";
-import { extractStreetWords } from "../Highlighters/AddressHighlighter";
 
 const renderList = <T extends unknown>(list: T[], render: (entity: T) => AnyTodo) => {
   if (list.length === 0) {
@@ -39,8 +39,19 @@ export const DetailsModal = ({ show, onClose, entity, customerData }: IModal): J
     return null;
   }
 
-  const { region_code, postal_code, city, country_code, street1, street2 } = customerData;
-  const stateFromRegionCode = mapStateByCode[region_code];
+  const { address_fields_list } = customerData;
+  let regionCode = "";
+  let postalCode = "";
+  let cityName = "";
+  let countryCode = "";
+  if (address_fields_list.length > 0) {
+    const { region_code, postal_code, city, country_code } = address_fields_list[0];
+    regionCode = region_code;
+    postalCode = postal_code;
+    cityName = city;
+    countryCode = country_code;
+  }
+  const stateFromRegionCode = mapStateByCode[regionCode];
 
   const parsedSections = useMemo(() => {
     const sections: Sections[] = [
@@ -130,7 +141,7 @@ export const DetailsModal = ({ show, onClose, entity, customerData }: IModal): J
     {
       title: "City",
       field: "city",
-      render: (data: AmlPostalAddress) => renderAddress(data.city, [city]),
+      render: (data: AmlPostalAddress) => renderAddress(data.city, [cityName]),
     },
     {
       title: "State",
@@ -140,12 +151,12 @@ export const DetailsModal = ({ show, onClose, entity, customerData }: IModal): J
     {
       title: "Country Code",
       field: "country_code",
-      render: (data: AmlPostalAddress) => renderAddress(data.country_code, [country_code]),
+      render: (data: AmlPostalAddress) => renderAddress(data.country_code, [countryCode]),
     },
     {
       title: "Postal Code",
       field: "postal_code",
-      render: (data: AmlPostalAddress) => renderAddress(data.postal_code, [postal_code]),
+      render: (data: AmlPostalAddress) => renderAddress(data.postal_code, [postalCode]),
     },
   ];
 

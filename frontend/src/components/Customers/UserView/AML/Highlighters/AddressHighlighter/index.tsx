@@ -1,24 +1,26 @@
-import React, { ReactElement } from "react";
+import { ReactElement } from "react";
 import { Highlighter } from "components/Highlighter";
-import { AmlPostalAddress, CustomersResponse } from "sardine-dashboard-typescript-definitions";
+import { AmlPostalAddress } from "sardine-dashboard-typescript-definitions";
 import { ListItemSepByComa } from "styles/List";
+import { extractStreetWords } from "utils/customerSessionUtils";
 import { HighlighterProps } from "../types";
 import { mapStateByCode } from "./mapStateByCode";
 
-export const extractStreetWords = (customerData: CustomersResponse) => {
-  const { street1 = "", street2 = "" } = customerData;
-  const streetWords = [...street1.split(" "), ...street2.split(" ")].filter(
-    // filter empty string
-    (s) => s
-  );
+export const AddressHighlighter = ({ value, customerData }: HighlighterProps<AmlPostalAddress>): JSX.Element => {
+  const { address_fields_list } = customerData;
+  let regionCode = "";
+  let postalCode = "";
+  let cityName = "";
+  let countryCode = "";
+  if (address_fields_list.length > 0) {
+    const { region_code, postal_code, city, country_code } = address_fields_list[0];
+    regionCode = region_code;
+    postalCode = postal_code;
+    cityName = city;
+    countryCode = country_code;
+  }
 
-  return streetWords;
-};
-
-export const AddressHighlighter = ({ value, customerData }: HighlighterProps<AmlPostalAddress>) => {
-  const { region_code, postal_code, city, country_code } = customerData;
-
-  const stateFromRegionCode = mapStateByCode[region_code];
+  const stateFromRegionCode = mapStateByCode[regionCode];
 
   const {
     line1,
@@ -56,7 +58,7 @@ export const AddressHighlighter = ({ value, customerData }: HighlighterProps<Aml
   if (postal_code_from_value) {
     renderItems.push(
       <ListItemSepByComa key={`postal_code_from_value_${postal_code_from_value}`}>
-        <Highlighter searchWords={[postal_code]} textToHighlight={postal_code_from_value} />
+        <Highlighter searchWords={[postalCode]} textToHighlight={postal_code_from_value} />
       </ListItemSepByComa>
     );
   }
@@ -64,7 +66,7 @@ export const AddressHighlighter = ({ value, customerData }: HighlighterProps<Aml
   if (city_from_value) {
     renderItems.push(
       <ListItemSepByComa key={`city_from_value_${city_from_value}`}>
-        <Highlighter searchWords={[city]} textToHighlight={city_from_value} />
+        <Highlighter searchWords={[cityName]} textToHighlight={city_from_value} />
       </ListItemSepByComa>
     );
   }
@@ -72,7 +74,7 @@ export const AddressHighlighter = ({ value, customerData }: HighlighterProps<Aml
   if (country_code_from_value) {
     renderItems.push(
       <ListItemSepByComa key={`country_code_from_value_${country_code_from_value}`}>
-        <Highlighter searchWords={[country_code]} textToHighlight={country_code_from_value} />
+        <Highlighter searchWords={[countryCode]} textToHighlight={country_code_from_value} />
       </ListItemSepByComa>
     );
   }

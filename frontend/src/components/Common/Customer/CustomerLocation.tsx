@@ -1,4 +1,6 @@
 import React from "react";
+import { GOOGLE_STREET_VIEW_MAP_STYLE, GOOGLE_STREET_VIEW_PANORAMA_OPTIONS } from "../../../constants";
+import { GoogleMapsWrapper, GoogleStreetViewMap } from "../../GoogleMaps";
 import DataCard, { CardAttribute } from "../DataCard";
 import { Link } from "../Links";
 
@@ -10,19 +12,34 @@ interface CustomerDetailsProps {
   postalCode: string;
   regionCode: string;
   countryCode: string;
-  mapAddress?: string;
+  mapUrl: string;
 }
 
 const CustomerLocation: React.FC<CustomerDetailsProps> = (props) => {
-  const { address, city, countryCode, postalCode, regionCode, mapAddress } = props;
+  const { address, city, countryCode, postalCode, regionCode, mapUrl } = props;
 
   const attributes: CardAttribute[] = [
     {
       key: "Address",
       value: (
-        <Link id="address_link" href={mapAddress} rel="noreferrer" target="_blank">
-          {address}
-        </Link>
+        <>
+          {mapUrl === "" ? (
+            <span>{address}</span>
+          ) : (
+            <Link id="address_link" href={mapUrl} rel="noreferrer" target="_blank">
+              {address}
+            </Link>
+          )}
+          {address === "" ? null : (
+            <GoogleMapsWrapper>
+              <GoogleStreetViewMap
+                address={address}
+                style={GOOGLE_STREET_VIEW_MAP_STYLE}
+                panoramaOptions={GOOGLE_STREET_VIEW_PANORAMA_OPTIONS}
+              />
+            </GoogleMapsWrapper>
+          )}
+        </>
       ),
       toolTip: "Customer's address, provided by you",
     },

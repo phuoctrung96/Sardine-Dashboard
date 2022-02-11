@@ -1,6 +1,6 @@
 import { Grid } from "@material-ui/core";
 import { uniqBy } from "lodash-es";
-import { Transaction, CustomersResponse } from "sardine-dashboard-typescript-definitions";
+import { Transaction } from "sardine-dashboard-typescript-definitions";
 import { Link } from "components/Common/Links";
 import american_express from "../../../utils/logo/cards/american_express.svg";
 import diners_club from "../../../utils/logo/cards/diners_club.svg";
@@ -54,35 +54,6 @@ export interface TransactionObject {
   action_type: string;
   type: string;
   isRelevantToSession: boolean;
-}
-
-export function createGmapsLinkFromAddress(data: CustomersResponse): CustomersResponse {
-  const googleMapUrl = "https://www.google.com/maps/place";
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  let { address, street1, street2, city, region_code, postal_code, country_code } = data;
-  address = address || "";
-  street1 = street1 || "";
-  street2 = street2 || "";
-  city = city || "";
-  region_code = region_code || "";
-  postal_code = postal_code || "";
-  country_code = country_code || "";
-  const searchQuery =
-    address.length > 0 && address.toLowerCase().includes(city.toLowerCase())
-      ? address
-      : [street1, street2, city, region_code, postal_code, country_code].filter((q) => q.trim()).join(", ");
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  const address_google_maps_url = `${googleMapUrl}/${encodeURIComponent(searchQuery)}`;
-  return { ...data, address_google_maps_url };
-}
-
-export function createGmapsLinkFromAddresses(data: CustomersResponse): CustomersResponse {
-  if (data.address.length === 0) {
-    return data;
-  }
-  const googleMapUrl = "https://www.google.com/maps/place";
-  const addresses = data.address.split("\n").map((a) => `${googleMapUrl}/${encodeURIComponent(a)}`);
-  return { ...data, mapUrls: addresses };
 }
 
 export function getDeviceViewLink(session_id: string | undefined): JSX.Element | string {
