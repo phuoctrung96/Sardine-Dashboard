@@ -32,7 +32,7 @@
     "@google-cloud/pubsub": "^2.18.5",
     "@google-cloud/secret-manager": "^3.10.1",
     "@google-cloud/storage": "^5.18.1",
-    "@sendgrid/mail": "^7.6.0",
+    "@sendgrid/mail": "^7.6.1",
     "@sentry/node": "^6.17.4",
     "@sentry/tracing": "^6.16.1",
     "axios": "^0.25.0",
