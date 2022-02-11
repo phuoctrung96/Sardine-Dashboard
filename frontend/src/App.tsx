@@ -66,6 +66,7 @@ import {
 } from "./modulePaths";
 import Transactions from "./components/Transactions";
 import AdminNotificatons from "./components/Admin/AdminNotificatons";
+import { SuperAdminOnly } from "./components/Auth/SuperAdminOnly";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -153,14 +154,13 @@ const App = (): JSX.Element => {
                       path={ADD_NEW_BLOCK_ALLOW_LIST_PATH}
                       element={<AuthenticatedOnly element={<AddNewBlockAllowListItem />} />}
                     />
-                    <Route path="/purchaseLimit" element={<AuthenticatedOnly element={<PurchaseLimitList />} />} />
-                    <Route path={FEATURE_FLAGS_PATH} element={<AuthenticatedOnly element={<FeatureFlags />} />} />
+                    <Route path="/purchaseLimit" element={<SuperAdminOnly element={<PurchaseLimitList />} />} />
+                    <Route path={FEATURE_FLAGS_PATH} element={<SuperAdminOnly element={<FeatureFlags />} />} />
                     <Route path={QUEUES_PATH} element={<AuthenticatedOnly element={<Queues />} />} />
                     <Route path={SESSIONS_PATH} element={<AuthenticatedOnly element={<Sessions />} />} />
                     <Route path={SESSION_DETAILS_PATH} element={<AuthenticatedOnly element={<SessionsDetails />} />} />
-                    <Route path="/purchaseLimit" element={<AuthenticatedOnly element={<PurchaseLimitList />} />} />
-                    <Route path={WEBHOOK_PATH} element={<AuthenticatedOnly element={<Webhooks />} />} />
-                    <Route path={SAR_PATH} element={<AuthenticatedOnly element={<SAR />} />} />
+                    <Route path={WEBHOOK_PATH} element={<SuperAdminOnly element={<Webhooks />} />} />
+                    <Route path={SAR_PATH} element={<SuperAdminOnly element={<SAR />} />} />
                     <Route
                       path={DOCUMENT_VERIFICATIONS_PATH}
                       element={<AuthenticatedOnly element={<DocumentVerifications />} />}
@@ -171,13 +171,13 @@ const App = (): JSX.Element => {
                       element={<AuthenticatedOnly element={<PaymentMethodDetails />} />}
                     />
                     <Route path={TRANSACTION_DETAILS_PATH} element={<AuthenticatedOnly element={<TransactionDetails />} />} />
-                    <Route path={NOTIFICATIONS_PATH} element={<AuthenticatedOnly element={<AdminNotificatons />} />} />
+                    <Route path={NOTIFICATIONS_PATH} element={<SuperAdminOnly element={<AdminNotificatons />} />} />
                     <Route path={CUSTOMER_PROFILE_PATH} element={<AuthenticatedOnly element={<CustomerProfile />} />} />
                     <Route
                       path={DOCUMENT_VERIFICATION_DETAIL_PATH}
                       element={<AuthenticatedOnly element={<DocumentVerificationsDetail />} />}
                     />
-                    <Route path={INTEGRATION_STATUS_PATH} element={<AuthenticatedOnly element={<IntegrationStatus />} />} />
+                    <Route path={INTEGRATION_STATUS_PATH} element={<SuperAdminOnly element={<IntegrationStatus />} />} />
                     {isAuthenticated && <Route path="*" element={<Navigate to={CUSTOMERS_PATH} />} />}
                     {!isAuthenticated && (
                       <>
