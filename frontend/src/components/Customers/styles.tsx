@@ -49,6 +49,54 @@ const UserProfilePic = styled.div`
   font-weight: 700;
 `;
 
+const StyledTableCell = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+const StyledCard = styled(Card)`
+  background-color: transparent;
+  border: none;
+  & > .card-header {
+    border: none;
+    padding: 20px;
+    background-color: transparent;
+  };
+  & > .card-body {
+    background-color: white;
+  }
+`;
+
+const StyledCardBody = styled(Card.Body)`
+  display: flex;
+  gap: 20px;
+  & #biometrics_steps {
+    width: 40%;
+    & .MuiStepLabel-root.MuiStepLabel-alternativeLabel {
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+    };
+    & .MuiStepLabel-label.MuiStepLabel-alternativeLabel {
+      margin-top: 0;
+    };
+    & .MuiStepConnector-alternativeLabel {
+      position: unset;
+    };
+    & .MuiStep-alternativeLabel {
+      flex: 0;
+    };
+    & .MuiStepConnector-vertical {
+      padding: 0;
+      margin-left: 8px;
+    };
+    & .MuiStepConnector-lineVertical {
+      min-height: 50px;
+    }
+  }
+`;
+
 const UserCard = styled(Card)`
   align-items: center;
   justify-content: center;
@@ -160,7 +208,7 @@ const StyledTh = styled.th`
 `;
 
 const DetailsHeaderParent = styled.div`
-  display: grid;
+  display: flex;
   grid-template-columns: repeat(auto-fill, 250px);
   grid-auto-rows: auto;
 `;
@@ -169,7 +217,7 @@ const DetailsHeaderChild = styled.div`
   margin: 10px 10px;
 `;
 
-const DetailsHeaderValue = styled.div`
+const DetailsHeaderValue = styled.span`
   font-family: IBM Plex Sans;
   letter-spacing: 0em;
   text-align: left;
@@ -182,6 +230,8 @@ const DetailsHeaderTile = styled(StyledTitleName)`
   font-size: 14px;
   color: rgb(144, 155, 173);
   font-weight: normal;
+  display: inline;
+  margin-right: 18px;
 `;
 
 export {
@@ -189,6 +239,9 @@ export {
   InputGroupWrapper,
   StyledMainDiv,
   UserProfilePic,
+  StyledCard,
+  StyledCardBody,
+  StyledTableCell,
   UserCard,
   ScoreWrapper,
   PinContainer,

@@ -5,6 +5,7 @@ import { withStyles } from "@material-ui/styles";
 import clsx from "clsx";
 import { Card, Col, Container, Row, Tooltip as TooltipBT, OverlayTrigger } from "react-bootstrap";
 import { BehaviorBiometricsPerFlow, BiometricField, AnyTodo } from "sardine-dashboard-typescript-definitions";
+import { StyledCard, StyledCardBody } from "../Customers/styles";
 
 export interface BehaviorBiometricsProps {
   behavior_biometrics: Array<BehaviorBiometricsPerFlow>;
@@ -32,8 +33,8 @@ const BehaviorBiometrics = (props: BehaviorBiometricsProps) => {
   const renderStepper = () => {
     if (behaviorBiometrics.length > 1) {
       return (
-        <Row style={{ overflowX: "scroll", marginBottom: 15 }} id="biometrics_steps">
-          <Stepper alternativeLabel activeStep={stepToFlow[inFocusFlow]} connector={<QontoConnector />}>
+        <Row style={{ marginBottom: 15 }} id="biometrics_steps">
+          <Stepper alternativeLabel orientation="vertical" activeStep={stepToFlow[inFocusFlow]} connector={<QontoConnector />}>
             {behaviorBiometrics.map((bb) => (
               <Step id={bb.flow} key={bb.flow} onClick={() => setInFocusFlow(bb.flow)}>
                 <Tooltip title={bb.flow} placement="top">
@@ -58,11 +59,11 @@ const BehaviorBiometrics = (props: BehaviorBiometricsProps) => {
   };
 
   return (
-    <Card style={{ marginTop: 15 }}>
+    <StyledCard style={{ marginTop: 15 }}>
       <Card.Header id="biometrics_title" style={{ color: "var(--dark-14)" }}>
         Behavior Biometrics
       </Card.Header>
-      <Card.Body>
+      <StyledCardBody>
         {renderNoBiometricsDetailsFound()}
         {renderStepper()}
         {behaviorBiometrics
@@ -70,8 +71,8 @@ const BehaviorBiometrics = (props: BehaviorBiometricsProps) => {
           .map((bb) => (
             <BehaviorBiometric {...bb} key={bb.created_at} />
           ))}
-      </Card.Body>
-    </Card>
+      </StyledCardBody>
+    </StyledCard>
   );
 };
 
