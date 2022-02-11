@@ -5,7 +5,10 @@ import { captureException } from "utils/errorUtils";
 import { useToasts } from "react-toast-notifications";
 import { QUEUES_PATH, SESSIONS_PATH } from "modulePaths";
 import { useCookies } from "react-cookie";
-import { selectIsAdmin, useUserStore } from "store/user";
+import { selectIsAdmin, selectIsSuperAdmin, useUserStore } from "store/user";
+import moment from "moment";
+import { SessionKind } from "sardine-dashboard-typescript-definitions";
+import { replaceAllSpacesWithUnderscores } from "utils/stringUtils";
 import Layout from "../components/Layout/Main";
 import { StoreCtx } from "../utils/store";
 import OrganisationDropDown from "../components/Dropdown/OrganisationDropDown";
@@ -30,8 +33,11 @@ import { Queue } from "../components/Queues/Components/Queue";
 import { QueueProps } from "../components/Queues/queueInterfaces";
 import downArrow from "../utils/logo/down.svg";
 import search_icon from "../utils/logo/search_light.svg";
-import { getQueueslist, deleteQueue } from "../utils/api";
+import { getQueueslist, deleteQueue, getSessionslist } from "../utils/api";
 import PopUp from "../components/Common/PopUp";
+import { headers } from "./Sessions";
+import { DATE_FORMATS } from "../constants";
+import { exportCSVFile } from "../utils/csvUtils";
 
 const HEADERS = ["Name", "Owner", "Counts", "Action"] as const;
 
@@ -47,6 +53,7 @@ const Queues: React.FC = () => {
   const [dataHolder, setDataHolder] = useState<QueueProps[]>([]);
 
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [exportingQueueId, setExportingQueueId] = useState(-1);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [searchString, setSearchString] = useState("");
   const organisationFromUserStore = useUserStore(({ organisation }) => organisation);
@@ -56,11 +63,12 @@ const Queues: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [queueToRemove, setQueueToRemove] = useState<QueueProps | undefined>(undefined);
   const { addToast } = useToasts();
-  const { isAdmin, setUserStoreOrganisation } = useUserStore((state) => {
+  const { isAdmin, isSuperAdmin, setUserStoreOrganisation } = useUserStore((state) => {
     const { setUserStoreOrganisation } = state;
 
     return {
       isAdmin: selectIsAdmin(state),
+      isSuperAdmin: selectIsSuperAdmin(state),
       setUserStoreOrganisation,
     };
   });
@@ -134,6 +142,34 @@ const Queues: React.FC = () => {
     }
   };
 
+  const handleExportCases = async (queue: QueueProps) => {
+    try {
+      const { id, name, owner } = queue;
+      const qName = replaceAllSpacesWithUnderscores(name || "");
+      setExportingQueueId(id);
+      const { list } = await getSessionslist(`${id}`, "start", organisation, "-1", 0, moment().unix(), {});
+
+      const csvHeader = `${headers.join(",")}\n`;
+      const csvData: string[] = list
+        ? list.map((session: SessionKind) =>
+            [
+              session.session_key,
+              session.customer_id,
+              moment(session.timestamp * 1000).format(DATE_FORMATS.DATETIME),
+              owner.name || "-",
+              session.status,
+            ].join(",")
+          )
+        : [];
+
+      exportCSVFile(csvHeader + csvData.join("\n"), `${organisation}_${qName}_cases.csv`);
+    } catch (error) {
+      captureException(error);
+    } finally {
+      setExportingQueueId(-1);
+    }
+  };
+
   const DataList = (): JSX.Element => (
     <StyledTable>
       <thead style={{ height: 50 }}>
@@ -149,6 +185,9 @@ const Queues: React.FC = () => {
             key={queue.id}
             queueData={queue}
             onRemove={() => setQueueToRemove(queue)}
+            onExport={() => handleExportCases(queue)}
+            isExporting={queue.id === exportingQueueId}
+            isSuperAdmin={isSuperAdmin}
             onClick={() => {
               navigate(
                 `${SESSIONS_PATH}?queueID=${queue.id}&name=${queue.name || "-"}&client_id=${queue.client_id}&org=${

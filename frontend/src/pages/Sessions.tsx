@@ -33,7 +33,7 @@ import { convertToCustomerResponse } from "./Customers";
 
 const searchFields = ["session_key", "customer_id", "status"];
 
-const headers = ["Session Key", "Customer ID", "Date", "Owner", "Status"];
+export const headers = ["Session Key", "Customer ID", "Date", "Owner", "Status"];
 const MAX_SELECTION_COUNT = 5;
 const LIMIT = 15;
 const LOADER_HEIGHT = 200;

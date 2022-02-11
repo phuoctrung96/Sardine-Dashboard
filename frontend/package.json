@@ -106,7 +106,7 @@
     "vite-tsconfig-paths": "^3.3.17"
   },
   "scripts": {
-    "start": "vite",
+    "start": "PORT=4000 vite",
     "build": "vite build",
     "build:visualize": "VISUALIZE=true vite build",
     "test": "jest",

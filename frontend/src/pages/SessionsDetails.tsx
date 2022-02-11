@@ -32,6 +32,7 @@ import { createGmapsLinkFromAddress } from "components/Customers/UserView";
 import DeviceInfo from "components/Common/Customer/DeviceInfo";
 import PaymentMethod from "components/Common/Customer/PaymentMethod";
 import { useUserStore } from "store/user";
+import { CLIENT_ID_QUERY_FIELD } from "utils/constructFiltersQueryParams";
 import Layout from "../components/Layout/Main";
 import { StyledNavTitle, StyledStickyNav, StyledTitleName } from "../components/Dashboard/styles";
 import { captureException, captureFailure } from "../utils/errorUtils";
@@ -76,7 +77,6 @@ import CustomerTaxDetails from "../components/Common/Customer/CustomerTaxDetails
 import Transaction from "../components/Common/Transaction";
 import { KEY_EXECUTED_RULES } from "../constants";
 import { useDeviceProfileFetchResult } from "../hooks/fetchHooks";
-import { CLIENT_ID_QUERY_FIELD } from "utils/constructFiltersQueryParams";
 import FeedbackPopUp from "../components/Customers/UserView/FeedbackPopUp";
 import FeedbackList from "../components/Queues/Components/FeedbackList";
 
@@ -315,10 +315,14 @@ const SessionsDetails = (): JSX.Element => {
     if (deviceProfileFetchResult.data !== undefined) {
       const { hits, profile } = deviceProfileFetchResult.data;
       // eslint-disable-next-line no-underscore-dangle
-      const deviceProfileList = hits.hits.map((item) => item._source);
-      if (deviceProfileList.length > 0) {
-        const deviceProfile = deviceProfileList[0];
-        setDeviceData(deviceProfile);
+      if (profile) {
+        setDeviceData(profile);
+      } else if (hits && hits.hits) {
+        const deviceProfileList = hits.hits.map((item) => item._source);
+        if (deviceProfileList.length > 0) {
+          const deviceProfile = deviceProfileList[0];
+          setDeviceData(deviceProfile);
+        }
       }
     }
   }, [deviceProfileFetchResult.data]);

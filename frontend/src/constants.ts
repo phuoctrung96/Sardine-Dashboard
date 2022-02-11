@@ -3,6 +3,7 @@
 import { SARDINE_ADMIN, MULTI_ORG_ADMIN } from "sardine-dashboard-typescript-definitions";
 
 export const CHECKPOINT_QUERY_FIELD = "checkpoint";
+export const ORGANIZATION_QUERY_FIELD = "organization";
 const ADMIN_ROLES = [SARDINE_ADMIN, MULTI_ORG_ADMIN];
 
 export const DATE_FORMATS = {
