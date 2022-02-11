@@ -48,6 +48,7 @@ interface Organisation {
 const PARAM_KEYS = SEARCH_PARAM_KEYS[RULE_DETAILS_PATH];
 const HEADERS = ["RULE ID", "RULE NAME", "CONDITION", "ACTION", "ENV"] as const;
 const CHECKPOINTS = [
+  { name: CHECK_POINTS.ACH },
   { name: CHECK_POINTS.AML },
   { name: CHECK_POINTS.AMLBank },
   { name: CHECK_POINTS.AMLIssuer },
@@ -59,7 +60,6 @@ const CHECKPOINTS = [
   { name: CHECK_POINTS.Payment },
   { name: CHECK_POINTS.Withdrawal },
   { name: CHECK_POINTS.IssuingRisk },
-  { name: CHECK_POINTS.IssuingAML },
 ] as const;
 const DROPDOWN_TYPE = {
   CheckPoint: "checkPoint",

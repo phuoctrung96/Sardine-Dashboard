@@ -27,7 +27,7 @@ type FormValues = {
   reason: string;
 };
 
-const scopeOptions = [
+const SCOPE_OPTIONS = [
   {
     value: "session",
     label: "Session",
@@ -36,9 +36,9 @@ const scopeOptions = [
     value: "user",
     label: "User",
   },
-];
+] as const;
 
-const statusOptions = [
+const STATUS_OPTIONS = [
   {
     value: "approved",
     label: "Approved",
@@ -47,9 +47,24 @@ const statusOptions = [
     value: "declined",
     label: "Declined",
   },
-];
+] as const;
 
-const typeOptions = [
+const STATUS_FOR_SETTLEMENT_TYPE_OPTIONS = [
+  {
+    value: "settled",
+    label: "Settled",
+  },
+  {
+    value: "chargeback_fraud",
+    label: "Chargeback Fraud",
+  },
+  {
+    value: "chargeback_dispute",
+    label: "Chargeback Dispute",
+  },
+] as const;
+
+const TYPE_OPTIONS = [
   {
     value: "login",
     label: "Login",
@@ -67,10 +82,6 @@ const typeOptions = [
     label: "Settlement",
   },
   {
-    value: "suspension",
-    label: "Suspension",
-  },
-  {
     value: "offboarding",
     label: "Offboarding",
   },
@@ -78,17 +89,19 @@ const typeOptions = [
     value: "update_profile",
     label: "Update profile",
   },
-];
+] as const;
 
 const FeedbackPopUp: FC<IProps> = ({ handleClose, show, data, handleSuccess }) => {
   const isAdmin = useUserStore(selectIsAdmin);
   const [organisations, setOrganisations] = useState<OrgAdminList>([]);
   const [apiError, setApiError] = useState("");
   const {
+    watch,
     register,
     handleSubmit,
     formState: { isSubmitting, isValid },
   } = useForm<FormValues>({ mode: "onChange" });
+  const type = watch("type");
   const onSubmit = handleSubmit(async ({ scope, status, type, reason, organisation }) => {
     try {
       await submitFeedback(
@@ -147,18 +160,8 @@ const FeedbackPopUp: FC<IProps> = ({ handleClose, show, data, handleSuccess }) =
           <Form.Group className="mb-2">
             <Form.Label>Scope</Form.Label>
             <Form.Select {...register("scope")}>
-              {scopeOptions.map((option) => (
+              {SCOPE_OPTIONS.map((option) => (
                 <option key={`feedback-pop-up-scope-${option.value}`} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </Form.Select>
-          </Form.Group>
-          <Form.Group className="mb-2">
-            <Form.Label>Status</Form.Label>
-            <Form.Select {...register("status")}>
-              {statusOptions.map((option) => (
-                <option key={`feedback-pop-up-status-${option.value}`} value={option.value}>
                   {option.label}
                 </option>
               ))}
@@ -167,8 +170,18 @@ const FeedbackPopUp: FC<IProps> = ({ handleClose, show, data, handleSuccess }) =
           <Form.Group className="mb-2">
             <Form.Label>Type</Form.Label>
             <Form.Select {...register("type")}>
-              {typeOptions.map((option) => (
+              {TYPE_OPTIONS.map((option) => (
                 <option key={`feedback-pop-up-type-${option.value}`} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Form.Select>
+          </Form.Group>
+          <Form.Group className="mb-2">
+            <Form.Label>Status</Form.Label>
+            <Form.Select {...register("status")}>
+              {(type === "settlement" ? STATUS_FOR_SETTLEMENT_TYPE_OPTIONS : STATUS_OPTIONS).map((option) => (
+                <option key={`feedback-pop-up-status-${option.value}`} value={option.value}>
                   {option.label}
                 </option>
               ))}

@@ -18,7 +18,12 @@ import moment from "moment";
 import { RULE_DETAILS_PATH, SEARCH_PARAM_KEYS, TRANSACTIONS_PATH } from "modulePaths";
 import { replaceAll } from "utils/stringUtils";
 import { captureException } from "utils/errorUtils";
-import { isTableCardCustomerData, isTableCardListData, TableCardData } from "components/Customers/UserView/TableCard";
+import {
+  isCardElement,
+  isTableCardCustomerData,
+  isTableCardListData,
+  TableCardData,
+} from "components/Customers/UserView/TableCard";
 import { DetailsHeaderChild, DetailsHeaderParent, DetailsHeaderTile, DetailsHeaderValue } from "components/Customers/styles";
 import { CustomerProfileLink } from "components/Common/Links";
 import mccArray from "./mcc_codes.json";
@@ -295,7 +300,15 @@ const TransactionDetails = (): JSX.Element => {
                     attributes={prepareCardAttributes(
                       Object(transactionData),
                       "",
-                      cardsData.map((c) => (isTableCardCustomerData(c) ? c.value : [])).flat()
+                      cardsData
+                        .map((c) =>
+                          isTableCardCustomerData(c)
+                            ? c.value.map((cardKeyValue) =>
+                                isCardElement(cardKeyValue) ? [cardKeyValue.key, cardKeyValue.description] : cardKeyValue
+                              )
+                            : []
+                        )
+                        .flat()
                     )}
                     cardsData={cardsData}
                   />

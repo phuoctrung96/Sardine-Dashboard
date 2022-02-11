@@ -3,6 +3,7 @@ import { getClientIdObject, getRules, fetchOrganisationNames, fetchDeviceProfile
 import { ClientIdObject, Rule, OrgName, DATA_SOURCE } from "sardine-dashboard-typescript-definitions";
 import { CACHE_KEYS } from "../constants";
 import { QueryResult } from "../interfaces/queryInterfaces";
+import { fetchLatLng, LatLng } from "../components/GoogleMaps";
 import { DeviceProfileResponse } from "../utils/api_response/deviceResponse";
 
 export const useDeviceProfileFetchResult = ({
@@ -83,4 +84,10 @@ export const useOrganizationNamesResult = ({ enabled }: { enabled: boolean }): Q
     data,
     error,
   };
+};
+
+// When it is used, caller should be in @googlemaps/react-Wrapper. If not, it might fail because it might not have loaded the JS.
+export const useLatLngFetchResult = ({ enabled, address }: { enabled: boolean; address: string }): QueryResult<LatLng> => {
+  const { data, error, status } = useQuery<LatLng, Error>([CACHE_KEYS.LAT_LNG, address], () => fetchLatLng(address), { enabled });
+  return { status, data, error };
 };

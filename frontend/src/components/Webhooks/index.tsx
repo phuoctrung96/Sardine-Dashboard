@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { H40Button } from "components/Button";
 import * as Sentry from "@sentry/react";
 import { AnyTodo } from "sardine-dashboard-typescript-definitions";
@@ -7,7 +7,6 @@ import { getWebhooks, updateWebhook, deleteWebhook } from "../../utils/api";
 import { DataTable, DataColumnSimple, ToolBarWrapper } from "../Common/DataTable";
 import { StyledMainDiv, TableWrapper } from "../FraudScore/styles";
 import { StyledTitleName } from "../Dashboard/styles";
-import { StoreCtx } from "../../utils/store";
 import { ToolbarContainer } from "./styles";
 import Layout from "../Layout/Main";
 import AddPopup from "./AddPopup";
@@ -54,8 +53,6 @@ const WebhooksList: React.FC = () => {
       editable: "never",
     },
   ];
-
-  const { state } = useContext(StoreCtx);
 
   const [data, setData] = useState<WebhooksRow[]>([]);
   const [loading, setLoading] = useState(false);

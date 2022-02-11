@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import moment from "moment";
 import { CustomersResponse } from "sardine-dashboard-typescript-definitions";
+import { Button, Spinner } from "react-bootstrap";
 import { StyledTitleName } from "../../Dashboard/styles";
 import { StyledTr, TdValue, CheckBox } from "../styles";
 import Badge from "../../Common/Badge";
@@ -30,13 +31,27 @@ export interface QueuePropsItem {
   sessionData?: CustomersResponse;
   isSelection?: boolean;
   isCheckActive?: boolean;
+  isSuperAdmin?: boolean;
+  isExporting?: boolean;
   onClick: () => void;
   onChecked?: () => void;
   onRemove?: () => void;
+  onExport?: () => void;
 }
 
 export const Queue = (p: QueuePropsItem): JSX.Element => {
-  const { sessionData, isCheckActive, isSelection, queueData, onChecked, onClick, onRemove } = p;
+  const {
+    sessionData,
+    isCheckActive,
+    isSuperAdmin,
+    isExporting,
+    isSelection,
+    queueData,
+    onChecked,
+    onClick,
+    onRemove,
+    onExport,
+  } = p;
   return sessionData ? (
     <StyledTr>
       <Cell>
@@ -88,8 +103,19 @@ export const Queue = (p: QueuePropsItem): JSX.Element => {
       <Cell>{queueData?.owner.name || "-"}</Cell>
       <Cell>{queueData?.hits || "-"}</Cell>
       {onRemove && (
-        <Cell onClick={onRemove} style={{ cursor: "pointer", color: "var(--danger)" }}>
-          Remove
+        <Cell>
+          <Button onClick={onRemove} variant="outline-danger">
+            Remove
+          </Button>
+          {isSuperAdmin && onExport && (
+            <Button onClick={onExport} disabled={isExporting} style={{ marginLeft: 10 }} variant="outline-primary">
+              {isExporting ? (
+                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+              ) : (
+                <span>Export</span>
+              )}
+            </Button>
+          )}
         </Cell>
       )}
     </StyledTr>

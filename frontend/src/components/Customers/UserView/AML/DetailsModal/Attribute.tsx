@@ -7,7 +7,7 @@ interface AttributeProps {
 
 export const Attribute = ({ attribute }: AttributeProps) => (
   <CardContentOther
-    featureData={[attribute.key, attribute.description]}
+    cardKeyValue={[attribute.key, attribute.description]}
     ind={attribute.key}
     key={attribute.key}
     getValueForKey={() => attribute.value}

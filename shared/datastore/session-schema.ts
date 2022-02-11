@@ -10,6 +10,7 @@ export interface SessionKind {
   timestamp: number;
   city: string;
   risk_score: number;
+  risk_level: string;
   street_2: string;
   postal_code: string;
   street_1: string;

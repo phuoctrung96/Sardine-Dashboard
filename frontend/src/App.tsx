@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import { useState } from "react";
 import { GTMProvider } from "@elgorditosalsero/react-gtm-hook";
 import "./App.css";
@@ -22,8 +21,7 @@ import CustomerProfile from "./pages/CustomerProfile";
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 import Admin from "./components/Admin/Admin";
-import Users from "./components/Users/Users";
-import Settings from "./components/Settings";
+import Settings from "./pages/Settings";
 import Organisation from "./components/Admin/Organisation";
 import { getUser } from "./utils/api";
 import RuleDetails from "./pages/RuleDetails";
@@ -135,7 +133,6 @@ const App = (): JSX.Element => {
                 {!isAuthenticated && autoLoging && checkAuth()}
                 {!loading && (
                   <Routes>
-                    <Route path="/users" element={<AuthenticatedOnly element={<Users data={{}} />} />} />
                     <Route path="/settings" element={<AuthenticatedOnly element={<Settings />} />} />
                     <Route path={DATA_DISTRIBUTION_PATH} element={<AuthenticatedOnly element={<DataDistribution />} />} />
                     <Route path="/relayfi" element={<AuthenticatedOnly element={<RelayDashboard />} />} />

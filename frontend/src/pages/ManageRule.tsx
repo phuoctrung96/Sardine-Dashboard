@@ -97,6 +97,7 @@ import {
   CheckPoint,
   Reason,
   ItemModel,
+  FunctionChild,
 } from "../utils/dataProviderUtils";
 import { DescriptionAndStats } from "../components/RulesModule/DescriptionAndStats";
 import QueueSection from "../components/RulesModule/Components/QueueSection";
@@ -268,8 +269,9 @@ const DropdownContainer = ({
   renderDropDownItem: (
     items: readonly (ItemModel | string)[],
     type: DropdownType,
-    parentIndex: AnyTodo,
-    index: AnyTodo
+    parentIndex: number,
+    index: number,
+    parentTitle: string
   ) => JSX.Element | JSX.Element[];
   rules: Rule[];
   rulesData: ItemModel[];
@@ -417,7 +419,7 @@ const DropdownContainer = ({
           {selectedSection === element.title && (
             <SubDropDownContent style={{ top: 0, display: "block" }} className="dropdown">
               {" "}
-              {renderDropDownItem(element.items, typeRuleOrCheckpoint, pIndex, idx)}
+              {renderDropDownItem(element.items, typeRuleOrCheckpoint, pIndex, idx, element.title)}
             </SubDropDownContent>
           )}
         </DropDownLi>
@@ -634,7 +636,7 @@ const DropdownContainer = ({
                     : "",
               }}
             >
-              {renderDropDownItem(OPERATORS, subtype, parentIndex, index)}
+              {renderDropDownItem(OPERATORS, subtype, parentIndex, index, "")}
             </DropDownContent>
           </DropDownLi>
         )
@@ -688,6 +690,7 @@ const ManageRule: React.FC = () => {
   const [name, setName] = useState("");
   const [visibleDropDown, setVisibleDropDown] = useState("");
   const [checkpoints, setCheckpoints] = useState<(CheckPoint | typeof ADD_CUSTOM | string)[]>([
+    CHECK_POINTS.ACH,
     CHECK_POINTS.AML,
     CHECK_POINTS.AMLBank,
     CHECK_POINTS.AMLCrypto,
@@ -699,7 +702,6 @@ const ManageRule: React.FC = () => {
     CHECK_POINTS.Payment,
     CHECK_POINTS.Withdrawal,
     CHECK_POINTS.IssuingRisk,
-    CHECK_POINTS.IssuingAML,
   ]);
   const [checkpoint, setCheckpoint] = useState<CheckPoint | typeof ADD_CUSTOM | string>(CHECK_POINTS.AML);
   const [isCustomAction, setIsCustomAction] = useState(false);
@@ -790,7 +792,6 @@ const ManageRule: React.FC = () => {
       // We have 2 outer operators i.e. &&, ||
       // Splitting rule with first one i.e. AND (&&)
       const firstSplit = condition.trim().split(" && ");
-      const customFunctions = supportedFunctions.map((s) => s.value);
       let ruleData: AnyTodo[] = [];
 
       // Looping 1nd outer split to perform 2nd outer split
@@ -832,19 +833,28 @@ const ManageRule: React.FC = () => {
 
         const param = d.length > 0 ? d[0] : "";
         let hasOperator = false; // Bool to decide does the inner condition has operator or it's functional condition
+        let hasFunction = false;
 
         let p = param.replace(/\(/g, "");
 
         // check if the param (feature) has any custom functions in it or not
-        customFunctions.forEach((val) => {
+        supportedFunctions.forEach((functionData: FunctionChild) => {
+          const val = functionData.value;
           const regex = new RegExp(val, "g");
           p = p.replace(regex, `${val}(`);
-          hasOperator = !p.includes(val) && d.length > 1;
+          if (param.includes(val)) {
+            hasFunction = true;
+            hasOperator = functionData.hasOperator;
+          }
         });
 
         // Custom functions will have additional brackets so managing it.
-        if (!hasOperator && p.includes("))")) {
+        if (hasFunction && p.includes("))")) {
           p = replaceAll(p, "))", ")");
+        }
+
+        if (!hasFunction) {
+          hasOperator = true;
         }
 
         // Checking the operator value
@@ -862,16 +872,16 @@ const ManageRule: React.FC = () => {
             : "";
 
         // Variables to hold sample & expected data type of the feature
-        let sample = "";
-        let dataType = "";
+        let sampleValue = "";
+        let dataTypeValue = "";
 
         // Checking for the subparam means the child condition
         if (param.length > 0) {
           const subParam = param.split(".");
           if (subParam.length > 1) {
-            const value = getSampleValue(subParam[0], subParam[1]);
-            sample = value.sample;
-            dataType = value.datatype;
+            const { datatype, sample } = getSampleValue(subParam[0], subParam[1]);
+            sampleValue = sample;
+            dataTypeValue = datatype;
           }
         }
 
@@ -881,8 +891,8 @@ const ManageRule: React.FC = () => {
           operator: opt,
           value: val.replace(/\)/g, ""),
           join: j,
-          sample,
-          datatype: dataType,
+          sample: sampleValue,
+          datatype: dataTypeValue,
           rules: [],
           hasOperator,
         };
@@ -1250,36 +1260,20 @@ const ManageRule: React.FC = () => {
     return finalRule.length === 0 ? "N/A" : finalRule.trim();
   };
 
-  const handleItemClick = (value: AnyTodo, type: DropdownType, parentIndex: number, index: number) => {
+  const handleItemClick = (value: AnyTodo, type: DropdownType, parentIndex: number, index: number, parentTitle: string) => {
     if (!value) return;
 
     if (type === DROPDOWN_TYPES.Rules) {
-      setSelectedSection(selectedSection);
       const newRules = [...rules];
 
       let subValues = selectedSubSections;
-      if (subValues.length > 0) {
-        if (!isDurationValue(value) && selectedSubSections.length > 1) {
-          subValues.pop();
-        }
-
-        const ruleList = rulesData.filter((r) => r.title === selectedSection);
-        if (ruleList.length > 0) {
-          const subRules = ruleList[0].items.filter((i: AnyTodo) => selectedSubSections.includes(i.title));
-          if (subRules.length > 0) {
-            const subItems = subRules[0].items;
-            if (!subItems.map((t: AnyTodo) => t.title).includes(value)) {
-              const subToSubItems = subItems.map((t: AnyTodo) => t.items.map((si: AnyTodo) => si.title));
-              if (subToSubItems.length > 0) {
-                if (subToSubItems.includes(value)) {
-                  subValues = [];
-                }
-              } else {
-                subValues = [];
-              }
-            }
-          }
-        }
+      // parentTitle would be like PaymentMethod_Bank_PrimaryIdentity_Address_City
+      // And we already have first & last value so removing them from the list and considering intermediate features
+      const pathValues = parentTitle.split("_");
+      if (pathValues.length > 1) {
+        pathValues.shift(); // Remove main section value
+        pathValues.pop(); // Remove last selected value
+        subValues = pathValues;
       }
 
       const val =
@@ -1290,19 +1284,19 @@ const ManageRule: React.FC = () => {
           : `${selectedSection}.${value}`;
 
       const valueForSampleData = subValues.length > 0 && isDurationValue(value) ? subValues[subValues.length - 1] : value;
-      const values = getSampleValue(selectedSection, valueForSampleData);
+      const { sample, datatype } = getSampleValue(selectedSection, valueForSampleData);
 
       const hasOperator = getHasOperator(val);
 
       if (parentIndex === -1) {
         newRules[index].rule = val;
-        newRules[index].sample = values.sample;
-        newRules[index].datatype = values.datatype;
+        newRules[index].sample = sample;
+        newRules[index].datatype = datatype;
         newRules[index].hasOperator = hasOperator;
       } else {
         newRules[parentIndex].rules[index].rule = val;
-        newRules[parentIndex].rules[index].sample = values.sample;
-        newRules[parentIndex].rules[index].datatype = values.datatype;
+        newRules[parentIndex].rules[index].sample = sample;
+        newRules[parentIndex].rules[index].datatype = datatype;
         newRules[parentIndex].rules[index].hasOperator = hasOperator;
       }
       setRules(newRules);
@@ -1333,24 +1327,25 @@ const ManageRule: React.FC = () => {
   const renderDropDownItem = (
     items: readonly (ItemModel | string)[],
     type: DropdownType,
-    parentIndex: AnyTodo,
-    index: AnyTodo
+    parentIndex: number,
+    index: number,
+    parentTitle: string // Added title to capture the path of the node by creating parent_node string
   ): JSX.Element | JSX.Element[] =>
     items.map((item: AnyTodo) =>
       item.title === undefined ? (
         <SubA
-          data-tid={`${type}_${parentIndex}_${index}_${item}`.replace(/_undefined/g, "")}
+          data-tid={`${type}_${parentIndex}_${index}_${item}`.replace(/_NaN/g, "")}
           key={item}
-          onClick={() => handleItemClick(item, type, parentIndex, index)}
+          onClick={() => handleItemClick(item, type, parentIndex, index, `${parentTitle}_${item.title}`)}
           className="dropdown"
         >
           {item}
         </SubA>
       ) : item.items.length === 0 ? (
         <SubA
-          data-tid={`${type}_${parentIndex}_${index}_${item.title}`.replace(/_undefined/g, "")}
+          data-tid={`${type}_${parentIndex}_${index}_${item.title}`.replace(/_NaN/g, "")}
           key={item.title}
-          onClick={() => handleItemClick(item.title, type, parentIndex, index)}
+          onClick={() => handleItemClick(item.title, type, parentIndex, index, `${parentTitle}_${item.title}`)}
           className="dropdown"
         >
           {item.title}
@@ -1364,21 +1359,14 @@ const ManageRule: React.FC = () => {
           <SubDropbtn
             key={item.title}
             onClick={() => {
-              const allTitles = items.map((i: AnyTodo) => i.title);
               const section = rulesData.filter((r: AnyTodo) => r.title === selectedSection);
               if (section.length > 0) {
-                const subSection = section[0].items.filter((r: AnyTodo) => r.title === item.title);
-                if (subSection.length > 0) {
-                  setSelectedSubSections([item.title]);
-                } else if (
-                  section[0].items.filter((r: AnyTodo) => r.items.map((d: AnyTodo) => d.title).includes(item.title)).length > 0
-                ) {
-                  if (selectedSubSections.filter((sub: AnyTodo) => allTitles.includes(sub)).length > 0) {
-                    const subSections = selectedSubSections.slice(0, -1);
-                    setSelectedSubSections([...subSections, item.title]);
-                  } else {
-                    setSelectedSubSections([...selectedSubSections, item.title]);
-                  }
+                // Splitting each value from path by _
+                const itemPath = `${parentTitle}_${item.title}`;
+                const pathValues = itemPath.split("_");
+                if (pathValues.length > 0) {
+                  pathValues.shift(); // Removing first element as it is section and not subsection
+                  setSelectedSubSections(pathValues);
                 }
               }
             }}
@@ -1400,7 +1388,7 @@ const ManageRule: React.FC = () => {
           </SubDropbtn>
           {selectedSubSections.includes(item.title) && (
             <SubDropDownContent style={{ top: 0, left: 280, display: "block" }} className="dropdown">
-              {renderDropDownItem(item.items, type, parentIndex, index)}
+              {renderDropDownItem(item.items, type, parentIndex, index, `${parentTitle}_${item.title}`)}
             </SubDropDownContent>
           )}
         </div>
@@ -1443,7 +1431,7 @@ const ManageRule: React.FC = () => {
               }}
               className="dropdown"
             >
-              {renderDropDownItem(actionsData, DROPDOWN_TYPES.RiskLevel, undefined, undefined)}
+              {renderDropDownItem(actionsData, DROPDOWN_TYPES.RiskLevel, NaN, NaN, "")}
             </DropDownContent>
           </DropDownLi>
           {riskValue === ADD_CUSTOM ? (
@@ -1477,7 +1465,7 @@ const ManageRule: React.FC = () => {
                 {riskValue.length === 0 ? "Value" : riskValue}
               </Dropbtn>
               <DropDownContent data-tid="action_value_options" style={additionalStyle} className="dropdown">
-                {renderDropDownItem(getRiskValues(), DROPDOWN_TYPES.RiskValue, undefined, undefined)}
+                {renderDropDownItem(getRiskValues(), DROPDOWN_TYPES.RiskValue, NaN, NaN, "")}
               </DropDownContent>
             </DropDownLi>
           )}

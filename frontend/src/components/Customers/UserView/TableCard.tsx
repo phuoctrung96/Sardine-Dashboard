@@ -2,10 +2,7 @@ import React from "react";
 import { Card, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { CustomersResponse } from "sardine-dashboard-typescript-definitions";
 import { replaceAllSpacesWithUnderscores, replaceAllUnderscoresWithSpaces } from "utils/stringUtils";
-import { renderReasonCodes } from "utils/renderReasonCodes";
-import BulletView, { BulletContainer } from "components/Common/BulletView";
-import imgTick from "../../../utils/logo/tick.svg";
-import { Link } from "../../Common/Links";
+import BulletView from "components/Common/BulletView";
 import { TableCardWrapper } from "./TableCardWrapper";
 
 export const TABLE_CARD_TYPES = {
@@ -16,7 +13,15 @@ export const TABLE_CARD_TYPES = {
 
 export type TableCardType = typeof TABLE_CARD_TYPES[keyof typeof TABLE_CARD_TYPES];
 
-type CardKeyValue = [string, string];
+interface CardElement {
+  key: string;
+  description: string;
+  component: JSX.Element;
+}
+type CardKeyValue = [string, string] | CardElement;
+
+export const isCardElement = (cardKeyValue: CardKeyValue): cardKeyValue is CardElement =>
+  typeof cardKeyValue === "object" && "component" in cardKeyValue;
 
 interface TableCardCustomerData {
   key: string;
@@ -48,12 +53,12 @@ export const isTableCardComponentData = (tableCardData: TableCardData): tableCar
   tableCardData.type === TABLE_CARD_TYPES.COMPONENT;
 
 export const CardContentOther: React.FC<{
-  featureData: string[];
+  cardKeyValue: CardKeyValue;
   ind: number | string;
   getValueForKey: (arg: string) => string | JSX.Element | JSX.Element[];
-}> = ({ featureData, ind, getValueForKey }) => {
-  const feature: string = Array.isArray(featureData) ? featureData[0] : featureData;
-  const description: string | undefined = Array.isArray(featureData) ? featureData[1] : undefined;
+}> = ({ cardKeyValue, ind, getValueForKey }) => {
+  const key: string = Array.isArray(cardKeyValue) ? cardKeyValue[0] : cardKeyValue.key;
+  const description: string | undefined = Array.isArray(cardKeyValue) ? cardKeyValue[1] : undefined;
   // checking feature.replaceAll is a temporary fix. feature should be typed correctly.
   // Error detail: https://sentry.io/organizations/sardine/issues/2717710736/?project=5709359&query=is%3Aunresolved
   // String.prototype.replaceAll is a newly added function. Babel should have handle it, but
@@ -66,11 +71,13 @@ export const CardContentOther: React.FC<{
         textTransform: "capitalize",
       }}
       className="font-weight-normal"
-      id={`${replaceAllSpacesWithUnderscores(feature)}_title`}
+      id={`${replaceAllSpacesWithUnderscores(key)}_title`}
     >
-      {replaceAllUnderscoresWithSpaces(feature)}
+      {replaceAllUnderscoresWithSpaces(key)}
     </Card.Title>
   );
+
+  const component = isCardElement(cardKeyValue) ? cardKeyValue.component : getValueForKey(key);
 
   return (
     <div
@@ -87,7 +94,7 @@ export const CardContentOther: React.FC<{
         }}
       >
         {description ? (
-          <OverlayTrigger placement="top" overlay={<Tooltip id={feature}>{description}</Tooltip>}>
+          <OverlayTrigger placement="top" overlay={<Tooltip id={key}>{description}</Tooltip>}>
             <div
               style={{
                 display: "flex",
@@ -101,17 +108,9 @@ export const CardContentOther: React.FC<{
         ) : (
           title
         )}
-        {getValueForKey(feature)?.toString() === "true" ? (
-          <img
-            id={`${replaceAllSpacesWithUnderscores(feature)}_tick`}
-            alt="tick"
-            src={imgTick}
-            style={{ width: 17, marginLeft: 5 }}
-          />
-        ) : null}
       </div>
-      <div id={`${replaceAllSpacesWithUnderscores(feature)}_value`} style={{ fontSize: 14 }}>
-        {typeof getValueForKey(feature) === "object" ? getValueForKey(feature) : getValueForKey(feature).toString()}{" "}
+      <div id={`${replaceAllSpacesWithUnderscores(key)}_value`} style={{ fontSize: 14 }}>
+        {component}
       </div>
     </div>
   );
@@ -131,40 +130,6 @@ export const TableCard: React.FC<{
         if (!val) {
           return "-";
         }
-        if (key === "address") {
-          return val.length > 0 && customerData ? (
-            customerData.mapUrls ? (
-              <BulletContainer>
-                {customerData.mapUrls.map((url, index) => (
-                  <li key={url}>
-                    <Link id="address_link" href={url} rel="noreferrer" target="_blank">
-                      {(val.split && val.split("\n")[index]) || "-"}
-                    </Link>
-                    <br />
-                  </li>
-                ))}
-              </BulletContainer>
-            ) : (
-              <Link id="address_link" href={customerData?.address_google_maps_url} rel="noreferrer" target="_blank">
-                {val}
-              </Link>
-            )
-          ) : (
-            "-"
-          );
-        }
-        if (["facebook_link", "twitter_link", "linkedin_link"].includes(key.toLowerCase())) {
-          return <BulletView data={val || ""} isLink />;
-        }
-        if (key === "phone_reason_codes") {
-          return renderReasonCodes(val);
-        }
-        if (key === "tax_id") {
-          return "encrypted";
-        }
-        if (key === "email_reason_codes") {
-          return renderReasonCodes(val);
-        }
         return String(val).length > 0 ? <BulletView data={val || ""} /> : "-";
       }
     }
@@ -172,7 +137,12 @@ export const TableCard: React.FC<{
   };
 
   const content = value.map((featureData, ind) => (
-    <CardContentOther featureData={featureData} ind={ind} getValueForKey={getValueForKey} key={featureData.flat().join()} />
+    <CardContentOther
+      cardKeyValue={featureData}
+      ind={ind}
+      getValueForKey={getValueForKey}
+      key={isCardElement(featureData) ? featureData.key : featureData.flat().join()}
+    />
   ));
 
   return (

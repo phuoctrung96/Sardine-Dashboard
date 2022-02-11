@@ -7,14 +7,16 @@ import { Transaction, AnyTodo, CustomerProfileResponse, CustomersResponse } from
 import { captureException } from "utils/errorUtils";
 import { Grid } from "@material-ui/core";
 import Badge from "components/Common/Badge";
-import { renderReasonCodesFromArray } from "utils/renderReasonCodes";
+import { renderReasonCodes, renderReasonCodesFromArray } from "utils/renderReasonCodes";
 import { SESSION_DETAILS_PATH } from "modulePaths";
-import BulletView from "components/Common/BulletView";
+import BulletView, { BulletContainer } from "components/Common/BulletView";
 import { useUserStore } from "store/user";
 import Layout from "../components/Layout/Main";
 import Loader from "../components/Common/Loader";
+import { Link } from "../components/Common/Links";
 import UserNetwork from "../components/Customers/UserView/UserNetwork";
 import AccessControlPopUp from "../components/Customers/UserView/AccessControlPopUp";
+import { GoogleMapsWrapper, GoogleStreetViewMap } from "../components/GoogleMaps";
 import { StyledNavTitle, StyledStickyNav, StyledTitleName } from "../components/Dashboard/styles";
 import {
   StyledMainDiv,
@@ -34,7 +36,6 @@ import {
   CardContentFilled,
   CardNameWithHeaders,
   CardObject,
-  createGmapsLinkFromAddresses,
   CryptoObject,
   dedupeBankObjects,
   dedupeCardObjects,
@@ -60,7 +61,12 @@ import { TableCardSection } from "../components/Customers/UserView/TableCardSect
 import LoadingText from "../components/Common/LoadingText";
 import { TableCardData } from "../components/Customers/UserView/TableCard";
 import { DocumentVerificationSection } from "../components/Customers/UserView/DocumentVerification";
-import { convertDatastoreSessionsToCustomerResponse } from "../utils/customerSessionUtils";
+import {
+  convertDatastoreSessionsToCustomerResponse,
+  generateGoogleMapsUrlFromAddress,
+  getAddressListFromCustomerResponse,
+} from "../utils/customerSessionUtils";
+import { GOOGLE_STREET_VIEW_MAP_STYLE, GOOGLE_STREET_VIEW_PANORAMA_OPTIONS } from "../constants";
 
 export const renderCustomerNotFound = (customerId: string): JSX.Element => (
   <Grid container justify="center">
@@ -88,6 +94,34 @@ const CardContentOrLoadingOrNoData = ({
   ) : (
     <CardContentFilled name={name} tableBodyElements={tableBodyElements} />
   );
+
+const AddressContainer = ({ addresses }: { addresses: string[] }): JSX.Element => (
+  <>
+    {addresses && (
+      <BulletContainer>
+        {addresses.map((address, index) => (
+          <div key={address}>
+            <div>
+              <Link id="address_link" href={generateGoogleMapsUrlFromAddress(address)} rel="noreferrer" target="_blank">
+                {addresses[index] || "-"}
+              </Link>
+            </div>
+          </div>
+        ))}
+      </BulletContainer>
+    )}
+
+    {addresses.length > 0 && (
+      <GoogleMapsWrapper>
+        <GoogleStreetViewMap
+          address={addresses[0]}
+          style={GOOGLE_STREET_VIEW_MAP_STYLE}
+          panoramaOptions={GOOGLE_STREET_VIEW_PANORAMA_OPTIONS}
+        />
+      </GoogleMapsWrapper>
+    )}
+  </>
+);
 
 const CustomerProfile: React.FC = () => {
   const navigate = useNavigate();
@@ -126,10 +160,31 @@ const CustomerProfile: React.FC = () => {
         ["is_email_verified", "If email was verified by you"],
         ["is_phone_verified", "If phone number was verified by you"],
         ["date_of_birth", "Customer's date of birth, provided by you"],
-        ["address", "Customer's address, provided by you"],
-        ["facebook_Link", "Facebook Link associated to given email address"],
-        ["Twitter_Link", "Twitter Link associated to given email address"],
-        ["LinkedIn_Link", "Linkedin Link associated to given email address"],
+        {
+          key: "address",
+          description: "Customer's address, provided by you",
+          component:
+            customerData === undefined ? (
+              <>-</>
+            ) : (
+              <AddressContainer addresses={customerData === undefined ? [] : getAddressListFromCustomerResponse(customerData)} />
+            ),
+        },
+        {
+          key: "facebook_Link",
+          description: "Facebook Link associated to given email address",
+          component: <BulletView data={customerData?.facebook_Link || ""} isLink />,
+        },
+        {
+          key: "Twitter_Link",
+          description: "Twitter Link associated to given email address",
+          component: <BulletView data={customerData?.Twitter_Link || ""} isLink />,
+        },
+        {
+          key: "LinkedIn_Link",
+          description: "Linkedin Link associated to given email address",
+          component: <BulletView data={customerData?.LinkedIn_Link || ""} isLink />,
+        },
         ["timestamp", "Timestamp"],
       ],
     },
@@ -156,7 +211,7 @@ const CustomerProfile: React.FC = () => {
       key: KEY_TAX_ID_DETAILS,
       type: "card",
       value: [
-        ["tax_id", "Customer's SSN, provided by you"],
+        { key: "tax_id", description: "Customer's SSN, provided by you", component: <>encrypted</> },
         ["tax_id_level", "Overall riskiness level of taxID"],
         ["tax_id_match", "If given taxID matches with our record"],
         ["tax_id_name_match", "If given name matches with our taxID record"],
@@ -214,9 +269,19 @@ const CustomerProfile: React.FC = () => {
         ["email_level", "Email risk level"],
         ["phone_level", "Phone risk level"],
         ["email_domain_level", "Email domain risk level"],
-        ["email_reason_codes", "Reason codes for email risk level"],
+        {
+          key: "email_reason_codes",
+          description: "Reason codes for email risk level",
+          component: <>{customerData ? renderReasonCodes(customerData?.email_reason_codes) : "-"}</>,
+        },
         ["email_reason", "Email risk level summary"],
-        ["phone_reason_codes", "Reason codes for phone risk level"],
+        {
+          key: "phone_reason_codes",
+          description: "Reason codes for phone risk level",
+          component: (
+            <>{customerData && customerData.phone_reason_codes ? renderReasonCodes(customerData.phone_reason_codes) : "-"}</>
+          ),
+        },
         ["phonescore_reason", "Phone risk level summary"],
         ["customer_score", "Riskiness score of this customer session, higher score means riskier. Range: (0-100)."],
         [
@@ -423,7 +488,7 @@ const CustomerProfile: React.FC = () => {
           setDSTransactionsData(transactions.transactions);
 
           if (val !== null) {
-            setCustomerData(createGmapsLinkFromAddresses(val));
+            setCustomerData(val);
             Promise.all([fetchBankData(cusId), fetchCardData(cusId), fetchCryptoData(cusId)]).catch(captureException);
           } else {
             setCustomerNotFound(true);
@@ -519,7 +584,7 @@ const CustomerProfile: React.FC = () => {
         >
           <PinContainer style={{ marginBottom: 30 }}>
             {cardsData.map((data) => (
-              <TableCardSection data={data} customerData={customerData} />
+              <TableCardSection key={data.key} data={data} customerData={customerData} />
             ))}
           </PinContainer>
         </Tab>

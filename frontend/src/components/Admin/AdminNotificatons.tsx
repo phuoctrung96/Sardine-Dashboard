@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, FormControl, Spinner } from "react-bootstrap";
 import { EmailConfig, Organization, OrganizationUser } from "sardine-dashboard-typescript-definitions";
 import { captureException } from "utils/errorUtils";
@@ -7,13 +7,11 @@ import { useToasts } from "react-toast-notifications";
 import { selectIsSuperAdmin, useUserStore } from "store/user";
 import { CheckboxContainer, TableWrapper, Title, UsersContainer } from "./styles";
 import { DataTable } from "../Common/DataTable";
-import { StoreCtx } from "../../utils/store";
 import Layout from "../Layout/Main";
 import { getAdminOrganisations, sendAdminNotification } from "../../utils/api";
 import RadioButton from "../Common/RadioButton";
 
 const AdminNotificatons: React.FC = () => {
-  const { state } = useContext(StoreCtx);
   const [searchString, setSearchString] = useState("");
   const [fetchOrg, setFetchOrg] = useState(true);
   const [isLoading, setIsLoading] = useState(false);

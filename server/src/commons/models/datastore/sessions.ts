@@ -206,7 +206,11 @@ export class Session {
     customerId: string,
     limit: number = 10
   ): Promise<CustomerProfileResponse> {
-    const query: Query = ds.createQuery(SESSION_KIND).filter("client_id", clientId).filter("customer_id", customerId);
+    const query: Query = ds
+      .createQuery(SESSION_KIND)
+      .filter("client_id", clientId)
+      .filter("customer_id", customerId)
+      .order("timestamp", { descending: true }); // Order by timestamp descending. New session comes first.
     const transactionQuery: Query = ds
       .createQuery(TRANSACTION_KIND)
       .filter("client_id", clientId)

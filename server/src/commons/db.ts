@@ -34,6 +34,7 @@ const createPgConnection = (uri: string) => {
 const con = createPgConnection(process.env.DATABASE_URL || config.get("DB_CONNECTION_STRING"));
 
 const businessConn = createPgConnection(process.env.BUSINESS_DATABASE_URL || config.get("BUSINESS_DB_CONNECTION_STRING"));
+
 export const db = {
   logs: logs(con),
   auth: auth(con),

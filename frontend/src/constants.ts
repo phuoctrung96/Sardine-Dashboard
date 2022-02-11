@@ -3,6 +3,7 @@
 import { SARDINE_ADMIN, MULTI_ORG_ADMIN } from "sardine-dashboard-typescript-definitions";
 
 export const CHECKPOINT_QUERY_FIELD = "checkpoint";
+export const ORGANIZATION_QUERY_FIELD = "organization";
 const ADMIN_ROLES = [SARDINE_ADMIN, MULTI_ORG_ADMIN];
 
 export const DATE_FORMATS = {
@@ -29,6 +30,7 @@ export const CACHE_KEYS = {
   ORGANIZATION_NAMES: "organizationNames",
   RULES: "rules",
   CLIENT_ID: "clientId",
+  LAT_LNG: "latLng",
 } as const;
 
 export const QUERY_STATUS = {
@@ -37,6 +39,17 @@ export const QUERY_STATUS = {
   ERROR: "error",
   SUCCESS: "success",
 } as const;
+
+export const GOOGLE_STREET_VIEW_PANORAMA_OPTIONS = {
+  pov: { heading: 165, pitch: 0 },
+  motionTracking: false,
+} as const;
+
+export const GOOGLE_STREET_VIEW_MAP_STYLE = {
+  height: 200,
+} as const;
+
+export const GOOGLE_MAPS_URL = "https://www.google.com/maps";
 
 const DATASTORE_START_DATE = "2021-08-18";
 

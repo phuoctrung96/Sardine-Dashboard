@@ -45,33 +45,18 @@ const RecursiveDropdown = (p: RecursiveDropdownProps) => {
     />
   );
 
-  const handleItemClick = (value: string, dt: string) => {
+  const handleItemClick = (value: string, dt: string, parentTitle: string) => {
     if (!value) return;
 
     if (selectedSection.length > 0) {
       let subValues = selectedSubSections;
-      if (subValues.length > 0) {
-        if (!isDurationValue(value) && selectedSubSections.length > 1) {
-          subValues.pop();
-        }
-
-        const _data = p.data.filter((r) => r.title === selectedSection);
-        if (_data.length > 0) {
-          const _subData = _data[0].items.filter((i) => selectedSubSections.includes(i.title));
-          if (_subData.length > 0) {
-            const subItems = _subData[0].items;
-            if (!subItems.map((t) => t.title).includes(value)) {
-              const subToSubItems = subItems
-                .map((t) => t.items.map((si) => si.title).join(","))
-                .join(",")
-                .split(",");
-
-              if (subToSubItems.length === 0) {
-                subValues = [];
-              }
-            }
-          }
-        }
+      // parentTitle would be like PaymentMethod_Bank_PrimaryIdentity_Address_City
+      // And we already have first & last value so removing them from the list and considering intermediate features
+      const pathValues = parentTitle.split("_");
+      if (pathValues.length > 1) {
+        pathValues.shift(); // Remove main section value
+        pathValues.pop(); // Remove last selected value
+        subValues = pathValues;
       }
 
       const val =
@@ -90,10 +75,14 @@ const RecursiveDropdown = (p: RecursiveDropdownProps) => {
     setSelectedSection("");
   };
 
-  const renderDropDownItem = (items: DataProps[]) =>
+  const renderDropDownItem = (items: DataProps[], parentTitle: string): JSX.Element | JSX.Element[] =>
     items.map((item) =>
       item.items.length === 0 ? (
-        <SubA key={item.title} onClick={() => handleItemClick(item.title, item.datatype)} className="dropdown">
+        <SubA
+          key={item.title}
+          onClick={() => handleItemClick(item.title, item.datatype, `${parentTitle}_${item.title}`)}
+          className="dropdown"
+        >
           {item.title}
         </SubA>
       ) : (
@@ -101,19 +90,14 @@ const RecursiveDropdown = (p: RecursiveDropdownProps) => {
           <SubDropbtn
             key={item.title}
             onClick={() => {
-              const allTitles = items.map((i) => i.title);
-              const section = p.data.filter((r) => r.title === selectedSection);
+              const section = p.data.filter((r: DataProps) => r.title === selectedSection);
               if (section.length > 0) {
-                const subSection = section[0].items.filter((r) => r.title === item.title);
-                if (subSection.length > 0) {
-                  setSelectedSubSections([item.title]);
-                } else if (section[0].items.filter((r) => r.items.map((d) => d.title).includes(item.title)).length > 0) {
-                  if (selectedSubSections.filter((sub) => allTitles.includes(sub)).length > 0) {
-                    const subSections = selectedSubSections.slice(0, -1);
-                    setSelectedSubSections([...subSections, item.title]);
-                  } else {
-                    setSelectedSubSections([...selectedSubSections, item.title]);
-                  }
+                // Splitting each value from path by _
+                const itemPath = `${parentTitle}_${item.title}`;
+                const pathValues = itemPath.split("_");
+                if (pathValues.length > 0) {
+                  pathValues.shift(); // Removing first element as it is section and not subsection
+                  setSelectedSubSections(pathValues);
                 }
               }
             }}
@@ -136,7 +120,7 @@ const RecursiveDropdown = (p: RecursiveDropdownProps) => {
           </SubDropbtn>
           {selectedSubSections.includes(item.title) ? (
             <SubDropDownContent style={{ top: 0, left: 280, display: "block" }} className="dropdown">
-              {renderDropDownItem(item.items)}
+              {renderDropDownItem(item.items, `${parentTitle}_${item.title}`)}
             </SubDropDownContent>
           ) : null}
         </div>
@@ -152,7 +136,7 @@ const RecursiveDropdown = (p: RecursiveDropdownProps) => {
               const val = element.title === selectedSection ? "" : element.title;
               setSelectedSection(val);
             } else {
-              handleItemClick(element.title, element.datatype);
+              handleItemClick(element.title, element.datatype, element.title);
             }
           }}
           style={{
@@ -173,7 +157,7 @@ const RecursiveDropdown = (p: RecursiveDropdownProps) => {
         {selectedSection === element.title ? (
           <SubDropDownContent style={{ top: 0, display: "block" }} className="dropdown">
             {" "}
-            {renderDropDownItem(element.items)}
+            {renderDropDownItem(element.items, element.title)}
           </SubDropDownContent>
         ) : null}
       </DropDownLi>

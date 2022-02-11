@@ -122,7 +122,6 @@ const UserNetwork = (p: IProps): JSX.Element => {
       startLoading().catch(captureException);
       setIsLoaded(true);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoaded]);
 
   const loadParentNodes = (index: number) => {
