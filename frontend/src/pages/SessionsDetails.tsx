@@ -4,6 +4,7 @@ import * as Sentry from "@sentry/react";
 import { AddToast, useToasts } from "react-toast-notifications";
 import { Button, FormControl, Spinner } from "react-bootstrap";
 import moment from "moment";
+import { FaAngleDown } from "react-icons/fa";
 import {
   AmlKind,
   StatusData,
@@ -44,7 +45,7 @@ import {
   StyledDrawer,
   StyledMenuDiv,
   StyledMainContentDiv,
-  StyledChildren,
+  StickyContainer,
   PinContainer,
   Container,
   StyledUserPhoto,
@@ -261,10 +262,11 @@ const DetailsHeader = ({ name, childElement }: { name: string; childElement: JSX
   <DetailsHeaderChild>
     <StyledTitleName
       style={{
-        fontSize: 16,
-        fontWeight: "bold",
+        fontSize: 14,
         textTransform: "capitalize",
         wordBreak: "break-all",
+        color: "#969AB6"
+        marginRight: 16
       }}
     >
       {name}
@@ -536,114 +538,124 @@ const SessionsDetails = (): JSX.Element => {
 
   return (
     <Layout>
-      <AccessControlPopUp
-        show={showAccessControlPopUp && customerData !== undefined}
-        client_id={customerData ? customerData.client_id : ""}
-        handleClose={() => {
-          setShowAccessControlPopUp(false);
-        }}
-        handleSuccess={(isBL) => {
-          setShowAccessControlPopUp(false);
-          addToast(`${isBL ? "Blocklisted" : "Allowlisted"} successfully`, {
-            appearance: "info",
-            autoDismiss: true,
-          });
-        }}
-        data={customerData}
-      />
-      {customerData?.transaction_id ? (
-        <FeedbackPopUp
-          show={showFeedbackPopUp}
+      <StickyContainer>
+        <AccessControlPopUp
+          show={showAccessControlPopUp && customerData !== undefined}
+          client_id={customerData ? customerData.client_id : ""}
           handleClose={() => {
-            setShowFeedbackPopUp(false);
+            setShowAccessControlPopUp(false);
           }}
-          handleSuccess={(feedback) => {
-            setShowFeedbackPopUp(false);
-            addToast("Feedback successfully", {
+          handleSuccess={(isBL) => {
+            setShowAccessControlPopUp(false);
+            addToast(`${isBL ? "Blocklisted" : "Allowlisted"} successfully`, {
               appearance: "info",
               autoDismiss: true,
             });
-            setFeedbackData([feedback]);
           }}
-          data={{
-            sessionKey: customerData.session_key,
-            customerId: customerData.customer_id,
-            transactionId: customerData.transaction_id,
-          }}
+          data={customerData}
         />
-      ) : null}
-      <StyledStickyNav style={{ width: "100%", marginBottom: 0, backgroundColor: "white" }}>
-        <HorizontalContainer
-          style={{
-            padding: 20,
-            justifyContent: "space-between",
-          }}
-        >
+        {customerData?.transaction_id ? (
+          <FeedbackPopUp
+            show={showFeedbackPopUp}
+            handleClose={() => {
+              setShowFeedbackPopUp(false);
+            }}
+            handleSuccess={(feedback) => {
+              setShowFeedbackPopUp(false);
+              addToast("Feedback successfully", {
+                appearance: "info",
+                autoDismiss: true,
+              });
+              setFeedbackData([feedback]);
+            }}
+            data={{
+              sessionKey: customerData.session_key,
+              customerId: customerData.customer_id,
+              transactionId: customerData.transaction_id,
+            }}
+          />
+        ) : null}
+        <StyledStickyNav style={{ width: "100%", marginBottom: 0, backgroundColor: "white" }}>
           <HorizontalContainer
             style={{
-              color: "#2173FF",
-              fontSize: 16,
-              width: 120,
+              padding: 20,
+              justifyContent: "space-between",
             }}
-            onClick={() => navigate(-1)}
           >
-            <img alt="back" src={back_blue} style={{ width: 20, marginLeft: 30 }} />
-            Back
-          </HorizontalContainer>
-          <HorizontalContainer>
-            <SubmitButton
-              style={{ marginRight: 10, minWidth: 170 }}
-              title="Blocklist/Allowlist"
-              onClick={() => {
-                setShowAccessControlPopUp(true);
-              }}
-            />
-            {customerData?.transaction_id ? (
-              <Button
-                style={{
-                  height: 45,
-                  borderRadius: 12,
-                  backgroundColor: "#F0F3F9",
-                  border: "none",
-                  minWidth: 170,
-                  color: "#2173FF",
-                  marginRight: 10,
-                }}
-                onClick={() => {
-                  setShowFeedbackPopUp(true);
-                }}
-              >
-                Provide Feedback
-              </Button>
-            ) : null}
-            <Button
+            <HorizontalContainer
               style={{
-                height: 45,
-                borderRadius: 12,
-                backgroundColor: "#F0F3F9",
-                border: "none",
-                minWidth: 170,
-                color: "#2173FF",
-              }}
-              onClick={() => {
-                if (commentsRef && commentsRef.current) {
-                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-ignore: Object is possibly 'null'.
-                  commentsRef.current.scrollIntoView({ behavior: "smooth" });
-                }
+                fontSize: 20,
               }}
             >
-              {" "}
-              <img alt="" src={comments} style={{ marginRight: 5 }} />
-              Add comments{" "}
-            </Button>
+              <span
+                style={{ 
+                  color: "#636D9C",
+                  cursor: "pointer"
+                }}
+                onClick={() => navigate(-1)}
+              >
+                {"< Customer intelligence"}
+              </span>{" "}
+              <span
+                style={{
+                  color: "#141A39",
+                  fontWeight: "600"
+                }}>
+                {"/ Customer session detail"}
+              </span>
+            </HorizontalContainer>
+            <HorizontalContainer>
+              {customerData?.transaction_id ? (
+                <Button
+                  style={{
+                    padding: "8px 16px",
+                    borderRadius: 5,
+                    backgroundColor: "#141A39",
+                    border: "none",
+                    color: "white",
+                    fontSize: 14,
+                    marginRight: 66,
+                  }}
+                  onClick={() => {
+                    setShowFeedbackPopUp(true);
+                  }}
+                >
+                  <span style={{ marginRight: 5 }}>Add Feedback</span>
+                  <FaAngleDown size={14}/>
+                </Button>
+              ) : null}
+              <SubmitButton
+                style={{ fontSize: 14, padding: "8px 16px", marginRight: 16 }}
+                title="Blocklist / Allowlist   +"
+                onClick={() => {
+                  setShowAccessControlPopUp(true);
+                }}
+              />
+              <Button
+                style={{
+                  borderRadius: 5,
+                  backgroundColor: "white",
+                  border: "1px solid #141A39",
+                  color: "#141A39",
+                  fontSize: 14,
+                  padding: "7px 15px"
+                }}
+                onClick={() => {
+                  if (commentsRef && commentsRef.current) {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore: Object is possibly 'null'.
+                    commentsRef.current.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+              >
+                Add comment
+              </Button>
+            </HorizontalContainer>
           </HorizontalContainer>
-        </HorizontalContainer>
-      </StyledStickyNav>
+        </StyledStickyNav>
 
-      <StyledMenuDiv>
-        <StyledDrawer>
-          <DetailsHeaderParent>
+        <StyledMenuDiv>
+          <StyledDrawer>
             {detailsHeaders}
             {customerData && customerData.queue_id && customerData.queue_id.length > 0 && (
               <DetailsHeaderChild>
@@ -666,200 +678,167 @@ const SessionsDetails = (): JSX.Element => {
                 </Button>
               </DetailsHeaderChild>
             )}
-          </DetailsHeaderParent>
-        </StyledDrawer>
-        <StyledMainContentDiv>
-          <StyledChildren>
+          </StyledDrawer>
+          <StyledMainContentDiv>
             {isDataLoaded ? (
-              <StyledMainDiv
-                style={{
-                  backgroundColor: "#FFF",
-                  width: "100%",
-                  height: "90vh",
-                  margin: 0,
-                  overflowY: "scroll",
-                }}
-              >
-                <StyledNavTitle fixedHeight={false} style={{ width: "100%", marginLeft: 30 }}>
-                  <StyledTitleName
-                    style={{
-                      fontSize: 32,
-                      fontWeight: "normal",
-                      paddingTop: 20,
-                    }}
-                  >
-                    Session details
-                    <StyledTitleName
-                      style={{
-                        fontSize: 14,
-                        fontWeight: "normal",
-                        color: "#B9C5E0",
-                        marginTop: 10,
-                      }}
-                    >
-                      <HandleOverflowDiv>{`Details associated with session key ${customerData?.session_key}`}</HandleOverflowDiv>
-                    </StyledTitleName>
-                  </StyledTitleName>
-                </StyledNavTitle>
-                <StyledContainer>
-                  <PinContainer style={{ marginBottom: 30 }}>
-                    <CustomerDetails
-                      firstName={customerData?.first_name || ""}
-                      lastName={customerData?.last_name || ""}
-                      customerScore={customerData?.customer_score || ""}
-                      emailAddress={customerData?.email_address || ""}
-                      phone={customerData?.phone || ""}
-                      carrier={customerData?.carrier || ""}
-                      phoneCountry={customerData?.phone_country || ""}
-                      dateOfBirth={customerData?.date_of_birth || ""}
-                      timestamp={customerData?.timestamp || ""}
-                      flow={customerData?.flow || ""}
-                      isEmailVerified={customerData?.is_email_verified || false}
-                      isPhoneVerified={customerData?.is_phone_verified || false}
-                      facebookLink={customerData?.facebook_Link || ""}
-                      twitterLink={customerData?.Twitter_Link || ""}
-                      linkedInLink={customerData?.LinkedIn_Link || ""}
-                      reasonCodes={customerData?.reason_codes || []}
-                    />
-                    <DataCard header={KEY_EXECUTED_RULES} attributes={[]} bodyStyle={{ display: "block" }}>
-                      <ExecutedRulesList
-                        executedRules={customerData?.rules_executed || []}
-                        sessionKey={sessionKey}
-                        date={customerData?.timestamp || ""}
-                        clientID={customerData?.client_id || ""}
-                        onClick={(id: string) => {
-                          navigate(
-                            `${RULE_DETAILS_PATH}?${PARAM_KEYS.RULE_ID}=${id}${
-                              customerData?.client_id && `&${PARAM_KEYS.CLIENT_ID}=${customerData?.client_id}`
-                            }`
-                          );
-                        }}
-                      />
-                    </DataCard>
-                    {amlData && customerData && (
-                      <DataCard header={KEY_AML_ANTI_MONEY_LAUNDERING} attributes={[]} bodyStyle={{ display: "block" }}>
-                        <AmlSection customerData={customerData} isLoading={isLoadingAmlData} amlData={amlData} />
-                      </DataCard>
-                    )}
-                    <CustomerLocation
-                      address={customerData === undefined ? "" : getLatestAddressFromCustomerResponse(customerData)}
-                      city={
-                        customerData === undefined || customerData.address_fields_list.length === 0
-                          ? ""
-                          : customerData.address_fields_list[0].city
-                      }
-                      postalCode={
-                        customerData === undefined || customerData.address_fields_list.length === 0
-                          ? ""
-                          : customerData.address_fields_list[0].postal_code
-                      }
-                      regionCode={
-                        customerData === undefined || customerData.address_fields_list.length === 0
-                          ? ""
-                          : customerData.address_fields_list[0].region_code
-                      }
-                      countryCode={
-                        customerData === undefined || customerData.address_fields_list.length === 0
-                          ? ""
-                          : customerData.address_fields_list[0].country_code
-                      }
-                      mapUrl={customerData === undefined ? "" : getLatestMapUrlFromCustomerResponse(customerData)}
-                    />
-                    <CustomerPhone
-                      phoneLevel={customerData?.phone_level || ""}
-                      phoneReasonCodes={customerData?.phone_reason_codes || ""}
-                      phoneScoreReason={customerData?.phonescore_reason || ""}
-                      nameScore={customerData?.name_score || ""}
-                      addressScore={customerData?.address_score || ""}
-                    />
-                    <CustomerEmail
-                      emailLevel={customerData?.email_level || ""}
-                      emailDomainLevel={customerData?.email_domain_level || ""}
-                      emailReasonCodes={customerData?.email_reason_codes || ""}
-                      emailReason={customerData?.email_reason || ""}
-                      emailOwnerName={customerData?.email_owner_name || ""}
-                      emailOwnerNameMatch={customerData?.email_owner_name_match || ""}
-                      emailPhoneRiskLevel={customerData?.email_phone_risk_level || ""}
-                      riskBand={customerData?.risk_band || ""}
-                      billaddressReason={customerData?.billaddress_reason || ""}
-                    />
-                    <CustomerTaxDetails
-                      abuseScore={customerData?.abuse_score || 0}
-                      firstPartySyntheticScore={customerData?.first_party_synthetic_score || 0}
-                      idTheftScore={customerData?.id_theft_score || 0}
-                      nameDobSharedCount={customerData?.name_dob_shared_count || 0}
-                      nameSsnSyntheticAddress={customerData?.name_ssn_synthetic_address || false}
-                      ssnBogus={customerData?.ssn_bogus || false}
-                      ssnHistoryLongerMonths={customerData?.ssn_history_longer_months || 0}
-                      ssnIssuanceBeforeDob={customerData?.ssn_issuance_before_dob || false}
-                      ssnIssuanceDobMismatch={customerData?.ssn_issuance_dob_mismatch || false}
-                      ssnSharedCount={customerData?.ssn_shared_count || 0}
-                      ssnNamesExactMatch={customerData?.ssn_names_exact_match || []}
-                      ssnPhonesExactMatch={customerData?.ssn_phones_exact_match || []}
-                      ssnEmailsExactMatch={customerData?.ssn_emails_exact_match || []}
-                      ssnDobsExactMatch={customerData?.ssn_dobs_exact_match || []}
-                      taxId={customerData?.tax_id || ""}
-                      taxIdLevel={customerData?.tax_id_level || ""}
-                      taxIdMatch={customerData?.tax_id_match || ""}
-                      taxIdNameMatch={customerData?.tax_id_name_match || ""}
-                      taxIdDobMatch={customerData?.tax_id_dob_match || ""}
-                      taxIdStateMatch={customerData?.tax_id_state_match || ""}
-                      thirdPartySyntheticScore={customerData?.third_party_synthetic_score || ""}
-                    />
-                    <DeviceInfo
-                      browser={deviceData?.browser}
-                      deviceId={deviceData?.device_id}
-                      deviceIp={deviceData?.ip_address}
-                      emulator={deviceData?.emulator}
-                      ipCity={deviceData?.city}
-                      ipCountry={deviceData?.country}
-                      ipRegion={deviceData?.region}
-                      ipType={deviceData?.ip_type}
-                      os={deviceData?.os}
-                      proxy={deviceData?.proxy}
-                      remoteDesktop={deviceData?.remote_software}
-                      trueOs={deviceData?.true_os}
-                      vpn={deviceData?.vpn}
-                      location={deviceData?.location}
-                    />
-                    <PaymentMethod
-                      accountNumber={transactionData?.account_number || ""}
-                      cardHash={transactionData?.card_hash || ""}
-                      first6={transactionData?.first_6 || ""}
-                      last4={transactionData?.last_4 || ""}
-                      mcc={transactionData?.mcc || ""}
-                      paymentMethod={transactionData?.payment_method || ""}
-                      recipientPaymentMethod={transactionData?.recipient_payment_method || ""}
-                      routingNumber={transactionData?.routing_number || ""}
-                      addressRiskLevel={transactionData?.address_risk_level || ""}
-                      cryptoAddress={transactionData?.crypto_address || ""}
-                      cryptoCurrencyCode={transactionData?.crypto_currency_code || ""}
-                      cryptoCategories={transactionData?.categories || ""}
-                      recipientAddressRiskLevel={transactionData?.recipient_payment_method_crypto?.address_risk_level || ""}
-                      recipientCryptoAddress={transactionData?.recipient_payment_method_crypto?.crypto_address || ""}
-                      recipientCryptoCategories={transactionData?.recipient_payment_method_crypto?.categories || ""}
-                      recipientCryptoCurrencyCode={transactionData?.recipient_payment_method_crypto?.currency_code || ""}
-                    />
-                    <TransactionDetails dataLoaded={isTransactionDataLoaded} transaction={transactionData} />
-
-                    {feedbackData && customerData && (
-                      <DataCard header="Feedback" attributes={[]} bodyStyle={{ display: "block" }}>
-                        <FeedbackList feedbacks={feedbackData} isLoading={isLoadingFeedbackData} />
-                      </DataCard>
-                    )}
-                  </PinContainer>
-
-                  <CustomView custom={custom} />
-                  <CommentsView
-                    addToast={addToast}
-                    commentsRef={commentsRef}
-                    sessionKey={sessionKey}
-                    setCommentsData={setCommentsData}
-                    clientId={clientId}
-                    commentsData={commentsData}
-                    isLoadingComments={isLoadingComments}
+              <StyledMainDiv>
+                <PinContainer style={{ marginBottom: 30 }}>
+                  <CustomerDetails
+                    firstName={customerData?.first_name || ""}
+                    lastName={customerData?.last_name || ""}
+                    customerScore={customerData?.customer_score || ""}
+                    emailAddress={customerData?.email_address || ""}
+                    phone={customerData?.phone || ""}
+                    carrier={customerData?.carrier || ""}
+                    phoneCountry={customerData?.phone_country || ""}
+                    dateOfBirth={customerData?.date_of_birth || ""}
+                    timestamp={customerData?.timestamp || ""}
+                    flow={customerData?.flow || ""}
+                    isEmailVerified={customerData?.is_email_verified || false}
+                    isPhoneVerified={customerData?.is_phone_verified || false}
+                    facebookLink={customerData?.facebook_Link || ""}
+                    twitterLink={customerData?.Twitter_Link || ""}
+                    linkedInLink={customerData?.LinkedIn_Link || ""}
+                    reasonCodes={customerData?.reason_codes || []}
                   />
-                </StyledContainer>
+                  <DataCard header={KEY_EXECUTED_RULES} attributes={[]} bodyStyle={{ display: "block" }}>
+                    <ExecutedRulesList
+                      executedRules={customerData?.rules_executed || []}
+                      sessionKey={sessionKey}
+                      date={customerData?.timestamp || ""}
+                      clientID={customerData?.client_id || ""}
+                      onClick={(id: string) => {
+                        navigate(
+                          `${RULE_DETAILS_PATH}?${PARAM_KEYS.RULE_ID}=${id}${
+                            customerData?.client_id && `&${PARAM_KEYS.CLIENT_ID}=${customerData?.client_id}`
+                          }`
+                        );
+                      }}
+                    />
+                  </DataCard>
+                  {amlData && customerData && (
+                    <DataCard header={KEY_AML_ANTI_MONEY_LAUNDERING} attributes={[]} bodyStyle={{ display: "block" }}>
+                      <AmlSection customerData={customerData} isLoading={isLoadingAmlData} amlData={amlData} />
+                    </DataCard>
+                  )}
+                  <CustomerLocation
+                    address={customerData === undefined ? "" : getLatestAddressFromCustomerResponse(customerData)}
+                    city={
+                      customerData === undefined || customerData.address_fields_list.length === 0
+                        ? ""
+                        : customerData.address_fields_list[0].city
+                    }
+                    postalCode={
+                      customerData === undefined || customerData.address_fields_list.length === 0
+                        ? ""
+                        : customerData.address_fields_list[0].postal_code
+                    }
+                    regionCode={
+                      customerData === undefined || customerData.address_fields_list.length === 0
+                        ? ""
+                        : customerData.address_fields_list[0].region_code
+                    }
+                    countryCode={
+                      customerData === undefined || customerData.address_fields_list.length === 0
+                        ? ""
+                        : customerData.address_fields_list[0].country_code
+                    }
+                    mapUrl={customerData === undefined ? "" : getLatestMapUrlFromCustomerResponse(customerData)}
+                  />
+                  <CustomerPhone
+                    phoneLevel={customerData?.phone_level || ""}
+                    phoneReasonCodes={customerData?.phone_reason_codes || ""}
+                    phoneScoreReason={customerData?.phonescore_reason || ""}
+                    nameScore={customerData?.name_score || ""}
+                    addressScore={customerData?.address_score || ""}
+                  />
+                  <CustomerEmail
+                    emailLevel={customerData?.email_level || ""}
+                    emailDomainLevel={customerData?.email_domain_level || ""}
+                    emailReasonCodes={customerData?.email_reason_codes || ""}
+                    emailReason={customerData?.email_reason || ""}
+                    emailOwnerName={customerData?.email_owner_name || ""}
+                    emailOwnerNameMatch={customerData?.email_owner_name_match || ""}
+                    emailPhoneRiskLevel={customerData?.email_phone_risk_level || ""}
+                    riskBand={customerData?.risk_band || ""}
+                    billaddressReason={customerData?.billaddress_reason || ""}
+                  />
+                  <CustomerTaxDetails
+                    abuseScore={customerData?.abuse_score || 0}
+                    firstPartySyntheticScore={customerData?.first_party_synthetic_score || 0}
+                    idTheftScore={customerData?.id_theft_score || 0}
+                    nameDobSharedCount={customerData?.name_dob_shared_count || 0}
+                    nameSsnSyntheticAddress={customerData?.name_ssn_synthetic_address || false}
+                    ssnBogus={customerData?.ssn_bogus || false}
+                    ssnHistoryLongerMonths={customerData?.ssn_history_longer_months || 0}
+                    ssnIssuanceBeforeDob={customerData?.ssn_issuance_before_dob || false}
+                    ssnIssuanceDobMismatch={customerData?.ssn_issuance_dob_mismatch || false}
+                    ssnSharedCount={customerData?.ssn_shared_count || 0}
+                    ssnNamesExactMatch={customerData?.ssn_names_exact_match || []}
+                    ssnPhonesExactMatch={customerData?.ssn_phones_exact_match || []}
+                    ssnEmailsExactMatch={customerData?.ssn_emails_exact_match || []}
+                    ssnDobsExactMatch={customerData?.ssn_dobs_exact_match || []}
+                    taxId={customerData?.tax_id || ""}
+                    taxIdLevel={customerData?.tax_id_level || ""}
+                    taxIdMatch={customerData?.tax_id_match || ""}
+                    taxIdNameMatch={customerData?.tax_id_name_match || ""}
+                    taxIdDobMatch={customerData?.tax_id_dob_match || ""}
+                    taxIdStateMatch={customerData?.tax_id_state_match || ""}
+                    thirdPartySyntheticScore={customerData?.third_party_synthetic_score || ""}
+                  />
+                  <DeviceInfo
+                    browser={deviceData?.browser}
+                    deviceId={deviceData?.device_id}
+                    deviceIp={deviceData?.ip_address}
+                    emulator={deviceData?.emulator}
+                    ipCity={deviceData?.city}
+                    ipCountry={deviceData?.country}
+                    ipRegion={deviceData?.region}
+                    ipType={deviceData?.ip_type}
+                    os={deviceData?.os}
+                    proxy={deviceData?.proxy}
+                    remoteDesktop={deviceData?.remote_software}
+                    trueOs={deviceData?.true_os}
+                    vpn={deviceData?.vpn}
+                    location={deviceData?.location}
+                  />
+                  <PaymentMethod
+                    accountNumber={transactionData?.account_number || ""}
+                    cardHash={transactionData?.card_hash || ""}
+                    first6={transactionData?.first_6 || ""}
+                    last4={transactionData?.last_4 || ""}
+                    mcc={transactionData?.mcc || ""}
+                    paymentMethod={transactionData?.payment_method || ""}
+                    recipientPaymentMethod={transactionData?.recipient_payment_method || ""}
+                    routingNumber={transactionData?.routing_number || ""}
+                    addressRiskLevel={transactionData?.address_risk_level || ""}
+                    cryptoAddress={transactionData?.crypto_address || ""}
+                    cryptoCurrencyCode={transactionData?.crypto_currency_code || ""}
+                    cryptoCategories={transactionData?.categories || ""}
+                    recipientAddressRiskLevel={transactionData?.recipient_payment_method_crypto?.address_risk_level || ""}
+                    recipientCryptoAddress={transactionData?.recipient_payment_method_crypto?.crypto_address || ""}
+                    recipientCryptoCategories={transactionData?.recipient_payment_method_crypto?.categories || ""}
+                    recipientCryptoCurrencyCode={transactionData?.recipient_payment_method_crypto?.currency_code || ""}
+                  />
+                  <TransactionDetails dataLoaded={isTransactionDataLoaded} transaction={transactionData} />
+
+                  {feedbackData && customerData && (
+                    <DataCard header="Feedback" attributes={[]} bodyStyle={{ display: "block" }}>
+                      <FeedbackList feedbacks={feedbackData} isLoading={isLoadingFeedbackData} />
+                    </DataCard>
+                  )}
+                </PinContainer>
+
+                <CustomView custom={custom} />
+                <CommentsView
+                  addToast={addToast}
+                  commentsRef={commentsRef}
+                  sessionKey={sessionKey}
+                  setCommentsData={setCommentsData}
+                  clientId={clientId}
+                  commentsData={commentsData}
+                  isLoadingComments={isLoadingComments}
+                />
               </StyledMainDiv>
             ) : (
               <StyledTitleName
@@ -871,9 +850,9 @@ const SessionsDetails = (): JSX.Element => {
                 Loading Details...
               </StyledTitleName>
             )}
-          </StyledChildren>
-        </StyledMainContentDiv>
-      </StyledMenuDiv>
+          </StyledMainContentDiv>
+        </StyledMenuDiv>
+      </StickyContainer>
     </Layout>
   );
 };

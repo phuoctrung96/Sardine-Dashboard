@@ -51,7 +51,7 @@ const DetailCardTitle: React.FC<CardTitleProps> = (props) => {
       >
         <div
           style={{
-            fontWeight: 500,
+            fontWeight: 400,
             paddingRight: 10,
           }}
         >
@@ -69,24 +69,10 @@ const CardAttributes: React.FC<CardAttributesProps> = (props) => {
   const { key, value, toolTip = "", valueParser = defaultValueParser } = attribute;
   return (
     <div
-      style={{
-        margin: "20px 5px",
-        alignItems: "center",
-        lineBreak: "anywhere",
-      }}
       key={keyId}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        <DetailCardTitle title={replaceAllUnderscoresWithSpaces(key)} tooltip={toolTip} />
-      </div>
-      <DetailsCardValue>
-        <div id={`${replaceAllSpacesWithUnderscores(key)}_value`}>{valueParser(value)}</div>
-      </DetailsCardValue>
+      <DetailCardTitle title={replaceAllUnderscoresWithSpaces(key)} tooltip={toolTip} />
+      <div id={`${replaceAllSpacesWithUnderscores(key)}_value`}>{valueParser(value)}</div>
     </div>
   );
 };
@@ -98,31 +84,20 @@ const DataCard: React.FC<Props> = (props) => {
       <Card.Header
         id={replaceAllSpacesWithUnderscores(header)}
         style={{
-          fontSize: 20,
-          color: "#B9C5E0",
-          backgroundColor: "transparent",
-          border: "none",
-          paddingTop: 10,
-          fontWeight: "normal",
           ...headerStyle,
         }}
       >
-        {header}
+        <span>{header}</span>
       </Card.Header>
-
-      <Card.Body
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, 250px)",
-          gridAutoRows: "auto",
-          ...bodyStyle,
-        }}
-      >
-        {attributes.map((attr, keyId) => (
-          <CardAttributes attribute={attr} keyId={keyId} key={attr.key} />
-        ))}
-        {children}
-      </Card.Body>
+      {attributes.length === 0 ?
+        <>{children}</> :
+        <Card.Body>
+          {attributes.map((attr, keyId) => (
+            <CardAttributes attribute={attr} keyId={keyId} key={attr.key} />
+          ))}
+        </Card.Body>
+      }
+      <div className="hide-border" />
     </DetailsCardView>
   );
 };
