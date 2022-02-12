@@ -397,11 +397,11 @@ const DropdownContainer = ({
     let result: JSX.Element[] = [];
 
     if (typeRuleOrCheckpoint === DROPDOWN_TYPES.Rules && rulesData.length > 0) {
-      result = rulesData.map((element) => (
+      result = rulesData.map((element, elementIndex) => (
         <DropDownLi
           key={element.title}
           className={`rule-editor-dropdown-content-${typeRuleOrCheckpoint}-li`}
-          id={`rule_editor_dropdown_content_${typeRuleOrCheckpoint}_li`}
+          id={`rule_editor_dropdown_content_${typeRuleOrCheckpoint}_li_${elementIndex}`}
         >
           <SubDropbtn
             onClick={() => handleRuleClick(element.title, typeRuleOrCheckpoint, pIndex, idx)}
@@ -417,7 +417,7 @@ const DropdownContainer = ({
             {element.items.length > 0 ? <IconArrow className="dropdown" isSelected={selectedSection === element.title} /> : null}
           </SubDropbtn>
           {selectedSection === element.title && (
-            <SubDropDownContent style={{ top: 0, display: "block" }} className="dropdown">
+            <SubDropDownContent style={{ top: document.getElementById(`rule_editor_dropdown_content_${typeRuleOrCheckpoint}_li_${elementIndex}`)?.offsetTop || 0, display: "block" }} className="dropdown">
               {" "}
               {renderDropDownItem(element.items, typeRuleOrCheckpoint, pIndex, idx, element.title)}
             </SubDropDownContent>
@@ -1387,7 +1387,7 @@ const ManageRule: React.FC = () => {
             ) : null}
           </SubDropbtn>
           {selectedSubSections.includes(item.title) && (
-            <SubDropDownContent style={{ top: 0, left: 280, display: "block" }} className="dropdown">
+            <SubDropDownContent style={{ top: document.getElementById(`rule_editor_dropdown_subcontent_${type}-li_${item.title}`)?.offsetTop || 0, left: 280, display: "block" }} className="dropdown">
               {renderDropDownItem(item.items, type, parentIndex, index, `${parentTitle}_${item.title}`)}
             </SubDropDownContent>
           )}
