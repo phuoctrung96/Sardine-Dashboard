@@ -83,6 +83,9 @@ import { KEY_EXECUTED_RULES } from "../constants";
 import { useDeviceProfileFetchResult } from "../hooks/fetchHooks";
 import FeedbackPopUp from "../components/Customers/UserView/FeedbackPopUp";
 import FeedbackList from "../components/Queues/Components/FeedbackList";
+import executedRulesIcon from "../utils/logo/executed_rules.svg";
+import amlIcon from "../utils/logo/aml.svg";
+
 
 const PARAM_KEYS = SEARCH_PARAM_KEYS[RULE_DETAILS_PATH];
 
@@ -701,7 +704,12 @@ const SessionsDetails = (): JSX.Element => {
                     linkedInLink={customerData?.LinkedIn_Link || ""}
                     reasonCodes={customerData?.reason_codes || []}
                   />
-                  <DataCard header={KEY_EXECUTED_RULES} attributes={[]} bodyStyle={{ display: "block" }}>
+                  <DataCard
+                    header={KEY_EXECUTED_RULES}
+                    attributes={[]}
+                    bodyStyle={{ display: "block" }}
+                    icon={<img src={executedRulesIcon}/>}
+                  >
                     <ExecutedRulesList
                       executedRules={customerData?.rules_executed || []}
                       sessionKey={sessionKey}
@@ -717,7 +725,12 @@ const SessionsDetails = (): JSX.Element => {
                     />
                   </DataCard>
                   {amlData && customerData && (
-                    <DataCard header={KEY_AML_ANTI_MONEY_LAUNDERING} attributes={[]} bodyStyle={{ display: "block" }}>
+                    <DataCard
+                      header={KEY_AML_ANTI_MONEY_LAUNDERING}
+                      attributes={[]}
+                      bodyStyle={{ display: "block" }}
+                      icon={<img src={amlIcon}/>}
+                    >
                       <AmlSection customerData={customerData} isLoading={isLoadingAmlData} amlData={amlData} />
                     </DataCard>
                   )}

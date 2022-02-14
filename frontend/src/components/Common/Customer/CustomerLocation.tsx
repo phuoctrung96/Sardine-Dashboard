@@ -1,4 +1,5 @@
 import React from "react";
+import { GrGlobe } from "react-icons/gr";
 import { GOOGLE_STREET_VIEW_MAP_STYLE, GOOGLE_STREET_VIEW_PANORAMA_OPTIONS } from "../../../constants";
 import { GoogleMapsWrapper, GoogleStreetViewMap } from "../../GoogleMaps";
 import DataCard, { CardAttribute } from "../DataCard";
@@ -64,7 +65,7 @@ const CustomerLocation: React.FC<CustomerDetailsProps> = (props) => {
       toolTip: "Customer's country code, provided by you",
     },
   ];
-  return <DataCard header={HEADER} attributes={attributes} />;
+  return <DataCard header={HEADER} attributes={attributes} icon={<GrGlobe size={28} />}/>;
 };
 
 export default CustomerLocation;

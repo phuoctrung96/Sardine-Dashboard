@@ -1,5 +1,7 @@
 import { renderReasonCodes } from "utils/renderReasonCodes";
+import { GiSmartphone } from "react-icons/gi";
 import DataCard, { CardAttribute } from "../DataCard";
+import phoneLogo from "../../../utils/logo/phone.svg";
 
 const HEADER = "Phone Signals";
 
@@ -42,7 +44,7 @@ const CustomerPhone = (props: CustomerPhoneProps): JSX.Element => {
         "Match score of user's address, provided by you and address associated with phone number.Range: (0-100). 100 means exact match",
     },
   ];
-  return <DataCard header={HEADER} attributes={attributes} />;
+  return <DataCard header={HEADER} attributes={attributes} icon={<img src={phoneLogo} />} />;
 };
 
 export default CustomerPhone;

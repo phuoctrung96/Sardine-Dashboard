@@ -1,6 +1,7 @@
 import { KEY_DEVICE_AND_BEHAVIOUR_DETAILS } from "components/Customers/UserView";
 import DataCard, { CardAttribute } from "../DataCard";
 import { Link } from "../Links";
+import deviceIcon from "../../../utils/logo/device.svg";
 
 interface DeviceInfoProps {
   deviceId?: string;
@@ -161,7 +162,7 @@ const DeviceInfo = (props: DeviceInfoProps): JSX.Element => {
     });
   }
 
-  return attributes.length > 0 ? <DataCard header={KEY_DEVICE_AND_BEHAVIOUR_DETAILS} attributes={attributes} /> : <div />;
+  return attributes.length > 0 ? <DataCard header={KEY_DEVICE_AND_BEHAVIOUR_DETAILS} attributes={attributes} icon={<img src={deviceIcon} /> }/> : <div />;
 };
 
 export default DeviceInfo;

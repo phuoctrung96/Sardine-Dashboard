@@ -299,6 +299,7 @@ export const DetailsCardView = styled(Card)`
     font-size: 16px;
     font-weight: 600;
     display: flex;
+    align-items: center;
     gap: 10px;
   };
   & .card-body {
