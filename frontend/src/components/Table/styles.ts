@@ -8,44 +8,43 @@ export const StyledTable = styled.table`
 `;
 
 export const Cell = styled.td<{ bold?: boolean }>`
-  vertical-align: middle;
-  min-height: 25px;
-  padding: 10px 10px;
+  vertical-align: top;
+  padding: 18px 20px;
+  & ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
 `;
 
 export const StyledTh = styled.th`
+  background-color: white;
+  border-bottom: 1px solid #F2F6FF;
   height: 16px;
-  padding: 0px 8px;
-  font-family: IBM Plex Sans;
+  padding: 20px 0 20px 20px;
   font-style: normal;
-  font-weight: 600;
+  font-weight: normal;
   font-size: 13px;
   line-height: 16px;
-  /* identical to box height */
-
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-
-  /* Secondary */
-
-  color: black;
+  color: #969AB6;
+  & > div {
+    display: flex;
+    gap: 8px;
+  }
 `;
 
 export const StyledTr = styled.tr`
-  height: 36px;
-
-  border-radius: 4px;
-  font-family: IBM Plex Mono;
+  line-height:20px;
+  border-bottom: 1px solid #F2F6FF;
   font-style: normal;
   font-weight: normal;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 140%;
   font-feature-settings: "ss02" on, "zero" on;
   padding: 9px 0px;
   background-color: #ffffff;
-  :nth-child(even) {
-    background-color: #f7f9fc;
+  color: #141A39;
+  &:hover {
+    background-color: #F2F6FF;
   }
-
-  color: #000000;
 `;

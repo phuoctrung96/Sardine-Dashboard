@@ -265,7 +265,7 @@ const DetailsHeader = ({ name, childElement }: { name: string; childElement: JSX
         fontSize: 14,
         textTransform: "capitalize",
         wordBreak: "break-all",
-        color: "#969AB6"
+        color: "#969AB6",
         marginRight: 16
       }}
     >
