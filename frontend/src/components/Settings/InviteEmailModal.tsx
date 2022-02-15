@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { Modal, Button, FormControl, Spinner } from "react-bootstrap";
 import { useToasts } from "react-toast-notifications";
+import { OrganizationUser } from "sardine-dashboard-typescript-definitions";
 import { ErrorText } from "../RulesModule/styles";
 import { generateSendInvite } from "../../utils/api";
 import { REGISTER_PATH } from "../../modulePaths";
 
 // eslint-disable-next-line prefer-regex-literals
-const validateEmail = (emailAddress) => new RegExp(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,15}/g).test(emailAddress);
+const validateEmail = (emailAddress: string) => new RegExp(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,15}/g).test(emailAddress);
 
-const validateEmails = (emails) => {
+const validateEmails = (emails: string | any[]) => {
     let validated = true;
     for (let i = 0; i < emails.length && validated; i += 1) {
         if (!validateEmail(emails[i])) {
@@ -18,7 +19,14 @@ const validateEmails = (emails) => {
     return validated;
 };
 
-const InviteEmail = ({ show, handleClose, organisation }) => {
+const InviteEmail = ({ show,
+    handleClose,
+    organisation
+}: {
+    show: boolean;
+    handleClose: () => void;
+    organisation: string | OrganizationUser
+}) => {
     const [text, setText] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
@@ -38,7 +46,7 @@ const InviteEmail = ({ show, handleClose, organisation }) => {
             setIsLoading(true);
             const link = `${import.meta.env.VITE_APP_FRONTEND_HOST}${REGISTER_PATH}`;
 
-            await generateSendInvite(organisation.name, emails, link);
+            await generateSendInvite(typeof organisation === "object" ? organisation.name : organisation, emails, link);
 
             setIsLoading(false);
 
@@ -48,7 +56,7 @@ const InviteEmail = ({ show, handleClose, organisation }) => {
                 appearance: "success",
                 autoDismiss: true,
             });
-        } catch (err) {
+        } catch (err: any) {
             setIsLoading(false);
             setError(err);
         }
