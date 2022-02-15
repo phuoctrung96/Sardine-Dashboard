@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Button, FormControl, Spinner } from "react-bootstrap";
 import { useToasts } from "react-toast-notifications";
-import { OrganizationUser, AnyTodo } from "sardine-dashboard-typescript-definitions";
+import { AnyTodo } from "sardine-dashboard-typescript-definitions";
 import { ErrorText } from "../RulesModule/styles";
 import { generateSendInvite } from "../../utils/api";
 import { REGISTER_PATH } from "../../modulePaths";
@@ -24,9 +24,9 @@ const InviteEmailModal = ({
   handleClose,
   organisation,
 }: {
-  show: boolean;
+  show: AnyTodo;
   handleClose: () => void;
-  organisation: string | OrganizationUser;
+  organisation: string;
 }) => {
   const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -47,7 +47,7 @@ const InviteEmailModal = ({
       setIsLoading(true);
       const link = `${import.meta.env.VITE_APP_FRONTEND_HOST}${REGISTER_PATH}`;
 
-      await generateSendInvite(typeof organisation === "object" ? organisation.name : organisation, emails, link);
+      await generateSendInvite(organisation, emails, link);
 
       setIsLoading(false);
 
