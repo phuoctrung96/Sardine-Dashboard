@@ -5,7 +5,7 @@ import ChangeEmailModal from "../components/Settings/ChangeEmailModal";
 import Layout from "../components/Layout/Main";
 import { StyledContainer, StyledRow, StyledButton } from "../components/Settings/styles";
 import UsersList from "../components/Settings/UsersList";
-import InviteEmail from "../components/Settings/InviteEmailModal";
+import InviteEmailModal from "../components/Settings/InviteEmailModal";
 import { useUserStore } from "../store/user";
 const Settings = (): JSX.Element => {
   const [showChangeEmailModal, setShowChangeEmailModal] = useState(false);
@@ -39,18 +39,13 @@ const Settings = (): JSX.Element => {
         </StyledRow>
       </StyledContainer>
 
-      {/* {
-        organisation !== "all" ?
-          <> */}
       <StyledContainer fluid="md">
         <StyledButton onClick={() => setShowInviteEmail(true)}>Invite</StyledButton>
         <UsersList />
       </StyledContainer>
-      <InviteEmail show={showInviteEmail} handleClose={() => setShowInviteEmail(false)} organisation={organisation} />
-      {/* </>
-          :
-          ""
-      } */}
+
+      <InviteEmailModal show={showInviteEmail} handleClose={() => setShowInviteEmail(false)} organisation={organisation} />
+
       <ChangePasswordModal
         show={showChangePasswordModal}
         handleClose={() => setShowChangePasswordModal(false)}
