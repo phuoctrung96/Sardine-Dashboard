@@ -3,9 +3,9 @@ import chartLogo from "../../utils/logo/chartsOnly.svg";
 import downLogo from "../../utils/logo/down.svg";
 
 const StyledIcon = styled.div`
-display : flex;
-height  16px;
-width : 16px;
+  display: flex;
+  height: 16px;
+  width: 16px;
 `;
 
 const StyledOption = styled.div`
@@ -57,7 +57,12 @@ const DropwdownButton = (props: { clicked: () => void; item?: DropdownButtonItem
   const { clicked, item, title, id } = props;
   return (
     <StyledDropdownButton onClick={() => clicked()} data-tid={id}>
-      <StyledIcon>{item && item.icon ? <img alt="" src={chartLogo} /> : null}</StyledIcon>
+      {item && item.icon && (
+        <StyledIcon>
+          {" "}
+          <img alt="" src={chartLogo} /> : null
+        </StyledIcon>
+      )}
       <StyledOption>{item ? item.option : title}</StyledOption>
       <StyledIsSelected>
         <img alt="" src={downLogo} />
