@@ -8,13 +8,13 @@ import { REGISTER_PATH } from "../../modulePaths";
 
 // eslint-disable-next-line prefer-regex-literals
 
-interface IProps {
+interface InviteEmailProps {
   show: AnyTodo;
   handleClose: () => void;
   organisation: string;
 }
 
-const InviteEmailModal: React.FC<IProps> = ({ show, handleClose, organisation }) => {
+const InviteEmailModal: React.FC<InviteEmailProps> = ({ show, handleClose, organisation }) => {
   const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
