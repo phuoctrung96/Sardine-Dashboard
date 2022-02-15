@@ -7,31 +7,30 @@ import { generateSendInvite } from "../../utils/api";
 import { REGISTER_PATH } from "../../modulePaths";
 
 // eslint-disable-next-line prefer-regex-literals
-const validateEmail = (emailAddress: string) => new RegExp(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,15}/g).test(emailAddress);
 
-const validateEmails = (emails: AnyTodo) => {
-  let validated = true;
-  for (let i = 0; i < emails.length && validated; i += 1) {
-    if (!validateEmail(emails[i])) {
-      validated = false;
-    }
-  }
-  return validated;
-};
-
-const InviteEmailModal = ({
-  show,
-  handleClose,
-  organisation,
-}: {
+interface IProps {
   show: AnyTodo;
   handleClose: () => void;
   organisation: string;
-}) => {
+}
+
+const InviteEmailModal: React.FC<IProps> = ({ show, handleClose, organisation }) => {
   const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const { addToast } = useToasts();
+
+  const validateEmail = (emailAddress: string) => new RegExp(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,15}/g).test(emailAddress);
+
+  const validateEmails = (emails: AnyTodo) => {
+    let validated = true;
+    for (let i = 0; i < emails.length && validated; i += 1) {
+      if (!validateEmail(emails[i])) {
+        validated = false;
+      }
+    }
+    return validated;
+  };
 
   const sendInvite = async () => {
     // Split by line breaks, commma, and spaces
