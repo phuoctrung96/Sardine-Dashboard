@@ -42,7 +42,7 @@ const FlagPage = (): JSX.Element => {
       <StyledMainDiv>
         <StyledStickyNav id="flags" className="m-2">
           <StyledNavTitle className="w-100">
-            <StyledTitleName>Flags</StyledTitleName>
+            <StyledTitleName data-tid="title_flags">Flags</StyledTitleName>
             {isSuperAdmin && (
               <StyledDropdownDiv>
                 <OrganisationDropDown organisation={organisation} changeOrganisation={updateFilters} />

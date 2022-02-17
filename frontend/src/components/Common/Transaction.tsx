@@ -1,6 +1,7 @@
 import { DATE_FORMATS, TIME_UNITS } from "../../constants";
 import { formatTimestampInUtc } from "../../utils/timeUtils";
 import DataCard, { CardAttribute } from "./DataCard";
+import transactionIcon from "../../utils/logo/transactions_detail.svg";
 
 const HEADER = "Transaction";
 
@@ -44,7 +45,7 @@ const Transaction = (props: TransactionProps): JSX.Element => {
         "Indicates the type of transaction: buy, sell, deposit, withdraw, refund, payment, and topup. If you need other action type to be supported, please reach out sardine team.",
     },
   ];
-  return <DataCard header={HEADER} attributes={attributes} />;
+  return <DataCard header={HEADER} attributes={attributes} icon={<img src={transactionIcon} />} />;
 };
 
 export default Transaction;

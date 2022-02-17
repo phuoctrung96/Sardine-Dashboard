@@ -90,6 +90,23 @@ export type TimeUnit = typeof TIME_UNITS[keyof typeof TIME_UNITS];
 ```
 
 - Don't overuse `as`. You should use [type guards and type predicates](https://www.typescriptlang.org/docs/handbook/advanced-types.html#using-type-predicates). It is fine to use `as` in type guard functions.
+- Don't hard code svg in codebase, hard to maintain. Create as standalone file and import it.
+
+### CSS and styling
+
+#### DON'T
+
+- Don't use IDs in CSS. Please use class instead. Using IDs is similar to using `!important`. https://dev.to/clairecodes/reasons-not-to-use-ids-in-css-4ni4
+
+### Global state management
+
+#### DO
+
+- Use [Zustand](https://github.com/pmndrs/zustand) for global state management.
+
+#### DON'Ts
+
+- Don't directly use React context if you can implement it with Zustand.
 
 ### react-router
 
@@ -99,7 +116,6 @@ export type TimeUnit = typeof TIME_UNITS[keyof typeof TIME_UNITS];
 
 #### DON'Ts
 
-- Don't directly get search params from the URL by `const params = new URLSearchParams(location.search);`
 - Don't use old react-router v5 techniques. We are using react-router v6.
 - Don't overuse `state` in react-router. It is difficult to specify the type of the state. Please consider using the global state management like Zustand.
 

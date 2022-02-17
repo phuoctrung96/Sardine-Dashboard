@@ -1,13 +1,13 @@
 import { CHECKPOINTS } from "sardine-dashboard-typescript-definitions";
 
 const kCustomActions = "custom_actions";
-export const saveActionToStorage = (action: string) => {
+export const saveActionToStorage = (action: string): void => {
   const actions = localStorage.getItem(kCustomActions) || "";
   localStorage.setItem(kCustomActions, `${actions}${actions.length > 0 ? "," : ""}${action}`);
 };
 
 const kCustomActionlevels = "custom_levels";
-export const saveActionLevelToStorage = (value: string) => {
+export const saveActionLevelToStorage = (value: string): void => {
   const levels = localStorage.getItem(kCustomActionlevels) || "";
   localStorage.setItem(kCustomActionlevels, `${levels}${levels.length > 0 ? "," : ""}${value}`);
 };
@@ -95,9 +95,9 @@ export const supportedFunctions: FunctionChild[] = [
 
 const DURATION_VALUES = ["all", "min", "mins", "hrs", "day", "days", "mth", "mths"] as const;
 
-export const isWideScreen = () => window.screen.width > 800;
+export const isWideScreen = (): boolean => window.screen.width > 800;
 
-export const getHasOperator = (val: string) => {
+export const getHasOperator = (val: string): boolean => {
   let hasOperator = true;
 
   supportedFunctions.forEach((f) => {
@@ -144,10 +144,10 @@ const intChild = (title: string, description = "N/A", isDemo = true) =>
 const boolChild = (title: string, description = "N/A", isDemo = true) =>
   new ItemModel(title, [], "true", DATA_TYPES.bool, isDemo, description);
 
-export const stringChild = (title: string, description = "N/A", isDemo = false) =>
+export const stringChild = (title: string, description = "N/A", isDemo = false): ItemModel =>
   new ItemModel(title, [], '""', DATA_TYPES.string, isDemo, description);
 
-export const floatChild = (title: string, description = "N/A", isDemo = false) =>
+export const floatChild = (title: string, description = "N/A", isDemo = false): ItemModel =>
   new ItemModel(title, [], '""', DATA_TYPES.float, isDemo, description);
 
 const hide = (i: ItemModel): ItemModel => ({ ...i, isHidden: true });
@@ -156,7 +156,7 @@ export const OPERATORS = [">", ">=", "<", "<=", "==", "!=", " in ", " not in "] 
 
 export const ADD_CUSTOM = "+ add custom";
 export const DROP_DOWN_BG = "#EAEDF2";
-export const getRiskValues = () => {
+export const getRiskValues = (): string[] => {
   const levels = localStorage.getItem(kCustomActionlevels) || "";
   const customLevels = levels.length > 0 ? levels.split(",") : [];
 
@@ -181,23 +181,21 @@ export const isDropdownType = (type: string): type is DropdownType => type in DR
 
 export const BATCH_RULE_DURATIONS = ["7DAYS", "30DAYS", "60DAYS", "90DAYS"] as const;
 
-export const CHECK_POINTS = CHECKPOINTS;
-
-export type CheckPoint = typeof CHECK_POINTS[keyof typeof CHECK_POINTS];
+export type CheckPoint = typeof CHECKPOINTS[keyof typeof CHECKPOINTS];
 const CUSTOMER_CHECKPOINTS = [
-  CHECK_POINTS.Customer,
-  CHECK_POINTS.AML,
-  CHECK_POINTS.AMLBank,
-  CHECK_POINTS.AMLIssuer,
-  CHECK_POINTS.AMLCrypto,
-  CHECK_POINTS.Onboarding,
-  CHECK_POINTS.Payment,
-  CHECK_POINTS.Withdrawal,
-  CHECK_POINTS.ACH,
+  CHECKPOINTS.Customer,
+  CHECKPOINTS.AML,
+  CHECKPOINTS.AMLBank,
+  CHECKPOINTS.AMLIssuer,
+  CHECKPOINTS.AMLCrypto,
+  CHECKPOINTS.Onboarding,
+  CHECKPOINTS.Payment,
+  CHECKPOINTS.Withdrawal,
+  CHECKPOINTS.ACH,
 ];
 const arrayCustomerCheckpoints = CUSTOMER_CHECKPOINTS.map((c) => c.toLowerCase());
 
-const issuingCheckpoints = [CHECK_POINTS.IssuingRisk].map((c) => c.toLowerCase());
+const issuingCheckpoints = [CHECKPOINTS.IssuingRisk].map((c) => c.toLowerCase());
 
 const shouldVisible = (i: ItemModel, isDemoMode: boolean, isSuperAdmin: boolean): boolean => {
   if (isDemoMode) {
@@ -236,6 +234,7 @@ const customFeatures = (organization?: string) => {
   const wert = ["wert"];
   const relayfi = ["dev.relayfi", "relayfi"];
   const giveCrypto = ["trial.givecrypto.org", "dev.givecrypto.org", "givecrypto.org"];
+  const vault = ["dev.vault", "vault"];
   const featureLists = [
     {
       feature: newChild(
@@ -293,6 +292,34 @@ const customFeatures = (organization?: string) => {
       feature: newChild("phoneCarrierType", "", DATA_TYPES.string, "", false),
       organization: giveCrypto,
     },
+    {
+      feature: stringChild("Trulioo_businessName", ""),
+      organization: vault,
+    },
+    {
+      feature: stringChild("Trulioo_businessRegistrationNumber", ""),
+      organization: vault,
+    },
+    {
+      feature: stringChild("Trulioo_jurisdictionOfIncorporation", ""),
+      organization: vault,
+    },
+    {
+      feature: stringChild("Trulioo_address1", ""),
+      organization: vault,
+    },
+    {
+      feature: stringChild("Trulioo_city", ""),
+      organization: vault,
+    },
+    {
+      feature: stringChild("Trulioo_stateProvinceCode", ""),
+      organization: vault,
+    },
+    {
+      feature: stringChild("Trulioo_postalCode", ""),
+      organization: vault,
+    },
   ];
   const org = (organization || "").toLowerCase();
   const features: ItemModel[] = featureLists
@@ -313,7 +340,12 @@ const customFeatures = (organization?: string) => {
 };
 
 // Fatures to prepare rule condition
-export const getRulesData = (isDemoMode: boolean, checkpoint: string, isSuperAdmin: boolean, organization?: string) => {
+export const getRulesData = (
+  isDemoMode: boolean,
+  checkpoint: string,
+  isSuperAdmin: boolean,
+  organization?: string
+): ItemModel[] => {
   const DT = DATA_TYPES;
 
   const BankAccountAddress = [
@@ -615,7 +647,8 @@ export const getRulesData = (isDemoMode: boolean, checkpoint: string, isSuperAdm
       newChild("Asset", "BTC", DT.string, "Asset eg. BTC", false),
       intChild("UsersUsingCryptoAddressCount", "UsersUsingCryptoAddressCount number of users using the crypto address", false),
       newChild("ReasonCodes", `["address category"]`, DT.stringarray, "ReasonCodes  eg. address category", false),
-      boolChild("IsBlocklisted", "crypto address is blocklisted", false),
+      boolChild("IsBlocklisted", "crypto address is blocklisted by you", false),
+      boolChild("IsBlocklistedByNetwork", "crypto address is blocklisted by any merchant in sardine network", false),
     ]),
 
     stringChild("Type", "Type of payment method"),
@@ -672,7 +705,8 @@ export const getRulesData = (isDemoMode: boolean, checkpoint: string, isSuperAdm
           "Reputation of device based on IP address history and fraud feedback data",
           false
         ),
-        boolChild("IsBlocklisted", "Manually marked as bad from our dashboard", false),
+        boolChild("IsBlocklisted", "device ID is blocklisted by you", false),
+        boolChild("IsBlocklistedByNetwork", "device ID is blocklisted by any merchant in sardine network", false),
         boolChild("IsFraudulent", "Reported as fraudulent via /feedback API by any of merchant in sardine network", false),
         boolChild("IsAllowlisted", "User is allowlisted"),
         newChild("RiskLevel", "85", DT.int, "RiskLevel  of the current session"),
@@ -1025,7 +1059,7 @@ export const getRulesData = (isDemoMode: boolean, checkpoint: string, isSuperAdm
         "Number of outgoing transactions (money is going out from user's payment method eg buy and deposit)"
       ),
 
-      boolChild("IsBlocklisted", "Manually marked as bad from our dashboard", false),
+      boolChild("IsBlocklisted", "User ID is blocklisted", false),
       boolChild("IsFraudulent", "True if fraud feedback is sent (Card Not Present or ACH) via our /feedbacks AP", false),
       intChild("CountCryptoAddresses", "Count of all crypto addresses user has deposited from or withdrawn to"),
       intChild(
@@ -1123,7 +1157,8 @@ export const getRulesData = (isDemoMode: boolean, checkpoint: string, isSuperAdm
       intChild("DomainRelevantInfoId", "Id for email's domain relevant information", false),
       newChild("RiskBand", "1", DT.int, "Riskiness of email", false),
       stringChild("ReasonCode", "Reason codes related to this email"),
-      boolChild("IsBlocklisted", "email address is blocklisted", false),
+      boolChild("IsBlocklisted", "email address is blocklisted by you", false),
+      boolChild("IsBlocklistedByNetwork", "email address is blocklisted by any merchant in sardine network", false),
     ]),
     new ItemModel("Phone", [
       stringChild("PhoneNumber", "PhoneNumber"),
@@ -1147,7 +1182,8 @@ export const getRulesData = (isDemoMode: boolean, checkpoint: string, isSuperAdm
       boolChild("DOBMatch", "DoB provided matched the DoB returned by phone intelligence provider", false),
       boolChild("Last4Match", "Last 4 of Tax-Id matched with Tax-Id returned by phone intelligence provider", false),
       boolChild("SSNMatch", "SSN matched with SSN returned by phone intelligence provider", false),
-      boolChild("IsBlocklisted", "phone is blocklisted", false),
+      boolChild("IsBlocklisted", "phone is blocklisted by you", false),
+      boolChild("IsBlocklistedByNetwork", "phone is blocklisted by any merchant in sardine network", false),
     ]),
 
     new ItemModel("Sanction", [
@@ -1356,7 +1392,7 @@ export const getReasonCodeData = (): Reason[] => [
   },
 ];
 
-export const getActionData = (isSuperAdmin: boolean, checkpoint: string) => {
+export const getActionData = (isSuperAdmin: boolean, checkpoint: string): string[] => {
   const actions = localStorage.getItem(kCustomActions) || "";
   const customActions = actions.length > 0 ? actions.split(",") : [];
 
@@ -1387,7 +1423,7 @@ export const getActionData = (isSuperAdmin: boolean, checkpoint: string) => {
   return ["behaviorBiometricLevel", "riskLevel"].concat(customActions).sort();
 };
 
-export const isDurationValue = (s: string) =>
+export const isDurationValue = (s: string): boolean =>
   DURATION_VALUES.filter((d) => s.replace(/[0-9]/g, "").toLowerCase() === d).length > 0;
 
 export const rulesForDataDictionary = (rules: ItemModel[], parentTitle: string, isDemo = false): ItemModel[] => {
@@ -1406,6 +1442,6 @@ export const rulesForDataDictionary = (rules: ItemModel[], parentTitle: string, 
     }
   });
 
-  const data = isDemo ? rulesData : rulesData.filter((data) => data.isDemo === false);
+  const data = isDemo ? rulesData : rulesData.filter((ruleData) => ruleData.isDemo === false);
   return data;
 };

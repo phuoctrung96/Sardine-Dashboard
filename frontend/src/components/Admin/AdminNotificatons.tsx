@@ -112,7 +112,9 @@ const AdminNotificatons: React.FC = () => {
 
   return (
     <Layout>
-      <Title style={{ margin: 30, fontSize: 20 }}>Send email notification to clients</Title>
+      <Title data-tid="title_notifications" style={{ margin: 30, fontSize: 20 }}>
+        Send email notification to clients
+      </Title>
       <TableWrapper>
         <FormControl
           type="text"

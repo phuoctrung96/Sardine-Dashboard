@@ -67,18 +67,18 @@ const StyledDivWithNav = styled.div`
 `;
 
 const StyledDrawer = styled.div<{ open: boolean }>`
-display : flex;
-@media only screen and (min-width: 700px){
-  min-width : 240px;
-}
-@media only screen and (max-width: 700px){
-  display : ${(props) => (props.open ? "flex" : "none")};
-  position : ${(props) => (props.open ? "fixed" : "")};
-  height : 100vh;
-  overflow-x : auto
-  transition : left 0.5s ease;
-  // transform : ${(props) => (props.open ? "translateX(0)" : "translateX(-100%)")}
-}
+  display: flex;
+  @media only screen and (min-width: 700px) {
+    min-width: 250px;
+  }
+  @media only screen and (max-width: 700px) {
+    display: ${(props) => (props.open ? "flex" : "none")};
+    position: ${(props) => (props.open ? "fixed" : "")};
+    height: 100vh;
+    overflow-x: auto;
+    transition: left 0.5s ease;
+    // transform : ${(props) => (props.open ? "translateX(0)" : "translateX(-100%)")}
+  }
 `;
 
 const StyledImg = styled.img`

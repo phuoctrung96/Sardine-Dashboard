@@ -8,7 +8,7 @@ import { isErrorWithResponseStatus } from "utils/errorUtils";
 import * as Sentry from "@sentry/react";
 import { CUSTOMERS_PATH, SESSION_DETAILS_PATH } from "modulePaths";
 import { useCookies } from "react-cookie";
-import { selectIsAdmin, selectIsSuperAdmin, useUserStore } from "store/user";
+import { selectIsAdmin, useUserStore } from "store/user";
 import { getClientFromQueryParams } from "utils/getClientFromQueryParams";
 import Layout from "../components/Layout/Main";
 import { StoreCtx } from "../utils/store";
@@ -295,14 +295,11 @@ const Customers = (): JSX.Element => {
   // Datastore page cursor for sessions
   const [dsPageCursor, setDSPageCursor] = useState("start");
 
-  const { isAdmin, organisationFromUserStore, isSuperAdmin } = useUserStore((state: AnyTodo) => ({
+  const { isAdmin, organisationFromUserStore } = useUserStore((state) => ({
     isAdmin: selectIsAdmin(state),
-    isSuperAdmin: selectIsSuperAdmin(state),
     organisationFromUserStore: state.organisation,
   }));
-  const organisation =
-    cookies.organization ||
-    (isAdmin ? getClientFromQueryParams(search, isSuperAdmin, organisationFromUserStore) : organisationFromUserStore);
+  const organisation = getClientFromQueryParams(search, isAdmin, organisationFromUserStore, cookies.organization);
 
   const changeOrganisation = (org: string) => {
     navigate(`${CUSTOMERS_PATH}?${constructQueryParams(filters, startDate, endDate, org)}`);
@@ -348,6 +345,10 @@ const Customers = (): JSX.Element => {
       field: "customer_risk_level",
       grouping: false,
       render: (rowData: AnyTodo) => <Badge title={rowData.customer_risk_level || "unknown"} />,
+    },
+    {
+      title: "Date Time",
+      field: "datetime",
     },
     {
       title: "Flow",

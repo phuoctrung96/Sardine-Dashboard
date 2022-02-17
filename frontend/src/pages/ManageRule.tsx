@@ -5,6 +5,7 @@ import { useGTMDispatch } from "@elgorditosalsero/react-gtm-hook";
 import { CSVReader } from "react-papaparse";
 import {
   AnyTodo,
+  CHECKPOINTS,
   getSuccessResult,
   isFailure,
   RuleActionTag,
@@ -20,7 +21,7 @@ import { CLIENT_QUERY_FIELD } from "utils/constructFiltersQueryParams";
 import { captureException, captureFailure, isErrorWithResponseData } from "utils/errorUtils";
 import { replaceAll, replaceAllSpacesWithUnderscores } from "utils/stringUtils";
 import { useToasts } from "react-toast-notifications";
-import { RULES_PATH } from "modulePaths";
+import { DATA_DICTIONARY_PATH, RULES_PATH } from "modulePaths";
 import { useQueryClient } from "react-query";
 import {
   createRule,
@@ -84,7 +85,6 @@ import {
   getRiskValues,
   DROP_DOWN_BG,
   getActionData,
-  CHECK_POINTS,
   DATA_TYPES,
   saveActionToStorage,
   FUNCTIONS,
@@ -140,7 +140,7 @@ const LinkToDictionary = ({
       id="rule_editor_list_of_available_fields"
       style={style}
       onClick={() => {
-        navigate(`/data_dictionary${isDemoMode ? "?demo" : ""}`);
+        navigate(`${DATA_DICTIONARY_PATH}${isDemoMode ? "?demo" : ""}`);
       }}
     >
       <Image src={icon} style={{ width: 20, height: 20, marginRight: 10, marginLeft: 10 }} />
@@ -397,11 +397,11 @@ const DropdownContainer = ({
     let result: JSX.Element[] = [];
 
     if (typeRuleOrCheckpoint === DROPDOWN_TYPES.Rules && rulesData.length > 0) {
-      result = rulesData.map((element) => (
+      result = rulesData.map((element, elementIndex) => (
         <DropDownLi
           key={element.title}
           className={`rule-editor-dropdown-content-${typeRuleOrCheckpoint}-li`}
-          id={`rule_editor_dropdown_content_${typeRuleOrCheckpoint}_li`}
+          id={`rule_editor_dropdown_content_${typeRuleOrCheckpoint}_li_${elementIndex}`}
         >
           <SubDropbtn
             onClick={() => handleRuleClick(element.title, typeRuleOrCheckpoint, pIndex, idx)}
@@ -417,7 +417,15 @@ const DropdownContainer = ({
             {element.items.length > 0 ? <IconArrow className="dropdown" isSelected={selectedSection === element.title} /> : null}
           </SubDropbtn>
           {selectedSection === element.title && (
-            <SubDropDownContent style={{ top: 0, display: "block" }} className="dropdown">
+            <SubDropDownContent
+              style={{
+                top:
+                  document.getElementById(`rule_editor_dropdown_content_${typeRuleOrCheckpoint}_li_${elementIndex}`)?.offsetTop ||
+                  0,
+                display: "block",
+              }}
+              className="dropdown"
+            >
               {" "}
               {renderDropDownItem(element.items, typeRuleOrCheckpoint, pIndex, idx, element.title)}
             </SubDropDownContent>
@@ -690,20 +698,20 @@ const ManageRule: React.FC = () => {
   const [name, setName] = useState("");
   const [visibleDropDown, setVisibleDropDown] = useState("");
   const [checkpoints, setCheckpoints] = useState<(CheckPoint | typeof ADD_CUSTOM | string)[]>([
-    CHECK_POINTS.ACH,
-    CHECK_POINTS.AML,
-    CHECK_POINTS.AMLBank,
-    CHECK_POINTS.AMLCrypto,
-    CHECK_POINTS.AMLIssuer,
-    CHECK_POINTS.Customer,
-    CHECK_POINTS.Devices,
-    CHECK_POINTS.Login,
-    CHECK_POINTS.Onboarding,
-    CHECK_POINTS.Payment,
-    CHECK_POINTS.Withdrawal,
-    CHECK_POINTS.IssuingRisk,
+    CHECKPOINTS.ACH,
+    CHECKPOINTS.AML,
+    CHECKPOINTS.AMLBank,
+    CHECKPOINTS.AMLCrypto,
+    CHECKPOINTS.AMLIssuer,
+    CHECKPOINTS.Customer,
+    CHECKPOINTS.Devices,
+    CHECKPOINTS.Login,
+    CHECKPOINTS.Onboarding,
+    CHECKPOINTS.Payment,
+    CHECKPOINTS.Withdrawal,
+    CHECKPOINTS.IssuingRisk,
   ]);
-  const [checkpoint, setCheckpoint] = useState<CheckPoint | typeof ADD_CUSTOM | string>(CHECK_POINTS.AML);
+  const [checkpoint, setCheckpoint] = useState<CheckPoint | typeof ADD_CUSTOM | string>(CHECKPOINTS.AML);
   const [isCustomAction, setIsCustomAction] = useState(false);
   const [customRuleOption, setCustomRuleOption] = useState("");
   const [environment, setEnvironment] = useState<RuleEnvMode>(RULE_ENV_MODES.Shadow);
@@ -724,7 +732,7 @@ const ManageRule: React.FC = () => {
   const [rulesData, setRulesData] = useState<ItemModel[]>([]);
   const [reasonData, setReasonData] = useState<Reason[]>([...getReasonCodeData(), { title: ADD_CUSTOM, items: [] }]);
 
-  const [actionsData, setActionsData] = useState(getActionData(isSuperAdmin, CHECK_POINTS.Customer));
+  const [actionsData, setActionsData] = useState(getActionData(isSuperAdmin, CHECKPOINTS.Customer));
 
   const [queueData, setQueueData] = useState<AnyTodo[]>([]);
   const [customFunctionIndexes, setCustomFunctionIndexes] = useState<number[]>([]);
@@ -1353,7 +1361,7 @@ const ManageRule: React.FC = () => {
       ) : (
         <div
           className={`rule-editor-dropdown-subcontent-${type}-li`}
-          id={`rule_editor_dropdown_subcontent_${type}-li_${item.title}`}
+          id={`rule_editor_dropdown_subcontent_${type}_li_${item.title}`}
           key={item.title}
         >
           <SubDropbtn
@@ -1387,7 +1395,14 @@ const ManageRule: React.FC = () => {
             ) : null}
           </SubDropbtn>
           {selectedSubSections.includes(item.title) && (
-            <SubDropDownContent style={{ top: 0, left: 280, display: "block" }} className="dropdown">
+            <SubDropDownContent
+              style={{
+                top: document.getElementById(`rule_editor_dropdown_subcontent_${type}_li_${item.title}`)?.offsetTop || 0,
+                left: 280,
+                display: "block",
+              }}
+              className="dropdown"
+            >
               {renderDropDownItem(item.items, type, parentIndex, index, `${parentTitle}_${item.title}`)}
             </SubDropDownContent>
           )}
@@ -2177,7 +2192,7 @@ const ManageRule: React.FC = () => {
 
             {renderEnvironment()}
 
-            {![CHECK_POINTS.Devices as string].includes(checkpoint.toLowerCase()) && clientId !== RULE_ADMIN_CLIENT_ID && (
+            {![CHECKPOINTS.Devices as string].includes(checkpoint.toLowerCase()) && clientId !== RULE_ADMIN_CLIENT_ID && (
               <Container style={{ paddingTop: 20 }}>
                 <Form.Check
                   className="rule-editor-check-case-management"

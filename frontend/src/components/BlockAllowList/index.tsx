@@ -2,7 +2,6 @@ import { useContext, useEffect, useState, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { FormControl, Image, Button, Badge } from "react-bootstrap";
 import { captureException } from "utils/errorUtils";
-import { useCookies } from "react-cookie";
 import { selectIsAdmin, useUserStore } from "store/user";
 import Layout from "../Layout/Main";
 import { StoreCtx } from "../../utils/store";
@@ -57,8 +56,6 @@ const listTypes = {
 const BlockAllowList = (): JSX.Element => {
   const { state, dispatch } = useContext(StoreCtx);
   const navigate = useNavigate();
-
-  const [cookies] = useCookies(["organization"]);
 
   const [blocklistData, setBlocklistData] = useState<BlocklistProps[]>([]);
   const [allowlistData, setAllowlistData] = useState<BlocklistProps[]>([]);
@@ -167,9 +164,7 @@ const BlockAllowList = (): JSX.Element => {
           setListType(bl.selectedTab);
         }
 
-        if (cookies.organization) {
-          setOrganisation(cookies.organization);
-        } else if (bl.organisation) {
+        if (bl.organisation) {
           setOrganisation(bl.organisation);
         }
 
@@ -395,7 +390,7 @@ const BlockAllowList = (): JSX.Element => {
       <StyledMainDiv>
         <StyledStickyNav id="device-info" style={{ width: "inherit", marginBottom: 10 }}>
           <StyledNavTitle style={{ width: "100%" }}>
-            <StyledTitleName> Blocklist/Allowlist</StyledTitleName>
+            <StyledTitleName data-tid="title_block_allow_list">Blocklist/Allowlist</StyledTitleName>
             <StyledDropdownDiv>
               {isAdmin ? (
                 <>

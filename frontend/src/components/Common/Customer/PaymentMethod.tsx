@@ -1,4 +1,5 @@
 import DataCard, { CardAttribute } from "../DataCard";
+import creditCardIcon from "../../../utils/logo/credit_card.svg";
 
 const HEADER = "Payment Method";
 
@@ -171,7 +172,11 @@ const PaymentMethod = (props: PaymentMethodProps): JSX.Element => {
     });
   }
 
-  return attributes.length > 0 ? <DataCard header={HEADER} attributes={attributes} /> : <div />;
+  return attributes.length > 0 ? (
+    <DataCard header={HEADER} attributes={attributes} icon={<img src={creditCardIcon} />} />
+  ) : (
+    <div />
+  );
 };
 
 export default PaymentMethod;

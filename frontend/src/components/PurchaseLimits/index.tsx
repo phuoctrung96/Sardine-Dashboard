@@ -76,14 +76,14 @@ const PurchaseLimitList = () => {
     });
 
   const OnRowAdd = (newData: PurchaseLimitRow) =>
-    new Promise<void>((resolve, reject) => {
+    new Promise<void>((_resolve, reject) => {
       addPurchaseLimit(organisation, newData)
         .then((resolve) => {
           getData()
             .then(resolve)
             .catch((err) => Sentry.captureException(err));
         })
-        .catch((r) => {
+        .catch((_) => {
           reject();
         });
     });
@@ -146,7 +146,7 @@ const PurchaseLimitList = () => {
       <StyledMainDiv>
         <StyledStickyNav id="device-info" style={{ width: "inherit", marginBottom: 10 }}>
           <StyledNavTitle style={{ width: "100%" }}>
-            <StyledTitleName> Purchase Limit</StyledTitleName>
+            <StyledTitleName data-tid="title_purchase_limit">Purchase Limit</StyledTitleName>
             <StyledDropdownDiv style={{ marginRight: "50px" }}>
               {role === SARDINE_ADMIN ? (
                 <div style={{ zIndex: 20 }}>

@@ -1,6 +1,7 @@
 import { KEY_TAX_ID_DETAILS } from "components/Customers/UserView";
 import React from "react";
 import DataCard, { CardAttribute } from "../DataCard";
+import taxDetailIcon from "../../../utils/logo/tax_detail.svg";
 
 interface CustomerTaxDetailsProps {
   abuseScore: number;
@@ -118,7 +119,7 @@ const CustomerTaxDetails = (props: CustomerTaxDetailsProps): JSX.Element => {
     },
   ];
 
-  return <DataCard header={KEY_TAX_ID_DETAILS} attributes={attributes} />;
+  return <DataCard header={KEY_TAX_ID_DETAILS} attributes={attributes} icon={<img src={taxDetailIcon} />} />;
 };
 
 export default CustomerTaxDetails;

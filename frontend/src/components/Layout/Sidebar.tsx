@@ -1,9 +1,8 @@
 import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import moment from "moment"; // TODO: Stop using moment.js because it is obsolete.
-import { Link, useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import styled from "styled-components";
-import { Badge, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Badge } from "react-bootstrap";
 import { WEBHOOK_PATH } from "components/Webhooks";
 import { SAR_PATH } from "components/SAR";
 import { INTEGRATION_STATUS_PATH } from "components/IntegrationStatus";
@@ -17,198 +16,67 @@ import {
   QUEUES_PATH,
   FRAUD_SCORE_PATH,
   CUSTOMERS_PATH,
+  LOGIN_PATH,
+  PURCHASE_LIMIT_PATH,
+  ROOT_PATH,
+  ADMIN_PATH,
+  SETTINGS_PATH,
   RULES_PATH,
 } from "modulePaths";
-import { Line } from "components/RulesModule/styles";
-import { useUserStore, selectIsAdmin, selectIsSuperAdmin } from "store/user";
+import { useUserStore } from "store/user";
 import { CLIENT_QUERY_FIELD } from "utils/constructFiltersQueryParams";
 import { DATE_FORMATS, ORGANIZATION_QUERY_FIELD } from "../../constants";
 import firebaseClient from "../../utils/firebase";
 import { captureException } from "../../utils/errorUtils";
-import { replaceAllSpacesWithUnderscores } from "../../utils/stringUtils";
 import PopUp from "../Common/PopUp";
-import deviceIntelligence from "../../utils/logo/deviceIntelligence.svg";
-import adminLogo from "../../utils/logo/admin.svg";
-import transactionsLogo from "../../utils/logo/transactions.svg";
-import dashboardLogo from "../../utils/logo/dashboard.svg";
-import darkLogo from "../../utils/logo/Dark.svg";
-import rulesLogos from "../../utils/logo/rules.svg";
-import settingsLogo from "../../utils/logo/settings.svg";
-import logoutIcon from "../../utils/logo/logout.svg";
-import docsLogo from "../../utils/logo/docs.svg";
-import customers from "../../utils/logo/customer.svg";
-import blocklist from "../../utils/logo/blocklist.svg";
-import queuesLogo from "../../utils/logo/queues.svg";
-import infoLogo from "../../utils/logo/info.svg";
+import {
+  SidebarMainDiv,
+  StyledIconTitle,
+  SidebarLine,
+  StyledSidebarTitle,
+  StyledSidebarMenu,
+  StyledItemIcon,
+  StyledSubItem,
+  StyledUser,
+  UserProfilePic,
+  UserName,
+  StyledUpcomingLink,
+  StyledUpcomingLinkOut,
+  StyledUpcoming,
+  StyledLinkText,
+  Image,
+  ImageLarge,
+} from "./sidebarStyles";
+import { HoverToggleDiv } from "../Common/HoverToggleDiv";
 
-const SideBarMainDiv = styled.div`
-  position: fixed;
-  width: 250px;
-  height: 100vh;
-  left: 0px;
-  top: 0px;
-  background: #ffffff;
-`;
-
-const StyledLogoTitle = styled.div`
-  margin-top: 26px;
-  margin-left: 20px;
-  display: flex;
-  @media (max-width: 700px) {
-    margin-top: 16px;
-  }
-`;
-
-const StyledTitle = styled.div`
-  align-self: center;
-  font-family: IBM Plex Sans;
-  font-style: normal;
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 18px;
-  font-feature-settings: "ss02" on;
-
-  /* Primary */
-
-  color: #001932;
-  margin-left: 12px;
-`;
-
-const StyledMenu = styled.div`
-  margin: 45px 0px 125px 24px;
-  overflow: auto;
-  height: -webkit-fill-available;
-  ::-webkit-scrollbar {
-    width: 0px;
-  }
-`;
-
-const MenuItem = styled.div<{ index?: number; isActive?: boolean }>`
-  height: ${(props) => (props.index === 0 ? "36px" : "24px")};
-  margin-bottom: 4px;
-  display: flex;
-  font-family: IBM Plex Sans;
-  font-style: normal;
-  font-weight: normal;
-  font-size: ${(props) => (props.index === 0 ? "14px" : "12px")};
-  line-height: 16px;
-  /* identical to box height */
-
-  font-feature-settings: "ss02" on;
-
-  /* Primary */
-
-  color: var(--dark-14);
-  align-items: center;
-  border-right: ${(props) => (props.isActive ? "2px solid #37C2F2" : "")};
-  cursor: pointer;
-`;
-
-const StyledItemLogo = styled.div`
-  width: 16px;
-  height: 16px;
-  marign: auto;
-`;
-
-const StyledSubItem = styled.div`
-  height: 16px;
-  margin-left: 16px;
-`;
-
-const StyledUser = styled.div`
-  width: 240px;
-  background: #ffffff;
-  height: 68px;
-  align-items: center;
-  display: flex;
-  bottom: 0;
-  position: fixed;
-  @media only screen and (max-width: 700px) {
-  }
-`;
-
-const UserProfilePic = styled.div`
-  height: 36px;
-  width: 36px;
-  border-radius: 18px;
-  margin: 16px 12px 16px 16px;
-  background-color: #909bad;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
-  font-weight: 700;
-`;
-
-const UserName = styled.div`
-  max-width: 113px;
-  overflow: hidden;
-  left: 64px;
-  height: 20px;
-  font-family: IBM Plex Sans;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 14px;
-  line-height: 140%;
-  /* identical to box height, or 20px */
-
-  font-feature-settings: "ss02" on;
-
-  /* Secondary */
-
-  color: #909bad;
-`;
-
-const StyledLogout = styled.img`
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  left: 208px;
-`;
-
-const StyledUpcomingDiv = styled.div`
-  display: flex;
-  height: 30px;
-  margin-top: 15px;
-  align-items: center;
-
-  font-family: IBM Plex Sans;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 14px;
-  line-height: 140%;
-  font-feature-settings: "ss02" on;
-
-  color: #325078;
-`;
-
-const StyledLink = styled(Link)`
-  color: var(--dark-14);
-  font-size: 14px;
-  line-height: 18px;
-  text-decoration: none !important;
-`;
-
-const SettingsIcon = styled(Link)`
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  left: 180px;
-  top: 27px;
-  img {
-    vertical-align: top;
-  }
-`;
-
-const Image = styled.img`
-  width: 18px;
-  height: 18px;
-`;
-
-interface SuperAdminMenuProps {
-  title: string;
-  path: string;
-}
+import deviceIntelligence from "../../utils/logo/sidebar/ic_devices.svg";
+import deviceIntelligenceActive from "../../utils/logo/sidebar/ic_devices_active.svg";
+import adminIcon from "../../utils/logo/sidebar/ic_admin.svg";
+import adminIconActive from "../../utils/logo/sidebar/ic_admin_active.svg";
+import transactionsIcon from "../../utils/logo/sidebar/ic_transactions.svg";
+import transactionsIconActive from "../../utils/logo/sidebar/ic_transactions_active.svg";
+import dashboardIcon from "../../utils/logo/sidebar/ic_dashboard.svg";
+import dashboardIconActive from "../../utils/logo/sidebar/ic_dashboard_active.svg";
+import sardineIconNormal from "../../utils/logo/sidebar/ic_sardine_logo_normal.svg";
+import sardineIconActive from "../../utils/logo/sidebar/ic_sardine_logo_active.svg";
+import rulesIcons from "../../utils/logo/sidebar/ic_rules.svg";
+import rulesIconsActive from "../../utils/logo/sidebar/ic_rules_active.svg";
+import settingsIcon from "../../utils/logo/sidebar/ic_setting.svg";
+import settingsIconActive from "../../utils/logo/sidebar/ic_setting_active.svg";
+import logoutIcon from "../../utils/logo/sidebar/ic_logout.svg";
+import logoutIconActive from "../../utils/logo/sidebar/ic_logout_active.svg";
+import docsIcon from "../../utils/logo/sidebar/ic_doc.svg";
+import docsIconActive from "../../utils/logo/sidebar/ic_doc_active.svg";
+import customers from "../../utils/logo/sidebar/ic_users.svg";
+import customersActive from "../../utils/logo/sidebar/ic_users_active.svg";
+import blocklist from "../../utils/logo/sidebar/ic_blacklist.svg";
+import blocklistActive from "../../utils/logo/sidebar/ic_blacklist_active.svg";
+import queuesIcon from "../../utils/logo/sidebar/ic_queue.svg";
+import queuesIconActive from "../../utils/logo/sidebar/ic_queue_active.svg";
+import infoIcon from "../../utils/logo/sidebar/ic_info.svg";
+import infoIconActive from "../../utils/logo/sidebar/ic_info_active.svg";
+import { SuperAdminVisible } from "../Auth/SuperAdminVisible";
+import { AdminVisible } from "../Auth/AdminVisible";
 
 const filterStartDate = moment().subtract({ days: 1 }).utc().format(DATE_FORMATS.DATETIME);
 const filterEndDate = moment().utc().format(DATE_FORMATS.DATETIME);
@@ -217,56 +85,312 @@ const diDefaultPath = `${FRAUD_SCORE_PATH}?session_risk=high&start_date=${filter
 
 const ciDefaultPath = `${CUSTOMERS_PATH}?risk_level=high&start_date=${filterStartDate}&end_date=${filterEndDate}`;
 
+const superAdminMenuProps = [
+  {
+    title: "Integration Status",
+    tid: "sidebar_link_sardine_admin_integration_status",
+    path: INTEGRATION_STATUS_PATH,
+    activePath: INTEGRATION_STATUS_PATH,
+    normalIcon: infoIcon,
+    activeIcon: infoIconActive,
+    badge: null,
+  },
+  {
+    title: "Flags",
+    tid: "sidebar_link_sardine_admin_flags",
+    path: FEATURE_FLAGS_PATH,
+    activePath: FEATURE_FLAGS_PATH,
+    normalIcon: docsIcon,
+    activeIcon: docsIconActive,
+    badge: null,
+  },
+  {
+    title: "Purchase Limit",
+    tid: "sidebar_link_sardine_admin_purchase_limit",
+    path: PURCHASE_LIMIT_PATH,
+    activePath: PURCHASE_LIMIT_PATH,
+    normalIcon: docsIcon,
+    activeIcon: docsIconActive,
+    badge: null,
+  },
+  {
+    title: "Webhooks",
+    tid: "sidebar_link_sardine_admin_webhooks",
+    path: WEBHOOK_PATH,
+    activePath: WEBHOOK_PATH,
+    normalIcon: docsIcon,
+    activeIcon: docsIconActive,
+    badge: null,
+  },
+  {
+    title: "Send Notification",
+    tid: "sidebar_link_sardine_admin_send_notification",
+    path: NOTIFICATIONS_PATH,
+    activePath: NOTIFICATIONS_PATH,
+    normalIcon: docsIcon,
+    activeIcon: docsIconActive,
+    badge: null,
+  },
+] as const;
+
+const MenuItem = ({
+  image,
+  title,
+  tid,
+  badge,
+}: {
+  image: JSX.Element;
+  title: string;
+  tid: string;
+  badge: JSX.Element | null;
+}): JSX.Element => (
+  <>
+    <StyledItemIcon>{image}</StyledItemIcon>
+    <StyledSubItem>
+      <StyledLinkText data-tid={tid}>{title}</StyledLinkText>
+    </StyledSubItem>
+    {badge}
+  </>
+);
+
+const MenuLink = ({
+  path,
+  className,
+  image,
+  title,
+  tid,
+  badge,
+}: {
+  path: string;
+  className: string;
+  image: JSX.Element;
+  title: string;
+  tid: string;
+  badge: JSX.Element | null;
+}): JSX.Element => (
+  <StyledUpcomingLink to={path} key={path} className={className}>
+    <MenuItem image={image} title={title} tid={tid} badge={badge} />
+  </StyledUpcomingLink>
+);
+
+const MenuButton = ({
+  image,
+  onClick,
+  title,
+  tid,
+  badge,
+}: {
+  image: JSX.Element;
+  onClick: () => void;
+  title: string;
+  tid: string;
+  badge: JSX.Element | null;
+}): JSX.Element => (
+  <StyledUpcoming onClick={onClick}>
+    <MenuItem image={image} title={title} tid={tid} badge={badge} />
+  </StyledUpcoming>
+);
+
+const HoverToggleMenuLink = ({
+  path,
+  activePath,
+  activeIcon,
+  normalIcon,
+  title,
+  tid,
+  badge,
+}: {
+  path: string;
+  activePath: string;
+  activeIcon: string;
+  normalIcon: string;
+  title: string;
+  tid: string;
+  badge: JSX.Element | null;
+}): JSX.Element => {
+  const location = useLocation();
+  const { pathname } = location;
+  const isActive = pathname === activePath;
+  const className = isActive ? "active" : "";
+  return (
+    <HoverToggleDiv
+      componentOnHovered={
+        <MenuLink
+          path={path}
+          className={className}
+          title={title}
+          image={<Image src={activeIcon} alt={title} />}
+          tid={tid}
+          badge={badge}
+        />
+      }
+      componentOnNotHovered={
+        <MenuLink
+          path={path}
+          className={className}
+          title={title}
+          image={<Image src={isActive ? activeIcon : normalIcon} alt={title} />}
+          tid={tid}
+          badge={badge}
+        />
+      }
+    />
+  );
+};
+
+const HoverToggleMenuButton = ({
+  activeIcon,
+  onClick,
+  normalIcon,
+  title,
+  tid,
+  badge,
+}: {
+  activeIcon: string;
+  onClick: () => void;
+  normalIcon: string;
+  title: string;
+  tid: string;
+  badge: JSX.Element | null;
+}): JSX.Element => (
+  <HoverToggleDiv
+    componentOnHovered={
+      <MenuButton title={title} onClick={onClick} image={<Image src={activeIcon} alt={title} />} tid={tid} badge={badge} />
+    }
+    componentOnNotHovered={
+      <MenuButton title={title} onClick={onClick} image={<Image src={normalIcon} alt={title} />} tid={tid} badge={badge} />
+    }
+  />
+);
+
+const IconTitle = ({ src }: { src: string }): JSX.Element => {
+  const location = useLocation();
+  const { pathname } = location;
+  return (
+    <StyledIconTitle to={ROOT_PATH} className={pathname === ROOT_PATH ? "active" : ""}>
+      <ImageLarge alt="logo" src={src} />
+      <StyledSidebarTitle>Sardine</StyledSidebarTitle>
+    </StyledIconTitle>
+  );
+};
+
+const DocsLink = ({ icon }: { icon: string }): JSX.Element => (
+  <StyledUpcomingLinkOut href="https://sardine:apidoc@docs.sardine.ai">
+    <Image alt="docs" src={icon} />
+    <StyledSubItem>
+      <StyledLinkText data-tid="sidebar_link_docs">Docs</StyledLinkText>
+    </StyledSubItem>
+  </StyledUpcomingLinkOut>
+);
+
+const HoverToggleDocsLink = (): JSX.Element => (
+  <HoverToggleDiv componentOnHovered={<DocsLink icon={docsIconActive} />} componentOnNotHovered={<DocsLink icon={docsIcon} />} />
+);
+
 const Sidebar = (): JSX.Element => {
   const navigate = useNavigate();
   const [cookies] = useCookies(["organization"]);
-  const { isSuperAdmin, logout, userName } = useUserStore((state) => {
-    const { logout, name } = state;
+  const { logout, userName } = useUserStore((state) => {
+    const { logout: lo, name } = state;
     return {
-      isSuperAdmin: selectIsSuperAdmin(state),
-      logout,
+      logout: lo,
       userName: name,
     };
   });
-  const isAdmin = useUserStore(selectIsAdmin);
 
   const [showPopup, setShowPopup] = useState(false);
+
+  const commonMenuItemProps = [
+    {
+      title: "Device Intelligence",
+      path: diDefaultPath,
+      activePath: FRAUD_SCORE_PATH,
+      normalIcon: deviceIntelligence,
+      activeIcon: deviceIntelligenceActive,
+      tid: "sidebar_link_device_intelligence",
+      badge: null,
+    },
+    {
+      title: "Customer Intelligence",
+      path: ciDefaultPath,
+      activePath: CUSTOMERS_PATH,
+      normalIcon: customers,
+      activeIcon: customersActive,
+      tid: "sidebar_link_customer_intelligence",
+      badge: null,
+    },
+    {
+      title: "Document Verifications",
+      path: `${DOCUMENT_VERIFICATIONS_PATH}${cookies.organization ? `?${CLIENT_QUERY_FIELD}=${cookies.organization}` : ""}`,
+      activePath: DOCUMENT_VERIFICATIONS_PATH,
+      normalIcon: docsIcon,
+      activeIcon: docsIconActive,
+      tid: "sidebar_link_document_verifications",
+      badge: null,
+    },
+    {
+      title: "Transaction Intelligence",
+      path: TRANSACTIONS_PATH,
+      activePath: `${TRANSACTIONS_PATH}${cookies.organization ? `?${CLIENT_QUERY_FIELD}=${cookies.organization}` : ""}`,
+      normalIcon: transactionsIcon,
+      activeIcon: transactionsIconActive,
+      tid: "sidebar_link_transaction_intelligence",
+      badge: (
+        <Badge style={{ fontSize: 8, marginLeft: 5, textTransform: "uppercase" }} bg="info">
+          Beta
+        </Badge>
+      ),
+    },
+    {
+      title: "data distribution",
+      path: DATA_DISTRIBUTION_PATH,
+      activePath: DATA_DISTRIBUTION_PATH,
+      normalIcon: dashboardIcon,
+      activeIcon: dashboardIconActive,
+      tid: "sidebar_link_data_distribution",
+      badge: null,
+    },
+    {
+      title: "Rules",
+      path: `${RULES_PATH}${cookies.organization ? `?${CLIENT_QUERY_FIELD}=${cookies.organization}` : ""}`,
+      activePath: RULES_PATH,
+      normalIcon: rulesIcons,
+      activeIcon: rulesIconsActive,
+      tid: "sidebar_link_rules",
+      badge: null,
+    },
+    {
+      title: "Blocklist/Allowlist",
+      path: `${BLOCK_ALLOW_LIST_PATH}${cookies.organization ? `?${ORGANIZATION_QUERY_FIELD}=${cookies.organization}` : ""}`,
+      activePath: BLOCK_ALLOW_LIST_PATH,
+      normalIcon: blocklist,
+      activeIcon: blocklistActive,
+      tid: "sidebar_link_block_allow_list",
+      badge: null,
+    },
+    {
+      title: "Queues",
+      path: `${QUEUES_PATH}${cookies.organization ? `?${ORGANIZATION_QUERY_FIELD}=${cookies.organization}` : ""}`,
+      activePath: QUEUES_PATH,
+      normalIcon: queuesIcon,
+      activeIcon: queuesIconActive,
+      tid: "sidebar_link_queues",
+      badge: null,
+    },
+  ] as const;
 
   const logoutUser = async () => {
     try {
       await firebaseClient.logout();
       await logout();
-      navigate("/login");
+      navigate(LOGIN_PATH);
     } catch (e) {
       captureException(e);
     }
   };
 
-  const superAdminMenu: SuperAdminMenuProps[] = [
-    {
-      title: "Flags",
-      path: FEATURE_FLAGS_PATH,
-    },
-    {
-      title: "Integration Status",
-      path: INTEGRATION_STATUS_PATH,
-    },
-    {
-      title: "Purchase Limit",
-      path: "/purchaseLimit",
-    },
-    {
-      title: "Webhooks",
-      path: WEBHOOK_PATH,
-    },
-    {
-      title: "Send Notification",
-      path: NOTIFICATIONS_PATH,
-    },
-  ];
-
   return (
-    <SideBarMainDiv>
+    <SidebarMainDiv>
       <PopUp
         show={showPopup}
         title="Logout"
@@ -276,195 +400,92 @@ const Sidebar = (): JSX.Element => {
         }}
         handleSubmit={logoutUser}
       />
-      <StyledLogoTitle>
-        <Image alt="" src={darkLogo} />
-        <StyledTitle>Sardine</StyledTitle>
-      </StyledLogoTitle>
-      <StyledMenu>
-        <MenuItem>
-          <Image alt="" src={deviceIntelligence} />
-          <StyledSubItem>
-            <StyledLink to={diDefaultPath} data-tid="sidebar_link_device_intelligence">
-              Device Intelligence
-            </StyledLink>
-          </StyledSubItem>
-        </MenuItem>
+      <HoverToggleDiv
+        componentOnHovered={<IconTitle src={sardineIconActive} />}
+        componentOnNotHovered={<IconTitle src={sardineIconNormal} />}
+      />
 
-        <StyledUpcomingDiv>
-          <Image alt="customers" src={customers} />
-          <StyledSubItem>
-            <StyledLink to={ciDefaultPath} data-tid="sidebar_link_customer_intelligence">
-              Customer Intelligence
-            </StyledLink>
-          </StyledSubItem>
-        </StyledUpcomingDiv>
-        <StyledUpcomingDiv>
-          <Image src={docsLogo} />
-          <StyledSubItem>
-            <StyledLink
-              to={`${DOCUMENT_VERIFICATIONS_PATH}${cookies.organization ? `?${CLIENT_QUERY_FIELD}=${cookies.organization}` : ""}`}
-              data-tid="sidebar_link_document_verifications"
-            >
-              Document Verifications
-            </StyledLink>
-          </StyledSubItem>
-        </StyledUpcomingDiv>
+      <StyledSidebarMenu>
+        {commonMenuItemProps.map((menuItem) => (
+          <HoverToggleMenuLink
+            path={menuItem.path}
+            activePath={menuItem.activePath}
+            activeIcon={menuItem.activeIcon}
+            normalIcon={menuItem.normalIcon}
+            title={menuItem.title}
+            tid={menuItem.tid}
+            badge={menuItem.badge}
+            key={menuItem.tid}
+          />
+        ))}
 
-        <StyledUpcomingDiv>
-          <Image alt="transactions" src={transactionsLogo} />
-          <StyledSubItem>
-            <StyledLink
-              to={`${TRANSACTIONS_PATH}${cookies.organization ? `?${CLIENT_QUERY_FIELD}=${cookies.organization}` : ""}`}
-              data-tid="sidebar_link_transaction_intelligence"
-            >
-              Transaction Intelligence
-            </StyledLink>
-          </StyledSubItem>
-          <Badge style={{ fontSize: 8, marginLeft: 5 }} bg="info">
-            BETA
-          </Badge>
-        </StyledUpcomingDiv>
+        <HoverToggleDocsLink />
+        <AdminVisible>
+          <HoverToggleMenuLink
+            path={ADMIN_PATH}
+            activePath={ADMIN_PATH}
+            activeIcon={adminIconActive}
+            normalIcon={adminIcon}
+            title="Admin"
+            tid="sidebar_link_admin"
+            badge={null}
+          />
+        </AdminVisible>
 
-        <StyledUpcomingDiv>
-          <StyledItemLogo>
-            <Image alt="" src={dashboardLogo} />
-          </StyledItemLogo>
-          <StyledSubItem>
-            <StyledLink to={DATA_DISTRIBUTION_PATH} data-tid="sidebar_link_data_distribution">
-              Data Distribution
-            </StyledLink>
-          </StyledSubItem>
-        </StyledUpcomingDiv>
+        <SuperAdminVisible>
+          <HoverToggleMenuLink
+            path={SAR_PATH}
+            activePath={SAR_PATH}
+            activeIcon={docsIconActive}
+            normalIcon={docsIcon}
+            title="File A SAR"
+            tid="sidebar_link_file_a_sar"
+            badge={null}
+          />
+        </SuperAdminVisible>
 
-        <StyledUpcomingDiv>
-          <Image alt="" src={rulesLogos} />
-          <StyledSubItem>
-            <StyledLink
-              to={`${RULES_PATH}${cookies.organization ? `?${CLIENT_QUERY_FIELD}=${cookies.organization}` : ""}`}
-              data-tid="sidebar_link_rules"
-            >
-              Rules
-            </StyledLink>
-          </StyledSubItem>
-        </StyledUpcomingDiv>
-
-        <StyledUpcomingDiv>
-          <Image alt="" src={blocklist} />
-          <StyledSubItem>
-            <StyledLink
-              to={`${BLOCK_ALLOW_LIST_PATH}${cookies.organization ? `?${ORGANIZATION_QUERY_FIELD}=${cookies.organization}` : ""}`}
-              data-tid="sidebar_link_block_allow_list"
-            >
-              Blocklist/Allowlist
-            </StyledLink>
-          </StyledSubItem>
-        </StyledUpcomingDiv>
-
-        <StyledUpcomingDiv>
-          <Image alt="queues" src={queuesLogo} />
-          <StyledSubItem>
-            <StyledLink
-              to={`${QUEUES_PATH}${cookies.organization ? `?${ORGANIZATION_QUERY_FIELD}=${cookies.organization}` : ""}`}
-              data-tid="sidebar_link_queues"
-            >
-              Queues
-            </StyledLink>
-          </StyledSubItem>
-        </StyledUpcomingDiv>
-
-        <StyledUpcomingDiv>
-          <Image alt="" src={docsLogo} />
-          <StyledSubItem>
-            <a
-              href="https://sardine:apidoc@docs.sardine.ai"
-              style={{ color: "#325078", textDecoration: "none" }}
-              data-tid="sidebar_link_docs"
-            >
-              Docs
-            </a>
-          </StyledSubItem>
-        </StyledUpcomingDiv>
-
-        {isSuperAdmin && (
-          <StyledUpcomingDiv>
-            <Image src={infoLogo} />
-            <StyledSubItem>
-              <StyledLink to={INTEGRATION_STATUS_PATH} data-tid="sidebar_link_integration_status">
-                Integration Status
-              </StyledLink>
-            </StyledSubItem>
-          </StyledUpcomingDiv>
-        )}
-
-        {isAdmin && (
-          <StyledUpcomingDiv>
-            <Image alt="admin" src={adminLogo} />
-            <StyledSubItem>
-              <StyledLink to="/admin" data-tid="sidebar_link_admin">
-                Admin
-              </StyledLink>
-            </StyledSubItem>
-          </StyledUpcomingDiv>
-        )}
-
-        {isSuperAdmin && (
-          <StyledUpcomingDiv>
-            <Image alt="sar" src={docsLogo} />
-            <StyledSubItem>
-              <StyledLink to={SAR_PATH} data-tid="sidebar_link_file_a_sar">
-                File A SAR
-              </StyledLink>
-            </StyledSubItem>
-          </StyledUpcomingDiv>
-        )}
-
-        {isSuperAdmin && (
+        <SuperAdminVisible>
           <>
-            <Line />
-            <StyledUpcomingDiv>
-              <Image src={adminLogo} />
-              <StyledSubItem style={{ fontWeight: 500, color: "var(--dark-14)" }} data-tid="sidebar_sardine_admin">
-                Sardine Admin
-              </StyledSubItem>
-            </StyledUpcomingDiv>
-            {superAdminMenu.map((menu) => (
-              <StyledUpcomingDiv key={menu.path} style={{ marginTop: 5 }}>
-                <StyledSubItem style={{ paddingLeft: 20 }}>
-                  <StyledLink
-                    to={menu.path}
-                    data-tid={`sidebar_link_sardine_admin_${replaceAllSpacesWithUnderscores(menu.title.toLowerCase())}`}
-                  >
-                    {menu.title}
-                  </StyledLink>
-                </StyledSubItem>
-              </StyledUpcomingDiv>
+            <SidebarLine />
+            {superAdminMenuProps.map((menuItem) => (
+              <HoverToggleMenuLink
+                path={menuItem.path}
+                activePath={menuItem.activePath}
+                activeIcon={menuItem.activeIcon}
+                normalIcon={menuItem.normalIcon}
+                title={menuItem.title}
+                tid={menuItem.tid}
+                key={menuItem.tid}
+                badge={menuItem.badge}
+              />
             ))}
           </>
-        )}
-      </StyledMenu>
+        </SuperAdminVisible>
+        <SidebarLine />
+
+        <HoverToggleMenuLink
+          path={SETTINGS_PATH}
+          activePath={SETTINGS_PATH}
+          normalIcon={settingsIcon}
+          activeIcon={settingsIconActive}
+          title="Settings"
+          tid="sidebar_link_settings"
+          badge={null}
+        />
+        <HoverToggleMenuButton
+          onClick={() => setShowPopup(true)}
+          activeIcon={logoutIconActive}
+          normalIcon={logoutIcon}
+          title="Logout"
+          tid="sidebar_link_logout"
+          badge={null}
+        />
+      </StyledSidebarMenu>
       <StyledUser>
-        <UserProfilePic>{false ? <img alt="" src="" /> : userName?.slice(0, 1).toUpperCase()}</UserProfilePic>
+        <UserProfilePic>{userName?.slice(0, 1).toUpperCase() || "?"}</UserProfilePic>
         <UserName>{userName}</UserName>
-        <>
-          <OverlayTrigger key="top" placement="top" overlay={<Tooltip id="tooltip-top">Settings</Tooltip>}>
-            <SettingsIcon to="/settings">
-              <img alt="" src={settingsLogo} />
-            </SettingsIcon>
-          </OverlayTrigger>{" "}
-        </>
-        <>
-          <OverlayTrigger key="top" placement="top" overlay={<Tooltip id="tooltip-top">Logout</Tooltip>}>
-            <StyledLogout
-              alt=""
-              onClick={() => {
-                setShowPopup(true);
-              }}
-              src={logoutIcon}
-            />
-          </OverlayTrigger>{" "}
-        </>
       </StyledUser>
-    </SideBarMainDiv>
+    </SidebarMainDiv>
   );
 };
 

@@ -11,49 +11,17 @@ import { DocumentVerification } from "sardine-dashboard-typescript-definitions";
 import OrganisationDropDown from "components/Dropdown/OrganisationDropDown";
 import { useSearchQuery } from "hooks/useSearchQuery";
 import { openUrlNewTabWithHistoryState } from "utils/openUrlNewTabWithHistoryState";
-import { CLIENT_QUERY_FIELD, constructFiltersQueryParams } from "utils/constructFiltersQueryParams";
+import { constructFiltersQueryParams } from "utils/constructFiltersQueryParams";
+import { getClientFromQueryParams } from "utils/getClientFromQueryParams";
+import { formatTimestampInUtc } from "utils/timeUtils";
 import * as Sentry from "@sentry/react";
 import { useCookies } from "react-cookie";
 import { selectIsAdmin, useUserStore } from "store/user";
 import Layout from "../Layout/Main";
-import { DataTable, useHandleRowClick, DataColumnSimple } from "../Common/DataTable";
+import { DataTable, useHandleRowClick, DataColumn } from "../Common/DataTable";
 import { StyledNavTitle, StyledTitleName } from "../Dashboard/styles";
 import { StyledDropdownDiv, StyledStickyNav } from "./styles";
-
-const tableColumns: DataColumnSimple[] = [
-  {
-    title: "Session key",
-    field: "session_key",
-  },
-  {
-    title: "Verification ID",
-    field: "verification_id",
-  },
-  {
-    title: "Customer ID",
-    field: "customer_id",
-  },
-  {
-    title: "Country",
-    field: "document_data.issuingCountry",
-  },
-  {
-    title: "Document Type",
-    field: "document_data.type",
-  },
-  {
-    title: "Time stamp",
-    field: "timestamp",
-  },
-  {
-    title: "Risk Level",
-    field: "risk_level",
-  },
-  { title: "Forgery Level", field: "forgery_level" },
-  { title: "Face Match Level", field: "face_match_level" },
-  { title: "Document Match Level", field: "document_match_level" },
-  { title: "Image Quality Level", field: "image_quality_level" },
-];
+import { DATE_FORMATS, TIME_UNITS } from "../../constants";
 
 const searchFields = [
   "session_key",
@@ -73,6 +41,44 @@ export const DocumentVerifications: React.FC = () => {
 
   const [cookies] = useCookies(["organization"]);
 
+  const tableColumns: DataColumn<DocumentVerification>[] = [
+    {
+      title: "Session key",
+      field: "session_key",
+    },
+    {
+      title: "Verification ID",
+      field: "verification_id",
+    },
+    {
+      title: "Customer ID",
+      field: "customer_id",
+    },
+    {
+      title: "Country",
+      field: "document_data.issuingCountry",
+    },
+    {
+      title: "Document Type",
+      field: "document_data.type",
+    },
+    {
+      title: "Date Time",
+      field: "time",
+      render: (rowData: DocumentVerification) => (
+        <div>{formatTimestampInUtc(rowData.time, { format: DATE_FORMATS.DATETIME, unit: TIME_UNITS.MILLISECOND })}</div>
+      ),
+    },
+    {
+      title: "Risk Level",
+      field: "risk_level",
+    },
+    { title: "Forgery Level", field: "forgery_level" },
+    { title: "Face Match Level", field: "face_match_level" },
+    { title: "Document Match Level", field: "document_match_level" },
+    { title: "Image Quality Level", field: "image_quality_level" },
+  ];
+
   const pushToDetails = (event: MouseEvent, rowData: DocumentVerification) => {
     const url = `${DOCUMENT_VERIFICATIONS_PATH}/${rowData.verification_id}`;
 
@@ -87,7 +93,13 @@ export const DocumentVerifications: React.FC = () => {
   };
   const handleRowClick = useHandleRowClick(pushToDetails);
   const queries = useSearchQuery();
-  const organisation = cookies.organization || queries.get(CLIENT_QUERY_FIELD);
+
+  const { isAdmin, userOrganization } = useUserStore((state) => ({
+    userOrganization: state.organisation,
+    isAdmin: selectIsAdmin(state),
+  }));
+
+  const organisation = getClientFromQueryParams(queries.toString(), isAdmin, userOrganization, cookies.organization);
 
   const { data: clientIdData } = useReactQuery(String(organisation), () => getClientIdObject(String(organisation)), {
     enabled: Boolean(organisation),
@@ -129,15 +141,13 @@ export const DocumentVerifications: React.FC = () => {
     navigate(0);
   };
 
-  const isSuperAdmin = useUserStore(selectIsAdmin);
-
   return (
     <Layout>
       <StyledMainDiv>
         <StyledStickyNav id="document-verifications" className="m-2">
           <StyledNavTitle className="w-100">
-            <StyledTitleName>Document Verfications</StyledTitleName>
-            {isSuperAdmin && (
+            <StyledTitleName data-tid="title_document_verifications">Document Verfications</StyledTitleName>
+            {isAdmin && (
               <StyledDropdownDiv>
                 <OrganisationDropDown organisation={organisation} changeOrganisation={updateFilters} />
               </StyledDropdownDiv>

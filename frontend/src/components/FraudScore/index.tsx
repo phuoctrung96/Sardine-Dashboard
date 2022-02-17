@@ -115,8 +115,7 @@ const FraudScore = () => {
 
   const [cookies] = useCookies(["organization"]);
 
-  const organisation =
-    cookies.organization || (isSuperAdmin ? getClientFromQueryParams(search, isAdmin, userOrganization) : userOrganization);
+  const organisation = getClientFromQueryParams(search, isAdmin, userOrganization, cookies.organization);
 
   const changeOrganisation = (org: string) => {
     navigate(`${FRAUD_SCORE_PATH}?${constructQueryParams(filters, startDate, endDate, org, dbSource)}`);

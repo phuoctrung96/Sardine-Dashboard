@@ -21,7 +21,6 @@ export const Highlighter = ({
   highlightedClassName,
   className,
   unhighlightedClassName,
-  activeClassName,
   ignoreTextDiacritics = true,
   ...rest
 }: HighlighterCoreProps): JSX.Element => {

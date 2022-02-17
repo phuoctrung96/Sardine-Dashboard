@@ -125,19 +125,27 @@ const BorderHide = styled.div`
 const StyleCircularBadge = styled.div`
   position: relative;
   & > div {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    & #session_level {
+    & .session-level {
       text-transform: capitalize;
       font-size: 20px;
       color: #f7b904;
       text-align: center;
+      white-space: nowrap;
+      &.red {
+        color: #fd6871;
+      }
+      &.yellow {
+        color: #f7b904;
+      }
+      &.green {
+        color: #00d060;
+      }
     }
-    & #session_level_label {
+    & .session-level-label {
       font-size: 12px;
       color: #141a39;
+      text-align: center;
+      white-space: nowrap;
     }
   }
 `;
@@ -145,7 +153,7 @@ const StyleCircularBadge = styled.div`
 const StyledCardBody = styled(Card.Body)`
   display: flex;
   gap: 20px;
-  & #biometrics_steps {
+  & .biometrics-steps {
     width: 40%;
     & .MuiStepLabel-root.MuiStepLabel-alternativeLabel {
       flex-direction: row;

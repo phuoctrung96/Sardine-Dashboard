@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { StyledMainDiv } from "styles/Layout";
 import { StyledNavTitle, StyledStickyNav } from "components/Dashboard/styles";
-import { Breadcumb, HeaderSectionContainer } from "styles/EntityDetail";
+import { Breadcumb, HeaderSectionContainer, ExpiredDocContainer, ExpiredDocTitle } from "styles/EntityDetail";
 import { DetailsHeaderChild, DetailsHeaderParent, DetailsHeaderTile, DetailsHeaderValue } from "styles/EntityList";
 import { startCase } from "lodash-es";
 import { useGetFallbackHistoryState } from "utils/openUrlNewTabWithHistoryState";
@@ -12,10 +12,13 @@ import { useParams } from "react-router-dom";
 import { InlineGenericError } from "components/Error/InlineGenericError";
 import Loader from "components/Common/Loader";
 import Badge from "components/Common/Badge";
+import dayjs from "dayjs";
 import { headerFields } from "./data";
 import Layout from "../../Layout/Main";
 import { CapturedDocumentsSection, DocumentInformationSection } from "./sections";
 import { FogeryTestResultsSection } from "./sections/FogeryTestResults";
+import { datetimeToTimestamp } from "../../../utils/timeUtils";
+import { DATE_FORMATS, TIMEZONE_TYPES, TIME_UNITS } from "../../../constants";
 
 export const DocumentVerificationsDetail = () => {
   const documentVerificationFromHistoryState: (DocumentVerification & { hasImages: boolean }) | null =
@@ -86,8 +89,19 @@ export const DocumentVerificationsDetail = () => {
       { src: documentVerification.selfie_path, alt: "selfie" },
     ].filter((image) => image.src);
 
+    const expiryTimeStamp = datetimeToTimestamp(documentVerification.document_data.date_of_expiry, {
+      format: DATE_FORMATS.DATE,
+      parseTimezone: TIMEZONE_TYPES.UTC,
+      unit: TIME_UNITS.SECOND,
+    });
+
     return (
       <>
+        {dayjs().unix() > expiryTimeStamp && (
+          <ExpiredDocContainer>
+            <ExpiredDocTitle>This document is expired</ExpiredDocTitle>
+          </ExpiredDocContainer>
+        )}
         <HeaderSectionContainer>
           <DetailsHeaderParent className="w-100">
             {headerFields.map(({ key, highFirstOrder }) => {

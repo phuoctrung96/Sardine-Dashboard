@@ -18,6 +18,7 @@ import { StyledMainDiv, TableWrapper, LinkValue } from "./styles";
 import FilterField, { FilterData, getFilters } from "../Common/FilterField";
 import { openUrlNewTabWithHistoryState } from "../../utils/openUrlNewTabWithHistoryState";
 import Badge from "../Common/Badge";
+import { getClientFromQueryParams } from "../../utils/getClientFromQueryParams";
 
 const WHITELISTED_QUERY_FIELDS = [
   "customer_id",
@@ -67,11 +68,6 @@ export function getDatesFromQueryParams(pathSearch: string): DatesProps {
   return { startDate, endDate, selectedDateIndex: 3 };
 }
 
-function getClientFromQueryParams(pathSearch: string): string {
-  const searchParams = new URLSearchParams(pathSearch);
-  return searchParams.get(CLIENT_QUERY_FIELD) || "all";
-}
-
 const Transactions: React.FC = () => {
   const navigate = useNavigate();
 
@@ -92,7 +88,7 @@ const Transactions: React.FC = () => {
     isAdmin: selectIsAdmin(state),
     userOrganisation: state.organisation,
   }));
-  const organisation = cookies.organization || (isAdmin ? getClientFromQueryParams(search) : userOrganisation);
+  const organisation = getClientFromQueryParams(search, isAdmin, userOrganisation, cookies.organization);
 
   const changeOrganisation = (org: string) => {
     navigate(`${TRANSACTIONS_PATH}?${constructQueryParams(filters, startDate, endDate, org)}`);
@@ -228,7 +224,7 @@ const Transactions: React.FC = () => {
       <StyledMainDiv>
         <StyledStickyNav id="transaction-info" style={{ width: "inherit", marginBottom: 10 }}>
           <StyledNavTitle style={{ width: "100%" }}>
-            <StyledTitleName> Transaction Intelligence</StyledTitleName>
+            <StyledTitleName data-tid="title_transaction_intelligence">Transaction Intelligence</StyledTitleName>
             <StyledDropdownDiv style={{ marginRight: "50px" }}>
               {isAdmin ? (
                 <div style={{ zIndex: 20 }}>

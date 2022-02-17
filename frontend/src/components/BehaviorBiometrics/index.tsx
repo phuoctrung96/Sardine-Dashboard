@@ -34,7 +34,7 @@ const BehaviorBiometrics = (props: BehaviorBiometricsProps) => {
   const renderStepper = () => {
     if (behaviorBiometrics.length > 1) {
       return (
-        <Row style={{ marginBottom: 15 }} id="biometrics_steps">
+        <Row style={{ marginBottom: 15 }} className="biometrics-steps">
           <Stepper alternativeLabel orientation="vertical" activeStep={stepToFlow[inFocusFlow]} connector={<QontoConnector />}>
             {behaviorBiometrics.map((bb) => (
               <Step id={bb.flow} key={bb.flow} onClick={() => setInFocusFlow(bb.flow)}>
@@ -62,7 +62,7 @@ const BehaviorBiometrics = (props: BehaviorBiometricsProps) => {
   return (
     <StyledCard style={{ marginTop: 15 }}>
       <Card.Header id="biometrics_title" style={{ color: "var(--dark-14)" }}>
-        <img src={biometricsIcon} />
+        <img src={biometricsIcon} alt="behavior biometrics icon" />
         <span>Behavior Biometrics</span>
       </Card.Header>
       <StyledCardBody>
@@ -123,13 +123,12 @@ const Attribute: React.FC<{ property: string; value: AnyTodo; description?: stri
         <div id={`${property}_value`}>{String(value)} </div>
       </div>
     );
-  } else {
-    return (
-      <Row>
-        <p style={{ fontSize: 20, fontWeight: "semibold" }}>{String(value)} </p>
-      </Row>
-    );
   }
+  return (
+    <Row>
+      <p style={{ fontSize: 20, fontWeight: "semibold" }}>{String(value)} </p>
+    </Row>
+  );
 };
 
 const BehaviorBiometric: React.FC<BehaviorBiometricsPerFlow> = (props) => {

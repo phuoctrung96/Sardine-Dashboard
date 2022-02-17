@@ -72,8 +72,17 @@ const organisationRouter = (unleashSevice: UnleashService) => {
     async (req: RequestWithUser, res: Response) => {
       try {
         const { organisation = "" } = req.query;
-        const invitations = await db.organisation.fetchInvitations(organisation.toString());
-        return res.json(invitations);
+        const rows = await db.organisation.fetchInvitations(organisation.toString());
+
+        return res.json(
+          rows.map((row) => ({
+            email: row.email,
+            expiredAt: row.expired_at,
+            id: row.id,
+            orgId: row.organisation_id,
+            token: row.token,
+          }))
+        );
       } catch (e) {
         Sentry.captureException(e);
         return res.status(500).json({ error: "internal error" });

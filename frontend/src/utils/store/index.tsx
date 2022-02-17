@@ -1,4 +1,4 @@
-import React, { createContext, useReducer, Dispatch } from "react";
+import React, { createContext, useMemo, useReducer, Dispatch } from "react";
 import moment from "moment";
 import { INITIAL_STATE_USER } from "./storeConstants";
 import { StoreProps } from "./interface";
@@ -79,8 +79,9 @@ const mainReducer = (defaultState: StoreProps, action: UserActions) => userReduc
 
 const StateProvider: React.FC = ({ children }) => {
   const [state, dispatch] = useReducer(mainReducer, initialState);
+  const value = useMemo(() => ({ state, dispatch }), [state, dispatch]);
 
-  return <StoreCtx.Provider value={{ state, dispatch }}>{children}</StoreCtx.Provider>;
+  return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>;
 };
 
 export { StateProvider, StoreCtx };

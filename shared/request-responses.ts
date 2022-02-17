@@ -3,7 +3,7 @@ import { AmlKind } from "./datastore/aml_schema";
 import { DocumentVerification } from "./datastore/document-verifications-schema";
 import { HealthCheckEvent, HealthCheckRequest } from "./bigquery";
 import { OrganizationUser, Feedback } from "./domain";
-import { RuleActionTag, RuleProps } from ".";
+import { DashboardInvitation, RuleActionTag, RuleProps } from ".";
 
 export type GetOrganisationFeatureFlagsResponse = {
   enabledFeatureFlagNames: string[];
@@ -13,6 +13,8 @@ export type GetOrganisationFeatureFlagsResponse = {
 export type GetDocumentVerificationsResponse = {
   documentVerifications: DocumentVerification[];
 } & WithPageCursor;
+
+export type FetchInvitationsResponse = DashboardInvitation[];
 
 export interface GetAmlResponse {
   aml?: AmlKind;
