@@ -320,7 +320,7 @@ const RuleDetails = (): JSX.Element => {
       />
       <Container style={{ margin: "auto" }}>
         {ruleDetails ? (
-          <BackgroundBox style={{ boxShadow: "none" }}>
+          <BackgroundBox style={{ boxShadow: "none", backgroundColor: "#FAFBFF" }}>
             <HorizontalContainer
               style={{
                 alignItems: "center",

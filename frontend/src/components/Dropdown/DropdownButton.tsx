@@ -56,7 +56,7 @@ interface DropdownButtonItem {
 const DropwdownButton = (props: { clicked: () => void; item?: DropdownButtonItem; title?: string; id: string }): JSX.Element => {
   const { clicked, item, title, id } = props;
   return (
-    <StyledDropdownButton onClick={() => clicked()} data-tid={id}>
+    <StyledDropdownButton onClick={() => clicked()} data-tid={id} style={{ backgroundColor: "white" }}>
       {item && item.icon && (
         <StyledIcon>
           {" "}
