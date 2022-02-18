@@ -13,7 +13,7 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/styles": "^4.11.4",
     "@react-leaflet/core": ">=1.0.0 <1.2.0 || ^1.1.1",
-    "@sentry/react": "^6.17.4",
+    "@sentry/react": "^6.17.9",
     "@sentry/tracing": "^6.17.4",
     "@types/lodash-es": "^4.17.5",
     "@types/react-highlight-words": "^0.16.3",
