@@ -51,6 +51,7 @@ import {
   Container,
   StyledUserPhoto,
   StyledLink,
+  StyledButtonGroup,
   HandleOverflowDiv,
 } from "../components/Queues/styles";
 import {
@@ -656,30 +657,32 @@ const SessionsDetails = (): JSX.Element => {
                 <CircularRiskLevel risk_level={customerData ? customerData.risk_level : ""} />
               </DetailsHeaderValue>
             </DetailsHeaderChild>
-            <StyledDrawer>
-              {detailsHeaders}
+            <div>
+              <StyledDrawer>{detailsHeaders}</StyledDrawer>
               {customerData && customerData.queue_id && customerData.queue_id.length > 0 && (
-                <DetailsHeaderChild>
-                  <ActionsDropDown
-                    actionsValue={actionsValue}
-                    onValuesUpdated={(arr) => {
-                      setActionsValue(arr);
-                    }}
-                  />
-                  <Button
-                    style={{ width: 120, backgroundColor: "#2173FF", margin: "inherit" }}
-                    disabled={actionsValue.filter((a) => a.length === 0).length > 0}
-                    onClick={() => updateCaseData()}
-                  >
-                    {isLoadingActions ? (
-                      <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                    ) : (
-                      <span>Submit</span>
-                    )}
-                  </Button>
-                </DetailsHeaderChild>
+                <StyledButtonGroup>
+                  <DetailsHeaderChild>
+                    <ActionsDropDown
+                      actionsValue={actionsValue}
+                      onValuesUpdated={(arr) => {
+                        setActionsValue(arr);
+                      }}
+                    />
+                    <Button
+                      style={{ width: 120, backgroundColor: "#2173FF", margin: "inherit" }}
+                      disabled={actionsValue.filter((a) => a.length === 0).length > 0}
+                      onClick={() => updateCaseData()}
+                    >
+                      {isLoadingActions ? (
+                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                      ) : (
+                        <span>Submit</span>
+                      )}
+                    </Button>
+                  </DetailsHeaderChild>
+                </StyledButtonGroup>
               )}
-            </StyledDrawer>
+            </div>
           </DetailsHeaderParent>
 
           <StyledMainContentDiv>

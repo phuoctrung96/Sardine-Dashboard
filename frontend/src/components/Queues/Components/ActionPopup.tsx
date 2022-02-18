@@ -45,21 +45,20 @@ export const actions = [
 export const ActionsDropDown: React.FC<IActionsDropdownProps> = (props) => {
   const { actionsValue, onValuesUpdated } = props;
   const result = actions.map((a, ind) => (
-    <div style={{ marginBottom: 20 }} key={a.key}>
-      <StyledTitleName style={{ marginBottom: 5 }}>{a.title}</StyledTitleName>
+    <div style={{ display: "flex", alignItems: "center" }} key={a.key}>
+      <StyledTitleName style={{ marginRight: 10 }}>{a.title}</StyledTitleName>
       <Dropdown>
         <Dropdown.Toggle
           style={{
             backgroundColor: "#F0F3F9",
             border: "none",
             color: "#325078",
-            width: "70%",
             textAlign: "left",
             height: 50,
             borderRadius: 16,
           }}
         >
-          <span style={{ paddingLeft: 20, textTransform: "capitalize" }}>
+          <span style={{ paddingLeft: 7, textTransform: "capitalize" }}>
             {actionsValue[ind].length > 0 ? actionsValue[ind] : "Select"}
           </span>
         </Dropdown.Toggle>

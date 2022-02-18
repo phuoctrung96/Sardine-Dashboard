@@ -342,7 +342,7 @@ const Sidebar = (): JSX.Element => {
       ),
     },
     {
-      title: "data distribution",
+      title: "Data Distribution",
       path: DATA_DISTRIBUTION_PATH,
       activePath: DATA_DISTRIBUTION_PATH,
       normalIcon: dashboardIcon,

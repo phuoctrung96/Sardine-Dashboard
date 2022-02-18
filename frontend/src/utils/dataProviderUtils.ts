@@ -789,9 +789,10 @@ export const getRulesData = (
         boolChild("IsChecksumInvalid", "client side event data had an invalid checksum, indicating payload was tampered", false),
         intChild("IPCount", "number of IP addresses tied to this session", false),
         intChild("IPCountryCount", "number of country (inferred from IP address) tied to this session", false),
-
+        stringChild("AppPackageName", "package name of mobile app (blank for web)"),
         intChild("TimezoneOffset", "Offset in number of hours between"),
         boolChild("IsRemoteDesktop", "Status of remote desktop active or not. Like TeamViwer, Anydesk, Zoom etc", false),
+        stringChild("OriginatingPartnerID", "the partner id that the user originated from"),
 
         // these features are already available in backend but let's not expose to customers
         hide(boolChild("LiedLanguages", "", false)),
@@ -1071,7 +1072,6 @@ export const getRulesData = (
       boolChild("IsDOBCompleted", "Has the Date of Birth been completed as part of the identity completion", false),
       stringChild("SSNCompletedConfidenceLevel", "the level of confidence in the SSN that was found"),
       stringChild("DOBCompletedConfidenceLevel", "the level of confidence in the date of birth that was found"),
-      stringChild("OriginatingPartnerID", "the partner id that the user originated from"),
 
       new ItemModel("Onboarding", [
         stringChild("FullName", "Name of the user"),
