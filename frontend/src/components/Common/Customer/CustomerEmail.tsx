@@ -1,4 +1,5 @@
 import { renderReasonCodes } from "utils/renderReasonCodes";
+import { AiOutlineMail } from "react-icons/ai";
 import DataCard, { CardAttribute } from "../DataCard";
 
 const HEADER = "Email Signals";
@@ -76,7 +77,7 @@ const CustomerEmail = (props: CustomerEmailProps): JSX.Element => {
       toolTip: "Billing address risk value. Range: (1-3) and 6. 1 means high risk and 6 means incomplete billing address",
     },
   ];
-  return <DataCard header={HEADER} attributes={attributes} />;
+  return <DataCard header={HEADER} attributes={attributes} icon={<AiOutlineMail size={28} />} />;
 };
 
 export default CustomerEmail;

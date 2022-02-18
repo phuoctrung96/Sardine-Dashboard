@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import { Card, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { replaceAllSpacesWithUnderscores, replaceAllUnderscoresWithSpaces } from "utils/stringUtils";
-import { DetailsCardView, DetailsCardTitle, DetailsCardValue } from "../Queues/styles";
+import { DetailsCardView, DetailsCardTitle } from "../Queues/styles";
 
 export interface CardAttribute {
   key: string;
@@ -16,6 +16,7 @@ interface Props {
   children?: JSX.Element;
   headerStyle?: React.CSSProperties;
   bodyStyle?: React.CSSProperties;
+  icon?: JSX.Element;
 }
 
 interface CardTitleProps {
@@ -51,7 +52,7 @@ const DetailCardTitle: React.FC<CardTitleProps> = (props) => {
       >
         <div
           style={{
-            fontWeight: 500,
+            fontWeight: 400,
             paddingRight: 10,
           }}
         >
@@ -68,61 +69,36 @@ const CardAttributes: React.FC<CardAttributesProps> = (props) => {
   const { attribute, keyId } = props;
   const { key, value, toolTip = "", valueParser = defaultValueParser } = attribute;
   return (
-    <div
-      style={{
-        margin: "20px 5px",
-        alignItems: "center",
-        lineBreak: "anywhere",
-      }}
-      key={keyId}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        <DetailCardTitle title={replaceAllUnderscoresWithSpaces(key)} tooltip={toolTip} />
-      </div>
-      <DetailsCardValue>
-        <div id={`${replaceAllSpacesWithUnderscores(key)}_value`}>{valueParser(value)}</div>
-      </DetailsCardValue>
+    <div key={keyId}>
+      <DetailCardTitle title={replaceAllUnderscoresWithSpaces(key)} tooltip={toolTip} />
+      <div id={`${replaceAllSpacesWithUnderscores(key)}_value`}>{valueParser(value)}</div>
     </div>
   );
 };
 
 const DataCard: React.FC<Props> = (props) => {
-  const { header, attributes, children, bodyStyle, headerStyle } = props;
+  const { header, attributes, children, bodyStyle, headerStyle, icon } = props;
   return (
     <DetailsCardView>
       <Card.Header
         id={replaceAllSpacesWithUnderscores(header)}
         style={{
-          fontSize: 20,
-          color: "#B9C5E0",
-          backgroundColor: "transparent",
-          border: "none",
-          paddingTop: 10,
-          fontWeight: "normal",
           ...headerStyle,
         }}
       >
-        {header}
+        {icon || <></>}
+        <span>{header}</span>
       </Card.Header>
-
-      <Card.Body
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, 250px)",
-          gridAutoRows: "auto",
-          ...bodyStyle,
-        }}
-      >
-        {attributes.map((attr, keyId) => (
-          <CardAttributes attribute={attr} keyId={keyId} key={attr.key} />
-        ))}
-        {children}
-      </Card.Body>
+      {attributes.length === 0 ? (
+        <>{children}</>
+      ) : (
+        <Card.Body>
+          {attributes.map((attr, keyId) => (
+            <CardAttributes attribute={attr} keyId={keyId} key={attr.key} />
+          ))}
+        </Card.Body>
+      )}
+      <div className="hide-border" />
     </DetailsCardView>
   );
 };

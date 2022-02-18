@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, writeFileSync } from "fs";
+import { CHECKPOINTS } from "sardine-dashboard-typescript-definitions";
 import { execSync } from "child_process";
-import { getRulesData, CHECK_POINTS, DATA_TYPES, ItemModel, DataType } from "../utils/dataProviderUtils";
+import { getRulesData, DATA_TYPES, ItemModel, DataType } from "../utils/dataProviderUtils";
 
 function toGoType(t: string) {
   switch (t as DataType) {
@@ -40,7 +41,7 @@ function toStructField(i: ItemModel) {
 
 const deviceEnvs: { [key: string]: string } = {};
 const customerEnvs: { [key: string]: string } = {};
-const data = getRulesData(true, CHECK_POINTS.Customer, true);
+const data = getRulesData(true, CHECKPOINTS.Customer, true);
 data.forEach((r) => {
   if (r.items.length === 0) {
     console.log(`skipping ${r.title}...`);

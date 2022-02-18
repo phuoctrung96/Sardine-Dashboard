@@ -258,7 +258,7 @@ const DataDistribution = (): JSX.Element => {
       ) : null}
       <div style={{ padding: 8 }}>
         <div style={{ padding: 20 }}>
-          <h2>ALL Score distribution/breakdown</h2>
+          <h2 data-tid="title_data_distribution">ALL Score distribution/breakdown</h2>
         </div>
         <Grid container spacing={2}>
           <Grid item xs={6}>

@@ -207,7 +207,7 @@ export const IntegrationStatus: React.FC = () => {
       <StyledMainDiv>
         <StyledStickyNav id="document-verifications" className="m-2">
           <StyledNavTitle className="w-100">
-            <StyledTitleName>Integration Status</StyledTitleName>
+            <StyledTitleName data-tid="title_integration_status">Integration Status</StyledTitleName>
             <StyledDropdownDiv>
               <OrganisationDropDown organisation={organisation} changeOrganisation={updateFilters} />
             </StyledDropdownDiv>

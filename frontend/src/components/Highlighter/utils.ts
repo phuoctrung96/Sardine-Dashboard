@@ -83,21 +83,17 @@ const findChunks = ({
   searchWords: Array<string>;
   textToHighlight: string;
   ignoreTextDiacritics?: boolean;
-}): Array<Chunk> => {
-  textToHighlight = sanitize(textToHighlight);
-
-  return searchWords
+}): Array<Chunk> =>
+  searchWords
     .filter((searchWord) => searchWord) // Remove empty words
     .reduce<Chunk[]>((chunks, searchWord) => {
-      searchWord = sanitize(searchWord);
-
       const stripedSearchWord = ignoreTextDiacritics ? stripTextDiacritics(searchWord) : searchWord;
       const stripedTextToHighlight = ignoreTextDiacritics ? stripTextDiacritics(textToHighlight) : textToHighlight;
 
       const regex = new RegExp(escapeRegExpFn(stripedSearchWord), "g");
 
-      let match;
-      while ((match = regex.exec(stripedTextToHighlight))) {
+      let match = regex.exec(stripedTextToHighlight);
+      while (match) {
         const start = match.index;
         const end = regex.lastIndex;
         // We do not return zero-length matches
@@ -108,13 +104,13 @@ const findChunks = ({
         // Prevent browsers like Firefox from getting stuck in an infinite loop
         // See http://www.regexguru.com/2008/04/watch-out-for-zero-length-matches/
         if (match.index === regex.lastIndex) {
-          regex.lastIndex++;
+          regex.lastIndex += 1;
         }
+        match = regex.exec(stripedTextToHighlight);
       }
 
       return chunks;
     }, []);
-};
 
 /**
  * Given a set of chunks to highlight, create an additional set of chunks
@@ -154,7 +150,3 @@ export const fillInChunks = ({
   }
   return allChunks;
 };
-
-function sanitize(string: string): string {
-  return string;
-}

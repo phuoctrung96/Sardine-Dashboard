@@ -7,6 +7,7 @@ const TableWrapper = styled.div`
 
 const StyledMainDiv = styled.div`
   padding: 0 5%;
+  max-width: 90%;
 `;
 
 const TextWrapper = styled.div`

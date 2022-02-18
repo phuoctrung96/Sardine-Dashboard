@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { GTMProvider } from "@elgorditosalsero/react-gtm-hook";
-import "./App.css";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import styled from "styled-components";
 import { ToastProvider } from "react-toast-notifications";
@@ -22,7 +21,6 @@ import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 import Admin from "./components/Admin/Admin";
 import Settings from "./pages/Settings";
-import Organisation from "./components/Admin/Organisation";
 import { getUser } from "./utils/api";
 import RuleDetails from "./pages/RuleDetails";
 import Rules from "./pages/Rules";
@@ -63,6 +61,10 @@ import {
   MANAGE_RULE,
   REGISTER_PATH,
   FRAUD_SCORE_PATH,
+  PURCHASE_LIMIT_PATH,
+  SETTINGS_PATH,
+  ADMIN_PATH,
+  DATA_DICTIONARY_PATH,
 } from "./modulePaths";
 import Transactions from "./components/Transactions";
 import AdminNotificatons from "./components/Admin/AdminNotificatons";
@@ -134,18 +136,14 @@ const App = (): JSX.Element => {
                 {!isAuthenticated && autoLoging && checkAuth()}
                 {!loading && (
                   <Routes>
-                    <Route path="/settings" element={<AuthenticatedOnly element={<Settings />} />} />
+                    <Route path={SETTINGS_PATH} element={<AuthenticatedOnly element={<Settings />} />} />
                     <Route path={DATA_DISTRIBUTION_PATH} element={<AuthenticatedOnly element={<DataDistribution />} />} />
                     <Route path="/relayfi" element={<AuthenticatedOnly element={<RelayDashboard />} />} />
                     <Route path={RULE_DETAILS_PATH} element={<AuthenticatedOnly element={<RuleDetails />} />} />
                     <Route path={RULES_PATH} element={<AuthenticatedOnly element={<Rules />} />} />
                     <Route path={MANAGE_RULE} element={<AuthenticatedOnly element={<ManageRule />} />} />
-                    <Route path="/admin" element={<AuthenticatedOnly element={<Admin />} />} />
-                    <Route
-                      path="/admin/organisation"
-                      element={<AuthenticatedOnly element={<Organisation data={[]} onInviteClicked={() => {}} />} />}
-                    />
-                    <Route path="/data_dictionary" element={<AuthenticatedOnly element={<DataDictionary />} />} />
+                    <Route path={ADMIN_PATH} element={<AuthenticatedOnly element={<Admin />} />} />
+                    <Route path={DATA_DICTIONARY_PATH} element={<AuthenticatedOnly element={<DataDictionary />} />} />
                     <Route path={FRAUD_SCORE_PATH} element={<AuthenticatedOnly element={<FraudScore />} />} />
                     <Route path={CUSTOMERS_PATH} element={<AuthenticatedOnly element={<Customers />} />} />
                     <Route path={DEVICE_VIEW_PATH} element={<AuthenticatedOnly element={<DeviceView />} />} />
@@ -154,7 +152,7 @@ const App = (): JSX.Element => {
                       path={ADD_NEW_BLOCK_ALLOW_LIST_PATH}
                       element={<AuthenticatedOnly element={<AddNewBlockAllowListItem />} />}
                     />
-                    <Route path="/purchaseLimit" element={<SuperAdminOnly element={<PurchaseLimitList />} />} />
+                    <Route path={PURCHASE_LIMIT_PATH} element={<SuperAdminOnly element={<PurchaseLimitList />} />} />
                     <Route path={FEATURE_FLAGS_PATH} element={<SuperAdminOnly element={<FeatureFlags />} />} />
                     <Route path={QUEUES_PATH} element={<AuthenticatedOnly element={<Queues />} />} />
                     <Route path={SESSIONS_PATH} element={<AuthenticatedOnly element={<Sessions />} />} />

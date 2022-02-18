@@ -1,7 +1,7 @@
 import { uniq } from "lodash-es";
 import { SessionKind as Session, CustomersResponse, AddressFields } from "sardine-dashboard-typescript-definitions";
-import { timestampToISODateIfZeroEmptyString } from "./timeUtils";
-import { GOOGLE_MAPS_URL } from "../constants";
+import { formatTimestampInUtc, timestampToISODateIfZeroEmptyString } from "./timeUtils";
+import { DATE_FORMATS, GOOGLE_MAPS_URL, TIME_UNITS } from "../constants";
 
 const filterAndJoin = (values: string[]): string => uniq(values.filter((val) => val !== "")).join(", ");
 
@@ -293,6 +293,10 @@ export function convertDatastoreSessionToCustomerResponse(r: Session): Customers
     status: r.status || "Pending",
     decision: r.decision || "",
     queue_id: r.queue_id,
+    datetime: formatTimestampInUtc(r.timestamp || 0, {
+      format: DATE_FORMATS.DATETIME,
+      unit: TIME_UNITS.SECOND,
+    }),
   };
 }
 

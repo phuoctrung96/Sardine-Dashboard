@@ -80,9 +80,9 @@ export const TableRow = ({ entity, onEntityView, customerData }: AmlListItemProp
         </ul>
       </Cell>
       <Cell>
-        <button type="button" onClick={() => onEntityView(entity)} className="btn btn-outline-primary">
-          View details
-        </button>
+        <span onClick={() => onEntityView(entity)} className="btn btn-link text-dark">
+          Details
+        </span>
       </Cell>
     </StyledTr>
   );

@@ -21,11 +21,12 @@ export type TimezoneType = typeof TIMEZONE_TYPES[keyof typeof TIMEZONE_TYPES];
 
 export const TIME_UNITS = {
   SECOND: "second",
-  MILLISECOND: " millisecond",
+  MILLISECOND: "millisecond",
 } as const;
 export type TimeUnit = typeof TIME_UNITS[keyof typeof TIME_UNITS];
 
 export const CACHE_KEYS = {
+  DASHBOARD_INVITATIONS: "dashboardInvitations",
   DEVICE_PROFILE: "deviceProfile",
   ORGANIZATION_NAMES: "organizationNames",
   RULES: "rules",

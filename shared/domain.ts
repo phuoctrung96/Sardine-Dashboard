@@ -21,3 +21,11 @@ export interface Feedback {
   type: string;
   time: number;
 }
+
+export interface DashboardInvitation {
+  email: string; // "ryo+test-client-2@sardine.ai"
+  expiredAt: string; // "2021-11-22T03:29:34.125Z"
+  id: string; // "5"
+  orgId: string; // "43"
+  token: string; // "09616440-19d9-4d56-8a88-7305c16d5d56"
+}

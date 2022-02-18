@@ -10,7 +10,7 @@ import { ButtonContainer, StyledButton } from "./styles";
 import OrganizationsList from "./OrganizationsList";
 import CreateOrganization from "./CreateOrganization";
 
-const Admin = () => {
+const Admin = (): JSX.Element => {
   const [fetchOrg, setFetchOrg] = useState(true);
   const [organisations, setOrganisations] = useState<Organization[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -80,7 +80,7 @@ const Admin = () => {
   }, [fetchOrg]);
 
   if (!isAuthenticated || !isAdmin) {
-    return <>unauthorized</>;
+    return <>Unauthorized</>;
   }
 
   return (

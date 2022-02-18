@@ -34,7 +34,7 @@ export interface DocumentVerification extends DocumentVerificationImages {
   image_quality_level: string;
   risk_level: string;
   verification_id: string;
-  timestamp: string;
+  time: number;
   document_data: DocumentData;
   customer_id: string;
   forgery_test_results: ForgeryTestResults[];

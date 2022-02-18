@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { AnyTodo } from "sardine-dashboard-typescript-definitions";
 
 const LayerContext: AnyTodo = React.createContext({});
 
-const LayerContextProvider = ({ children }: AnyTodo) => {
+const LayerContextProvider = ({ children }: { children: JSX.Element }): JSX.Element => {
   const [point, setPoint] = useState([0, 0]);
 
-  const defaultValue = {
-    point,
-    setPoint,
-  };
+  const defaultValue = useMemo(
+    () => ({
+      point,
+      setPoint,
+    }),
+    [point, setPoint]
+  );
 
   return <LayerContext.Provider value={defaultValue}>{children}</LayerContext.Provider>;
 };

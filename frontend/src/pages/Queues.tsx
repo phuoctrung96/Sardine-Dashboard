@@ -7,14 +7,13 @@ import { QUEUES_PATH, SESSIONS_PATH } from "modulePaths";
 import { useCookies } from "react-cookie";
 import { selectIsAdmin, selectIsSuperAdmin, useUserStore } from "store/user";
 import moment from "moment";
-import { SessionKind } from "sardine-dashboard-typescript-definitions";
+import { CHECKPOINTS, SessionKind } from "sardine-dashboard-typescript-definitions";
 import { replaceAllSpacesWithUnderscores } from "utils/stringUtils";
 import Layout from "../components/Layout/Main";
 import { StoreCtx } from "../utils/store";
 import OrganisationDropDown from "../components/Dropdown/OrganisationDropDown";
 import { StyledDropdownDiv, StyledNavTitle, StyledStickyNav, StyledTitleName } from "../components/Dashboard/styles";
 import { ActionTypes } from "../utils/store/actionTypes";
-import { CHECK_POINTS } from "../utils/dataProviderUtils";
 import {
   StyledMainDiv,
   StyledTable,
@@ -36,8 +35,9 @@ import search_icon from "../utils/logo/search_light.svg";
 import { getQueueslist, deleteQueue, getSessionslist } from "../utils/api";
 import PopUp from "../components/Common/PopUp";
 import { headers } from "./Sessions";
-import { DATE_FORMATS } from "../constants";
+import { CHECKPOINT_QUERY_FIELD, DATE_FORMATS, ORGANIZATION_QUERY_FIELD } from "../constants";
 import { exportCSVFile } from "../utils/csvUtils";
+import { getClientFromQueryParams } from "../utils/getClientFromQueryParams";
 
 const HEADERS = ["Name", "Owner", "Counts", "Action"] as const;
 
@@ -57,9 +57,7 @@ const Queues: React.FC = () => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [searchString, setSearchString] = useState("");
   const organisationFromUserStore = useUserStore(({ organisation }) => organisation);
-  const [organisation, setOrganisation] = useState(organisationFromUserStore);
 
-  const [checkpoint, setCheckpoint] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [queueToRemove, setQueueToRemove] = useState<QueueProps | undefined>(undefined);
   const { addToast } = useToasts();
@@ -73,9 +71,17 @@ const Queues: React.FC = () => {
     };
   });
 
+  const checkpointFromParams = params.get(CHECKPOINT_QUERY_FIELD) || "";
+  const organisation: string = getClientFromQueryParams(
+    params.toString(),
+    isAdmin,
+    organisationFromUserStore,
+    cookies.organization
+  );
+
   const changeOrganisation = (org: string) => {
-    params.set("organization", org);
-    navigate(`/queues?${params.toString()}`);
+    params.set(ORGANIZATION_QUERY_FIELD, org);
+    navigate(`${QUEUES_PATH}?${params.toString()}`);
     navigate(0); // Refresh the page. TODO: Change the way to update the filter.
     setUserStoreOrganisation(organisation);
   };
@@ -87,9 +93,8 @@ const Queues: React.FC = () => {
       }
 
       try {
-        const organization = isAdmin ? org : organisationFromUserStore;
         setIsLoading(true);
-        const data = await getQueueslist(organization, cp);
+        const data = await getQueueslist(org, cp);
         setDataHolder(data);
         setQueuesData(data);
       } catch (error) {
@@ -101,33 +106,23 @@ const Queues: React.FC = () => {
 
       setIsLoading(false);
     },
-    [addToast, isAdmin, organisationFromUserStore]
+    [addToast]
   );
 
   useEffect(() => {
     if (!isDataLoaded) {
-      const org: string = params.get("organization") || organisationFromUserStore;
-      const checkpointFromParams = params.get("checkpoint") || "";
-      setCheckpoint(checkpointFromParams);
-
-      if (cookies.organization) {
-        setOrganisation(cookies.organization);
-      } else {
-        setOrganisation(org);
-      }
-
-      loadData(org, checkpointFromParams).catch(captureException);
+      loadData(organisation, checkpointFromParams).catch(captureException);
       setIsDataLoaded(true);
       setIsLoading(false);
     }
-  }, [isDataLoaded, loadData, checkpoint, location.search, organisationFromUserStore]);
+  }, [isDataLoaded, loadData, checkpointFromParams, location.search, organisationFromUserStore]);
 
   const manageStoreBeforePush = () => {
     const payload = {
       list: dataHolder,
       organisation,
       strSearch: searchString,
-      checkpoint,
+      checkpoint: checkpointFromParams,
     };
 
     dispatch({ type: ActionTypes.QUEUES_LIST, payload });
@@ -209,11 +204,11 @@ const Queues: React.FC = () => {
 
   const Dropdown = (): JSX.Element => (
     <>
-      {Object.entries(CHECK_POINTS).map((element) => (
+      {Object.entries(CHECKPOINTS).map((element) => (
         <Container key={element[1]}>
           <SubDropbtn
             onClick={() => {
-              params.set("checkpoint", element[1]);
+              params.set(CHECKPOINT_QUERY_FIELD, element[1]);
               navigate(`${QUEUES_PATH}?${params.toString()}`);
               navigate(0); // Refresh the page. TODO: Change the way to update the filter.
             }}
@@ -239,7 +234,7 @@ const Queues: React.FC = () => {
           setIsDropdownVisible(!isDropdownVisible);
         }}
       >
-        {checkpoint.length > 0 ? checkpoint : "Checkpoint"}
+        {checkpointFromParams.length > 0 ? checkpointFromParams : "Checkpoint"}
         <Image
           src={downArrow}
           style={{
@@ -330,7 +325,7 @@ const Queues: React.FC = () => {
 
       <StyledMainDiv style={{ height: "100vh", backgroundColor: "#FFF", width: "100%", margin: 0 }}>
         <StyledNavTitle style={{ width: "100%", marginLeft: 30 }}>
-          <StyledTitleName style={{ fontSize: 32, fontWeight: "normal", paddingTop: 20 }}>
+          <StyledTitleName data-tid="title_queues" style={{ fontSize: 32, fontWeight: "normal", paddingTop: 20 }}>
             Queues
             <StyledTitleName style={{ fontSize: 14, fontWeight: "normal", color: "#B9C5E0", marginTop: 10 }}>
               Case Management for the rules engine

@@ -13,27 +13,14 @@ export const TableWrapper = styled.div`
 `;
 
 export const StyledLink = styled(Link)`
-  color: var(--dark-14);
+  color: #141a39;
   font-size: 14px;
   line-height: 18px;
   word-break: break-all;
 `;
 
 export const StyledMainDiv = styled.div`
-  @media (min-width: 1400px) {
-    width: 95%;
-    padding-left: 2%;
-    padding-right: 5%;
-  }
-  @media only screen and (max-width: 1400px) and (min-width: 1300px) {
-    width: 90%;
-    padding-left: 5%;
-    padding-right: 5%;
-  }
-  @media only screen and (max-width: 1300px) and (min-width: 700px) {
-    margin: 20px 10px;
-    width: 80%;
-  }
+  padding: 0 5%;
 `;
 
 export const StyledInput = styled.input`
@@ -237,41 +224,35 @@ export const TdValue = styled.div`
 export const StyledMenuDiv = styled.div`
   // height : 100vh;
   min-width: 100%;
-  display: flex;
   overflow: hidden;
-  min-height: 540px;
   @media only screen and (max-width: 700px) {
-    display: flex;
     transition: all 500ms linear;
-    min-height: 100vh;
-  }
-`;
-
-export const StyledChildren = styled.div`
-  width: 100%;
-  @media only screen and (max-width: 700px) {
-    transition: left 0.5s ease;
-    left: 0px;
-    margin-left: none;
-    overflow-x: hidden;
-    overflow-y: auto;
-    min-height: 100vh;
   }
 `;
 
 export const StyledDrawer = styled.div`
-display : flex;
-@media only screen and (min-width: 700px){
-  min-width : 240px;
-}
-@media only screen and (max-width: 700px){
-  display : flex;
-  position : fixed;
-  height : 100vh;
-  overflow-x : auto
-  transition : left 0.5s ease;
-  // transform : translateX(0);
-}
+  padding: 20px;
+  background: white;
+  display: flex;
+  flex-wrap: wrap;
+  @media only screen and (max-width: 700px) {
+    transition: left 0.5s ease;
+    // transform : translateX(0);
+  }
+`;
+
+export const StyledButtonGroup = styled.div`
+  padding-top: 0px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;
+  background: white;
+  display: flex;
+  flex-wrap: wrap;
+  @media only screen and (max-width: 700px) {
+    transition: left 0.5s ease;
+    // transform : translateX(0);
+  }
 `;
 
 export const StyledMainContentDiv = styled.div`
@@ -296,13 +277,17 @@ export const PinContainer = styled.div`
 `;
 
 export const DetailsHeaderParent = styled.div`
-  padding: 20px;
-  width: 40vh;
+  display: flex;
+  align-items: center;
+  margin: 0 5%;
+  background: white;
 `;
 
 export const DetailsHeaderChild = styled.div`
-  margin: 10px 10px;
-  padding-bottom: 10px;
+  padding: 10px 24px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
 `;
 
 export const DetailsHeaderValue = styled.div`
@@ -317,33 +302,70 @@ export const DetailsHeaderValue = styled.div`
 `;
 
 export const DetailsCardView = styled(Card)`
-  background: #ffffff;
-  border: 1px solid #eaedf2;
+  background-color: transparent;
+  border: none;
   box-sizing: border-box;
-  border-radius: 16px;
-  margin-top: 30px;
-  box-shadow: 0px 15px 60px rgba(0, 0, 0, 0.05);
+  margin-top: 56px;
+  position: relative;
+  & .card-header {
+    margin-bottom: 24px;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    color: "#141A39";
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  & .card-body {
+    background-color: white;
+    padding: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    & > div {
+      padding: 16px;
+      border-bottom: 1px solid #f2f6ff;
+      @media (min-width: 1600px) {
+        width: 25%;
+      }
+      @media only screen and (max-width: 1600px) and (min-width: 1200px) {
+        width: 33.33333333333%;
+      }
+      @media only screen and (max-width: 1200px) and (min-width: 800px) {
+        width: 50%;
+      }
+      @media only screen and (max-width: 800px) {
+        width: 100%;
+      }
+    }
+  }
+  & .hide-border {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 20px;
+    background-color: white;
+    width: 100%;
+  }
 `;
 
 export const DetailsCardTitle = styled.div`
-  font-family: IBM Plex Sans;
   font-style: normal;
-  font-size: 15px;
-  line-height: 21px;
-  color: #325078;
-  /* identical to box height */
-
-  padding-bottom: 5px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #969ab6;
   text-transform: capitalize;
+  margin-bottom: 6px;
 `;
 
 export const DetailsCardValue = styled.div`
-  font-family: IBM Plex Sans;
   font-style: normal;
   font-weight: normal;
   font-size: 14px;
-  line-height: 18px;
-  color: #001932;
+  line-height: 20px;
+  color: #141a39;
 `;
 
 export const StyledUserPhoto = styled.div`
@@ -356,10 +378,14 @@ export const StyledUserPhoto = styled.div`
   justify-content: center;
   align-items: center;
 
-  font-family: IBM Plex Sans;
   font-style: normal;
   font-weight: 300;
   font-size: 21px;
   line-height: 27px;
   text-align: center;
+`;
+
+export const StickyContainer = styled.div`
+  height: 100vh;
+  overflow-y: auto;
 `;
