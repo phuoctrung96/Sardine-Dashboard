@@ -1,10 +1,49 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import React from "react";
 import moment from "moment";
-import { Card } from "react-bootstrap";
 import { Transaction } from "sardine-dashboard-typescript-definitions";
+import styled from "styled-components";
+import DataCard from "components/Common/DataCard";
 import Badge from "../../Common/Badge";
-import { DetailsCardView, StyledTable, TdValue, StyledTh, Cell, StyledTr, DetailsCardHeader } from "../styles";
+import { DetailsCardView, StyledTable, TdValue, StyledTh, Cell } from "../styles";
+
+const TableWrapper = styled.div`
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 0;
+  &::-webkit-scrollbar {
+    width: 2px;
+    border-radius: 2px;
+  }
+  &::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #141a39;
+    border-radius: 2px;
+    outline: 1px solid slategrey;
+  }
+`;
+
+const StyledTr = styled.tr`
+  height: 36px;
+  border-radius: 4px;
+  font-family: IBM Plex Mono;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 140%;
+  font-feature-settings: "ss02" on, "zero" on;
+  color: #141a39;
+  padding: 9px 0px;
+  background-color: #ffffff;
+  border: solid 1px transparent;
+  border-bottom-color: #f2f6ff;
+  width: auto;
+  :hover {
+    background-color: #f7f9fc;
+  }
+`;
 
 interface Props {
   transactions: Transaction[];
@@ -17,11 +56,13 @@ const RecentTransaction: React.FC<Props> = (props) => {
   const headers = ["Date & Time", "Transaction Id", "Amount", "Type", "Risk Level", "AML Level", "Category"];
 
   return (
-    <DetailsCardView style={{ width: "100%", height: "unset" }}>
-      <DetailsCardHeader id="recent_transaction_title">
-        Recent Transaction {transactions.length >= 100 && <span style={{ fontSize: 9 }}>(Top 100)</span>}
-      </DetailsCardHeader>
-      <Card.Body>
+    <DataCard
+      header={`Recent Transaction ${transactions.length >= 100 ? "(Top 100)" : ""}`}
+      attributes={[]}
+      bodyStyle={{ display: "block" }}
+      icon={undefined}
+    >
+      <DetailsCardView style={{ width: "100%", height: "unset", margin: 0, borderRadius: 0 }}>
         {isLoading ? (
           <TdValue>Loading...</TdValue>
         ) : transactions.length === 0 ? (
@@ -29,21 +70,16 @@ const RecentTransaction: React.FC<Props> = (props) => {
             No data available!
           </TdValue>
         ) : (
-          <div
-            style={{
-              maxHeight: 400,
-              overflowY: "scroll",
-            }}
-          >
+          <TableWrapper>
             <StyledTable id="recent_transaction_table">
               <thead style={{ height: 50 }}>
-                <tr>
+                <StyledTr>
                   {headers.map((ele) => (
                     <StyledTh id={`th_${ele}`} key={`${ele}`}>
                       {ele}
                     </StyledTh>
                   ))}
-                </tr>
+                </StyledTr>
               </thead>
               <tbody>
                 {transactions.map((d, index) => {
@@ -66,10 +102,10 @@ const RecentTransaction: React.FC<Props> = (props) => {
                 })}
               </tbody>
             </StyledTable>
-          </div>
+          </TableWrapper>
         )}
-      </Card.Body>
-    </DetailsCardView>
+      </DetailsCardView>
+    </DataCard>
   );
 };
 

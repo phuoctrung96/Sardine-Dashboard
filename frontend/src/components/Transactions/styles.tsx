@@ -122,7 +122,7 @@ const DetailsCardHeader = styled(Card.Header)`
 `;
 
 const StyledTable = styled.table`
-  border-collapse: separate;
+  border-collapse: collapse;
   table-layout: auto;
   width: -webkit-fill-available;
   display: table;
@@ -142,8 +142,7 @@ const StyledTh = styled.th`
 
   /* Secondary */
 
-  color: #969ab6;
-  border-bottom: 1px solid #e6ecfa;
+  color: #aba69a;
 `;
 
 const StyledTr = styled.tr`
@@ -178,7 +177,7 @@ const Cell = styled.td`
   font-weight: 500;
   font-size: 14px;
   line-height: 18px;
-  color: #325078;
+  color: #141a39;
 `;
 const TdValue = styled.div`
   font-family: IBM Plex Sans;

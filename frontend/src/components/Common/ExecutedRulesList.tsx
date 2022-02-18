@@ -33,14 +33,15 @@ const StyledTr = styled.tr`
   font-size: 14px;
   line-height: 140%;
   font-feature-settings: "ss02" on, "zero" on;
-  color: #141A39;
+  color: #141a39;
   padding: 9px 0px;
   background-color: #ffffff;
   border: solid 1px transparent;
-  border-bottom-color: #F2F6FF;
+  border-bottom-color: #f2f6ff;
   width: auto;
   :hover {
-    background-color: #F7F9FC;
+    background-color: #f7f9fc;
+  }
 `;
 
 const Cell = styled.td`
