@@ -33,7 +33,6 @@ RUN npm link ../shared
 COPY server/src ./src
 COPY server/config ./config
 COPY server/migrations ./migrations
-COPY server/database.json ./database.json
 COPY server/start.sh ./start.sh
 COPY server/tsconfig.json ./tsconfig.json 
 RUN npm run build

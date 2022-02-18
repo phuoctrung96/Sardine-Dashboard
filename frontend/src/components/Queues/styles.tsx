@@ -241,6 +241,20 @@ export const StyledDrawer = styled.div`
   }
 `;
 
+export const StyledButtonGroup = styled.div`
+  padding-top: 0px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;
+  background: white;
+  display: flex;
+  flex-wrap: wrap;
+  @media only screen and (max-width: 700px) {
+    transition: left 0.5s ease;
+    // transform : translateX(0);
+  }
+`;
+
 export const StyledMainContentDiv = styled.div`
   width: 100%;
   @media only screen and (max-width: 700px) {
