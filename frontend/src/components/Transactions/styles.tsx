@@ -122,7 +122,7 @@ const DetailsCardHeader = styled(Card.Header)`
 `;
 
 const StyledTable = styled.table`
-  border-collapse: collapse;
+  border-collapse: separate;
   table-layout: auto;
   width: -webkit-fill-available;
   display: table;
@@ -133,17 +133,17 @@ const StyledTh = styled.th`
   padding: 10px;
   font-family: IBM Plex Sans;
   font-style: normal;
-  font-weight: 600;
+  font-weight: normal;
   font-size: 14px;
-  line-height: 19px;
+  line-height: 20px;
   /* identical to box height */
 
   letter-spacing: 0.14em;
 
   /* Secondary */
 
-  color: #325078;
-  background: #f7f9fc;
+  color: #969ab6;
+  border-bottom: 1px solid #e6ecfa;
 `;
 
 const StyledTr = styled.tr`
@@ -160,10 +160,11 @@ const StyledTr = styled.tr`
   padding: 9px 0px;
   background-color: #ffffff;
   border: solid 2px transparent;
-  border-bottom-color: #F7F9FC;
+  border-bottom-color: #f7f9fc;
   width: auto;
   :hover {
-    background-color: #F7F9FC;
+    background-color: #f7f9fc;
+  }
 `;
 
 const Cell = styled.td`

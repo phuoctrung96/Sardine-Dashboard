@@ -40,7 +40,7 @@ const RecentTransaction: React.FC<Props> = (props) => {
                 <tr>
                   {headers.map((ele) => (
                     <StyledTh id={`th_${ele}`} key={`${ele}`}>
-                      {ele.toUpperCase()}
+                      {ele}
                     </StyledTh>
                   ))}
                 </tr>
