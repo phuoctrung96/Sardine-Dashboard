@@ -1,3 +1,4 @@
+import { CSSProperties } from "react";
 import styled from "styled-components";
 import chartLogo from "../../utils/logo/chartsOnly.svg";
 import downLogo from "../../utils/logo/down.svg";
@@ -38,6 +39,7 @@ const StyledDropdownButton = styled.div`
   display: flex;
   margin-left: 20px;
   align-items: center;
+  justify-content: space-around;
   border: 2px solid #eaedf2;
   box-sizing: border-box;
   border-radius: 4px;
@@ -53,10 +55,16 @@ interface DropdownButtonItem {
   option: string;
 }
 
-const DropwdownButton = (props: { clicked: () => void; item?: DropdownButtonItem; title?: string; id: string }): JSX.Element => {
-  const { clicked, item, title, id } = props;
+const DropwdownButton = (props: {
+  clicked: () => void;
+  item?: DropdownButtonItem;
+  title?: string;
+  id: string;
+  style?: CSSProperties;
+}): JSX.Element => {
+  const { clicked, item, title, id, style } = props;
   return (
-    <StyledDropdownButton onClick={() => clicked()} data-tid={id} style={{ backgroundColor: "white" }}>
+    <StyledDropdownButton onClick={() => clicked()} data-tid={id} style={style}>
       {item && item.icon && (
         <StyledIcon>
           {" "}

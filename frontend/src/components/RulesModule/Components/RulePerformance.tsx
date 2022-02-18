@@ -1,6 +1,6 @@
 import DropwdownButton from "components/Dropdown/DropdownButton";
 import DropwdownItem from "components/Dropdown/DropdownItem";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { replaceAllSpacesWithUnderscores } from "utils/stringUtils";
 import { Container } from "../styles";
@@ -90,6 +90,63 @@ const StyledDropdownList = styled.div`
   border: 1px solid rgba(0, 0, 0, 0.02);
 `;
 
+const DateFilterDropdown = (props: {
+  open?: boolean;
+  setOpen: (open: boolean) => void;
+  selectedIndex: number;
+  setSelectedIndex: (index: number) => void;
+  options: string[];
+  width: number;
+}) => {
+  const { open, setOpen, selectedIndex, setSelectedIndex, options, width } = props;
+  const ref = useRef<HTMLDivElement>(null);
+
+  const onItemClicked = (index: number) => {
+    setSelectedIndex(index);
+    setOpen(false);
+  };
+
+  const handleClick = (e: MouseEvent) => {
+    if (!(ref && ref.current && ref.current.contains(e.target as Node))) {
+      setOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClick);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+    };
+  }, []);
+
+  return (
+    <div style={{ width }}>
+      {open ? (
+        <StyledDropdownDiv ref={ref}>
+          <StyledDropdownList>
+            {options.map((ele, index) => (
+              <DropwdownItem
+                clicked={() => onItemClicked(index)}
+                key={ele}
+                item={{ option: ele }}
+                isSelected={index === selectedIndex}
+                id={`dropdown_item_${replaceAllSpacesWithUnderscores(ele)}`}
+              />
+            ))}
+          </StyledDropdownList>
+        </StyledDropdownDiv>
+      ) : (
+        <DropwdownButton
+          id="rule-performance-start-from"
+          clicked={() => setOpen(true)}
+          item={{ option: options[selectedIndex] }}
+          style={{ backgroundColor: "white" }}
+        />
+      )}
+    </div>
+  );
+};
+
 export const RulePerformanceSection = () => {
   const START_FROM_OPTIONS = ["Last 1 day", "Last week", "Last 30 days", "Last 60 days"];
   const DURATION_OPTIONS = ["1 day", "30 days"];
@@ -99,16 +156,6 @@ export const RulePerformanceSection = () => {
   const [durationDropdownOpen, setDurationDropdownOpen] = useState(false);
   const [durationSelected, setDurationSelected] = useState(1);
 
-  const clickedStartFromItem = (index: number) => {
-    setStartFromSelected(index);
-    setStartFromDropdownOpen(false);
-  };
-
-  const clickedDurationItem = (index: number) => {
-    setDurationSelected(index);
-    setDurationDropdownOpen(false);
-  };
-
   return (
     <Container style={{ marginTop: 60 }}>
       <HorizontalContainer>
@@ -116,52 +163,24 @@ export const RulePerformanceSection = () => {
         <VerticalContainer>
           <HorizontalContainer>
             <DropdownLabel>Start from</DropdownLabel>
-
-            {startFromDropdownOpen ? (
-              <StyledDropdownDiv>
-                <StyledDropdownList>
-                  {START_FROM_OPTIONS.map((ele, index) => (
-                    <DropwdownItem
-                      clicked={() => clickedStartFromItem(index)}
-                      key={ele}
-                      item={{ option: ele }}
-                      isSelected={index === startFromSelected}
-                      id={`dropdown_item_start_from_${replaceAllSpacesWithUnderscores(ele)}`}
-                    />
-                  ))}
-                </StyledDropdownList>
-              </StyledDropdownDiv>
-            ) : (
-              <DropwdownButton
-                id="rule-performance-start-from"
-                clicked={() => setStartFromDropdownOpen(true)}
-                item={{ option: START_FROM_OPTIONS[startFromSelected] }}
-              />
-            )}
+            <DateFilterDropdown
+              open={startFromDropdownOpen}
+              setOpen={setStartFromDropdownOpen}
+              selectedIndex={startFromSelected}
+              setSelectedIndex={setStartFromSelected}
+              options={START_FROM_OPTIONS}
+              width={150}
+            />
 
             <DropdownLabel style={{ marginLeft: 32 }}>Duration</DropdownLabel>
-
-            {durationDropdownOpen ? (
-              <StyledDropdownDiv>
-                <StyledDropdownList>
-                  {DURATION_OPTIONS.map((ele, index) => (
-                    <DropwdownItem
-                      clicked={() => clickedDurationItem(index)}
-                      key={ele}
-                      item={{ option: ele }}
-                      isSelected={index === durationSelected}
-                      id={`dropdown_item_duration_${replaceAllSpacesWithUnderscores(ele)}`}
-                    />
-                  ))}
-                </StyledDropdownList>
-              </StyledDropdownDiv>
-            ) : (
-              <DropwdownButton
-                id="rule-performance-duration"
-                clicked={() => setDurationDropdownOpen(true)}
-                item={{ option: DURATION_OPTIONS[durationSelected] }}
-              />
-            )}
+            <DateFilterDropdown
+              open={durationDropdownOpen}
+              setOpen={setDurationDropdownOpen}
+              selectedIndex={durationSelected}
+              setSelectedIndex={setDurationSelected}
+              options={DURATION_OPTIONS}
+              width={120}
+            />
           </HorizontalContainer>
           <HorizontalContainer style={{ justifyContent: "flex-end", marginTop: 16 }}>
             <SummaryText style={{ color: "#969ab6", marginRight: 16 }}>Showing</SummaryText>
