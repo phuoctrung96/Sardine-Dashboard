@@ -11,9 +11,8 @@ interface IButtonProps {
 export const SubmitButton = (p: IButtonProps) => (
   <Button
     style={{
-      height: 45,
-      borderRadius: 12,
-      backgroundColor: "#2173FF",
+      borderRadius: 5,
+      backgroundColor: "#3147FF",
       border: "none",
       ...p.style,
     }}

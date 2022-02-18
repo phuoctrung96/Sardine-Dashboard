@@ -21,11 +21,6 @@ type UserActionPayload = {
     selectedDateIndex: number;
   };
 
-  [ActionTypes.CHANGE_PATH]: {
-    field: string;
-    title: string;
-  };
-
   [ActionTypes.BLOCK_LIST]: {
     blocklist: BlocklistProps[];
     allowlist: BlocklistProps[];
@@ -71,9 +66,6 @@ export type UserActions = ActionMap<UserActionPayload>[keyof ActionMap<UserActio
 
 export const userReducer = (state: StoreProps, action: UserActions) => {
   switch (action.type) {
-    case ActionTypes.CHANGE_PATH:
-      return { ...state, path: action.payload };
-
     case ActionTypes.CHANGE_SELECTED_DATES_DATA:
       return { ...state, selectedDatesData: action.payload };
 

@@ -1,9 +1,10 @@
 import { writeFileSync, existsSync, mkdirSync } from "fs";
-import { getRulesData, CHECK_POINTS, ItemModel } from "../utils/dataProviderUtils";
+import { CHECKPOINTS } from "sardine-dashboard-typescript-definitions";
+import { getRulesData, ItemModel } from "../utils/dataProviderUtils";
 
 const escapeForCSV = (t: string | boolean) => `"${String(t).replace(/\"/g, '""')}"`;
 
-const data = getRulesData(true, CHECK_POINTS.Customer, true);
+const data = getRulesData(true, CHECKPOINTS.Customer, true);
 let rulesData: ItemModel[] = [];
 data.forEach((r) => {
   if (r.items.length > 0) {

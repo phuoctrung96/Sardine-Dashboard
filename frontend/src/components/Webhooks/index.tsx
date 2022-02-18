@@ -129,7 +129,7 @@ const WebhooksList: React.FC = () => {
             components={{
               Toolbar: ({ data, title }: { data: AnyTodo; title: string }) => (
                 <ToolbarContainer>
-                  <StyledTitleName> Webhook URLs </StyledTitleName>
+                  <StyledTitleName data-tid="title_webhooks">Webhook URLs</StyledTitleName>
                   <ToolbarContainer>
                     <ToolBarWrapper data={data} title={title} />
                     <H40Button style={{ marginLeft: 20 }} onClick={() => setShowpopup(true)}>

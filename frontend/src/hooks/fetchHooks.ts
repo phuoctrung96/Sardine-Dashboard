@@ -1,6 +1,6 @@
 import { useQuery } from "react-query";
-import { getClientIdObject, getRules, fetchOrganisationNames, fetchDeviceProfile } from "utils/api";
-import { ClientIdObject, Rule, OrgName, DATA_SOURCE } from "sardine-dashboard-typescript-definitions";
+import { getClientIdObject, getRules, fetchOrganisationNames, fetchDeviceProfile, fetchInvitations } from "utils/api";
+import { ClientIdObject, Rule, OrgName, DATA_SOURCE, DashboardInvitation } from "sardine-dashboard-typescript-definitions";
 import { CACHE_KEYS } from "../constants";
 import { QueryResult } from "../interfaces/queryInterfaces";
 import { fetchLatLng, LatLng } from "../components/GoogleMaps";
@@ -78,6 +78,28 @@ export const useOrganizationNamesResult = ({ enabled }: { enabled: boolean }): Q
   const { data, error, status } = useQuery<OrgName[], Error>([CACHE_KEYS.ORGANIZATION_NAMES], () => fetchOrganisationNames(), {
     enabled,
   });
+
+  return {
+    status,
+    data,
+    error,
+  };
+};
+
+export const useDashboardInvitationsFetchResult = ({
+  enabled,
+  orgName,
+}: {
+  enabled: boolean;
+  orgName: string;
+}): QueryResult<DashboardInvitation[]> => {
+  const { data, error, status } = useQuery<DashboardInvitation[], Error>(
+    [CACHE_KEYS.DASHBOARD_INVITATIONS, orgName],
+    () => fetchInvitations(orgName),
+    {
+      enabled,
+    }
+  );
 
   return {
     status,

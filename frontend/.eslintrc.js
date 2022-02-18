@@ -56,7 +56,18 @@ module.exports = {
     "require-await": "error",
     "unused-imports/no-unused-imports": "error",
     "@typescript-eslint/return-await": "error",
-    "@typescript-eslint/naming-convention": "warn", // temporarily changed it warn instead of error since there are too many errors and we don't want to fix them all
+    "@typescript-eslint/naming-convention": [
+      "warn",
+      {
+        selector: "interface",
+        format: ["PascalCase"],
+        custom: {
+          // "Interfaces must be named in PascalCase that does not start with I.",
+          regex: "^I[A-Z]",
+          match: false,
+        },
+      },
+    ], // temporarily changed it warn instead of error since there are too many errors and we don't want to fix them all
     "@typescript-eslint/no-explicit-any": "error", // For old any type that is tough to convert, we temporarily use AnyTodo
     "@typescript-eslint/no-floating-promises": "error",
     "@typescript-eslint/no-use-before-define": "warn", // Temporarily changed it warn since there are too many errors and we don't want to fix them all

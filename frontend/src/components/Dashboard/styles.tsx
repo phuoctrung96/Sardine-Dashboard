@@ -47,7 +47,7 @@ export const StyledStickyNav = styled.div`
   }
 `;
 
-export const StyledTitleName = styled.div`
+export const StyledTitleName = styled.span`
   margin: auto 0px;
   font-family: IBM Plex Sans;
   font-style: normal;

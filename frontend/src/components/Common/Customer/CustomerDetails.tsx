@@ -1,5 +1,6 @@
 import React from "react";
 import { renderReasonCodesFromArray } from "utils/renderReasonCodes";
+import { BiUserCircle } from "react-icons/bi";
 import DataCard, { CardAttribute } from "../DataCard";
 import { Link } from "../Links";
 
@@ -150,7 +151,7 @@ const CustomerDetails = (props: CustomerDetailsProps): JSX.Element => {
     });
   }
 
-  return <DataCard header={HEADER} attributes={attributes} />;
+  return <DataCard header={HEADER} attributes={attributes} icon={<BiUserCircle size={28} />} />;
 };
 
 export default CustomerDetails;

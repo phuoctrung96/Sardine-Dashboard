@@ -11,7 +11,7 @@ export const headerFields: HeaderField[] = [
   { key: "document_match_level", highFirstOrder: true },
   { key: "image_quality_level", highFirstOrder: true },
   { key: "face_match_level", highFirstOrder: true },
-  { key: "timestamp" },
+  { key: "time" },
   { key: "customer_id" },
   { key: "session_key" },
   { key: "verification_id" },

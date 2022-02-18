@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { Card, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { GrLocation } from "react-icons/gr";
@@ -104,7 +105,8 @@ const DeviceView: React.FC = () => {
   const sessionKeyFromQP = getSessionKeyFromQueryParams(search);
   const dbSource = getSourceFromQueryParams(search, isSuperAdmin);
 
-  const organisation = getClientFromQueryParams(search, isSuperAdmin, organisationFromUserStore);
+  const [cookies] = useCookies(["organization"]);
+  const organisation = getClientFromQueryParams(search, isSuperAdmin, organisationFromUserStore, cookies.organization);
   const clientIdFromQP = searchPath.get(CLIENT_ID_QUERY_FIELD);
 
   const featuresWithLevel = ["device_reputation", "proxy", "vpn", "os_anomaly", "session_risk"];
@@ -194,7 +196,7 @@ const DeviceView: React.FC = () => {
 
         const data: DeviceObject[] = definitions.map((def) => {
           const name = def.key;
-          const icon = def.icon;
+          const { icon } = def;
           const value = Object.entries(def.value);
           if (name === "Executed Rules") {
             value.sort();
@@ -298,7 +300,7 @@ const DeviceView: React.FC = () => {
             <StyledNavTitle style={{ width: "100%" }}>
               <StyledTitleName id="page_title" style={{ fontSize: 20 }}>
                 {"< Device Intelligence "}
-                <span style={{ fontWeight: "bold" }}>{"/ Device Details"}</span>
+                <span style={{ fontWeight: "bold" }}>/ Device Details</span>
               </StyledTitleName>
             </StyledNavTitle>
           </StyledStickyNav>
@@ -330,7 +332,7 @@ const DeviceView: React.FC = () => {
             {deviceData.map((data) => (
               <StyledCard style={{ marginTop: 15 }} key={data.name}>
                 <Card.Header id={`header_${data.name}`} style={{ color: "var(--dark-14)" }}>
-                  <img src={data.icon} />
+                  <img src={data.icon} alt="device details icon" />
                   <span>{data.name}</span>
                 </Card.Header>
                 {data.name.toLowerCase().includes("rules") ? (

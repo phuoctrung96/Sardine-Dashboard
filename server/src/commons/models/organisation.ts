@@ -7,11 +7,7 @@ const organisationModel = (db: pgPromise.IDatabase<{}>) => {
   const fetchInvitations = (name: string) =>
     db.any(
       `
-      SELECT invitation_tokens.id, organisation_id, token, expired_at, email,
-      CASE
-        WHEN expired_at >= NOW() then 'Active'
-        ELSE 'Inactive' END
-        AS status
+      SELECT invitation_tokens.id, organisation_id, token, expired_at, email
       FROM invitation_tokens
       JOIN organisation ON invitation_tokens.organisation_id = organisation.id
       WHERE organisation.display_name = $1 ORDER BY invitation_tokens.id

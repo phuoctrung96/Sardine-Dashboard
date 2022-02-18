@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Modal, Button, FormControl } from "react-bootstrap";
+import { CHECKPOINTS } from "sardine-dashboard-typescript-definitions";
 import { replaceAll } from "utils/stringUtils";
 import { Title, StyledUl } from "./styles";
 import {
   getRulesData,
-  CHECK_POINTS,
   supportedFunctions,
   FUNCTIONS,
   ItemModel,
@@ -90,7 +90,7 @@ const FunctionsPopup: React.FC<Props> = (props) => {
   const [selectedFunction, setSelectedFunction] = useState("");
   const [functionData, setFunctionData] = useState<FunctionChild>();
   const [rulesData] = useState(
-    getRulesData(isDemoMode, CHECK_POINTS.Customer, isSuperAdmin, organisation).filter((r) => r.title !== FUNCTIONS)
+    getRulesData(isDemoMode, CHECKPOINTS.Customer, isSuperAdmin, organisation).filter((r) => r.title !== FUNCTIONS)
   );
   const [featureValue, setFeatureValue] = useState("");
 

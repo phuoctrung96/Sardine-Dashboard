@@ -1,20 +1,26 @@
+import classNames from "classnames";
 import { StyleCircularBadge } from "../Customers/styles";
-import riskLevelIcon from "../../utils/logo/risk_level.svg";
 
-interface IProps {
+interface CircularRiskLevelProps {
   risk_level: string;
 }
 
-const CircularRiskLevel: React.FC<IProps> = ({ risk_level }) => {
-  return (
-    <StyleCircularBadge>
-      <img src={riskLevelIcon} />
-      <div>
-        <div id="session_level">{risk_level}</div>
-        <div id="session_level_label">Risk Level</div>
+const CircularRiskLevel: React.FC<CircularRiskLevelProps> = ({ risk_level }) => (
+  <StyleCircularBadge>
+    <div>
+      <div
+        className={classNames({
+          red: risk_level === "high" || risk_level === "very_high",
+          yellow: risk_level === "medium",
+          green: risk_level === "low",
+          "session-level": true,
+        })}
+      >
+        {risk_level}
       </div>
-    </StyleCircularBadge>
-  );
-};
+      <div className="session-level-label">Risk Level</div>
+    </div>
+  </StyleCircularBadge>
+);
 
 export default CircularRiskLevel;

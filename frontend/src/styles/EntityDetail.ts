@@ -20,3 +20,15 @@ export const HeaderSectionContainer = styled.div`
     display: block;
   }
 `;
+
+export const ExpiredDocContainer = styled.div`
+  width: inherit;
+  background-color: var(--danger);
+  color: white;
+  text-align: center;
+`;
+
+export const ExpiredDocTitle = styled.div`
+  padding: 5px;
+  font-weight: 600;
+`;

@@ -5,7 +5,7 @@ import { TableRow } from "./TableRow";
 import { Entity } from "../types";
 import { Tbody } from "../styles";
 
-const headers = ["Entity name", "Match score", "Alias names", "Addreses", "Birth Dates", "Signals", "Actions"];
+const headers = ["Entity name", "Match score", "Alias names", "Addreses", "Birth Dates", "Signals", ""];
 const convertedSignalKey = ["Sanction List", "PEP (Politically Exposed Person)", "Adverse Media"];
 
 interface AmlTableProps {
@@ -41,14 +41,9 @@ export const Table = ({ amlData, onEntityView, customerData }: AmlTableProps) =>
   );
 
   return (
-    <StyledTable className="w-100">
+    <StyledTable className="w-100 bg-white">
       <thead>
-        <tr
-          style={{
-            height: "36px",
-            backgroundColor: "#f5f5f5",
-          }}
-        >
+        <tr>
           {headers.map((ele, eleIndex) => (
             <StyledTh
               style={{

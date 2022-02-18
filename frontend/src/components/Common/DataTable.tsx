@@ -14,6 +14,31 @@ const EmptyTextContainer = styled.div`
   text-align: left;
 `;
 
+const TableWrapper = styled.div`
+  .App {
+    text-align: center;
+  }
+  .MuiTable-root {
+    width: max-content !important;
+  }
+  .btn-group > .btn:focus,
+  .btn-group > .btn:active,
+  .btn-group > .btn.active,
+  .btn-group-vertical > .btn:focus,
+  .btn-group-vertical > .btn:active,
+  .btn-group-vertical > .btn.active {
+    z-index: 0 !important;
+  }
+  .MuiTableRow-root > th {
+    z-index: 0 !important;
+  }
+  .MuiTableCell-alignLeft {
+    width: max-content !important;
+    max-width: 320px !important;
+    line-break: anywhere !important;
+  }
+`;
+
 // Type definition is based on Column<RowData extends object> in material-table.
 // export interface Column<RowData extends object> {
 export interface DataColumn<RowData> {
@@ -156,23 +181,25 @@ export const DataTable = (props: DataTableProps): JSX.Element => {
   } = props;
   return (
     <ThemeProvider theme={tableTheme}>
-      <MaterialTable
-        components={components}
-        data={data}
-        detailPanel={detailPanel}
-        options={{ ...defaultOptions, ...options }}
-        localization={{
-          body: { ...defaultLocalization.body, ...localization?.body },
-          ...localization,
-        }}
-        columns={columns}
-        isLoading={isLoading}
-        onPageChange={onChangePage}
-        onFilterChange={onFilterChange}
-        onRowClick={onRowClick}
-        editable={editable}
-        title={title}
-      />
+      <TableWrapper>
+        <MaterialTable
+          components={components}
+          data={data}
+          detailPanel={detailPanel}
+          options={{ ...defaultOptions, ...options }}
+          localization={{
+            body: { ...defaultLocalization.body, ...localization?.body },
+            ...localization,
+          }}
+          columns={columns}
+          isLoading={isLoading}
+          onPageChange={onChangePage}
+          onFilterChange={onFilterChange}
+          onRowClick={onRowClick}
+          editable={editable}
+          title={title}
+        />
+      </TableWrapper>
     </ThemeProvider>
   );
 };

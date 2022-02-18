@@ -29,24 +29,27 @@ export const selectIsAdmin = (state: UseUserStore): boolean =>
 
 export const useUserStore = create<UseUserStore>(
   immer(
-    devtools((set) => {
-      const setWithReplaceParamLast = createSetWithReplaceParamLast<UseUserStore>(set);
+    devtools(
+      (set) => {
+        const setWithReplaceParamLast = createSetWithReplaceParamLast<UseUserStore>(set);
 
-      return {
-        // statew
-        isAuthenticated: false,
-        organisation: "",
-        // setters
-        setUser: (user) => setWithReplaceParamLast(user, "setUser"),
-        setUserStoreOrganisation: (organisation) => setWithReplaceParamLast({ organisation }, "setOrganisation"),
-        logout: async () => {
-          await logout();
-          setWithReplaceParamLast((state) => {
-            state.isAuthenticated = false;
-          }, "logout");
-        },
-      };
-    }, name)
+        return {
+          // states
+          isAuthenticated: false,
+          organisation: "",
+          // setters
+          setUser: (user) => setWithReplaceParamLast(user, "setUser"),
+          setUserStoreOrganisation: (organisation) => setWithReplaceParamLast({ organisation }, "setOrganisation"),
+          logout: async () => {
+            await logout();
+            setWithReplaceParamLast((state) => {
+              state.isAuthenticated = false;
+            }, "logout");
+          },
+        };
+      },
+      { name }
+    )
   )
 );
 

@@ -73,6 +73,7 @@ import {
   FetchDeviceProfileRequestBody,
   UserAggregationKind,
   GetFeedbacksResponse,
+  FetchInvitationsResponse,
 } from "sardine-dashboard-typescript-definitions";
 
 import { FilterData } from "components/Common/FilterField";
@@ -442,7 +443,8 @@ export const loginUserResult = async (data: SignInData) => {
   }
 };
 
-export const fetchInvitations = (id: string) => get({ url: `/api/organisation/fetch-invitations?organisation=${id}` });
+export const fetchInvitations = (id: string): Promise<FetchInvitationsResponse> =>
+  get({ url: `/api/organisation/fetch-invitations?organisation=${id}` });
 
 export const generateSendInvite = (id: string, emails: string[], link: string) =>
   post({

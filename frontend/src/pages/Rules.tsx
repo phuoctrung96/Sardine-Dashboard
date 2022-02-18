@@ -422,7 +422,7 @@ const Rules = (): JSX.Element => {
             margin: "50px 50px 0px",
           }}
         >
-          <Title className="title-rules-listing" id="title_rules_listing">
+          <Title className="title-rules-listing" id="title_rules_listing" data-tid="title_rules_listing">
             RULE LISTING
           </Title>
           <Button
