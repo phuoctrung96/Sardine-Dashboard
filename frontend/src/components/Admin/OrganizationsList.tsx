@@ -18,11 +18,16 @@ const OrganizationsList: React.FC<IProps> = (props) => {
 
   const { data, isLoading, onUserRemoved, showCredentialsModal, showInvitationModal } = props;
 
-  const tableData = data.map ? data.map((d, index) => ({ index, name: d.name })) : [];
+  const tableData = data.map ? data.map((d, index) => ({ index, name: d.name, clientID: d.clientID })) : [];
   const columnsData = [
     {
       title: "ORGANIZATIONS",
       field: "name",
+      grouping: false,
+    },
+    {
+      title: "CLIENT ID",
+      field: "clientID",
       grouping: false,
     },
     {
@@ -49,7 +54,7 @@ const OrganizationsList: React.FC<IProps> = (props) => {
   const getFilteredData = () => tableData.filter((org) => org.name.toLowerCase().includes(searchString.toLowerCase()));
 
   return (
-    <TableWrapper>
+    <TableWrapper style={{ maxWidth: 900 }}>
       <FormControl
         type="text"
         placeholder="Search here"
