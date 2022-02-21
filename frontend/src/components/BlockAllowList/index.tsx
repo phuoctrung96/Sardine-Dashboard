@@ -8,7 +8,7 @@ import { StoreCtx } from "../../utils/store";
 import OrganisationDropDown from "../Dropdown/OrganisationDropDown";
 import { StyledDropdownDiv, StyledNavTitle, StyledStickyNav, StyledTitleName } from "../Dashboard/styles";
 import { ActionTypes } from "../../utils/store/actionTypes";
-import { isWideScreen } from "../../utils/dataProviderUtils";
+import { isWideScreen } from "../../utils/browserUtils";
 import {
   StyledMainDiv,
   StyledTable,
