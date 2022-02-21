@@ -2,48 +2,9 @@
 import React from "react";
 import moment from "moment";
 import { Transaction } from "sardine-dashboard-typescript-definitions";
-import styled from "styled-components";
 import DataCard from "components/Common/DataCard";
 import Badge from "../../Common/Badge";
-import { DetailsCardView, StyledTable, TdValue, StyledTh, Cell } from "../styles";
-
-const TableWrapper = styled.div`
-  max-height: 400px;
-  overflow-y: auto;
-  padding: 0;
-  &::-webkit-scrollbar {
-    width: 2px;
-    border-radius: 2px;
-  }
-  &::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: #141a39;
-    border-radius: 2px;
-    outline: 1px solid slategrey;
-  }
-`;
-
-const StyledTr = styled.tr`
-  height: 36px;
-  border-radius: 4px;
-  font-family: IBM Plex Mono;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 14px;
-  line-height: 140%;
-  font-feature-settings: "ss02" on, "zero" on;
-  color: #141a39;
-  padding: 9px 0px;
-  background-color: #ffffff;
-  border: solid 1px transparent;
-  border-bottom-color: #f2f6ff;
-  width: auto;
-  :hover {
-    background-color: #f7f9fc;
-  }
-`;
+import { DetailsCardView, StyledTable, TransactionTableWrapper, TdValue, StyledTh, Cell, StyledTr } from "../styles";
 
 interface Props {
   transactions: Transaction[];
@@ -70,10 +31,10 @@ const RecentTransaction: React.FC<Props> = (props) => {
             No data available!
           </TdValue>
         ) : (
-          <TableWrapper>
+          <TransactionTableWrapper>
             <StyledTable id="recent_transaction_table">
               <thead style={{ height: 50 }}>
-                <StyledTr>
+                <StyledTr style={{ color: "#141a39", borderBottomColor: "#f2f6ff" }}>
                   {headers.map((ele) => (
                     <StyledTh id={`th_${ele}`} key={`${ele}`}>
                       {ele}
@@ -102,7 +63,7 @@ const RecentTransaction: React.FC<Props> = (props) => {
                 })}
               </tbody>
             </StyledTable>
-          </TableWrapper>
+          </TransactionTableWrapper>
         )}
       </DetailsCardView>
     </DataCard>

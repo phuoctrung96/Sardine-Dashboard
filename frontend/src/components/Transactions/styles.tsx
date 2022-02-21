@@ -6,6 +6,24 @@ const TableWrapper = styled.div`
   width: inherit;
 `;
 
+const TransactionTableWrapper = styled.div`
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 0;
+  &::-webkit-scrollbar {
+    width: 2px;
+    border-radius: 2px;
+  }
+  &::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #141a39;
+    border-radius: 2px;
+    outline: 1px solid slategrey;
+  }
+`;
+
 const StyledMainDiv = styled.div`
   @media (min-width: 1400px) {
     width: 95%;
@@ -206,6 +224,7 @@ const TitleContainer = styled.div`
 
 export {
   TableWrapper,
+  TransactionTableWrapper,
   InputGroupWrapper,
   StyledMainDiv,
   PinContainer,
