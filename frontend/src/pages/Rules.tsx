@@ -36,7 +36,7 @@ import {
   SortBtn,
 } from "../components/RulesModule/styles";
 import { RuleItem, SortableItem } from "../components/RulesModule/RuleItem";
-import { isWideScreen } from "../utils/dataProviderUtils";
+import { isWideScreen } from "../utils/browserUtils";
 import { CHECKPOINT_QUERY_FIELD, QUERY_STATUS } from "../constants";
 import { MANAGE_RULE, RULE_DETAILS_PATH, SEARCH_PARAM_KEYS } from "../modulePaths";
 import { useClientIdFetchResult, useRulesFetchResult, useOrganizationNamesResult } from "../hooks/fetchHooks";
