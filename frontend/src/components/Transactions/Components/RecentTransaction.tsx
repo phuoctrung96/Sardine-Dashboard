@@ -5,6 +5,7 @@ import { Transaction } from "sardine-dashboard-typescript-definitions";
 import DataCard from "components/Common/DataCard";
 import Badge from "../../Common/Badge";
 import { DetailsCardView, StyledTable, TransactionTableWrapper, TdValue, StyledTh, Cell, StyledTr } from "../styles";
+import transactionIcon from "../../../utils/logo/transactions_detail.svg";
 
 interface Props {
   transactions: Transaction[];
@@ -21,7 +22,7 @@ const RecentTransaction: React.FC<Props> = (props) => {
       header={`Recent Transaction ${transactions.length >= 100 ? "(Top 100)" : ""}`}
       attributes={[]}
       bodyStyle={{ display: "block" }}
-      icon={undefined}
+      icon={<img src={transactionIcon} alt="Transaction icon" />}
     >
       <DetailsCardView style={{ width: "100%", height: "unset", margin: 0, borderRadius: 0 }}>
         {isLoading ? (

@@ -14,9 +14,6 @@ const TransactionTableWrapper = styled.div`
     width: 2px;
     border-radius: 2px;
   }
-  &::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  }
   &::-webkit-scrollbar-thumb {
     background-color: #141a39;
     border-radius: 2px;
@@ -180,7 +177,7 @@ const StyledTr = styled.tr`
   border-bottom-color: #f7f9fc;
   width: auto;
   :hover {
-    background-color: #f7f9fc;
+    background-color: #fafbff;
   }
 `;
 
