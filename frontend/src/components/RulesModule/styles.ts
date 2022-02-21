@@ -100,8 +100,19 @@ export const HorizontalContainer = styled.div`
   flex-direction: row;
 `;
 
+export const HorizontalContainerSpaceBetween = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
 export const HorizontalSpace = styled.div`
   margin: 15px;
+`;
+
+export const VerticalContainer = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 
 export const TitleWithLogo = styled.div`
@@ -433,4 +444,77 @@ export const DataDictionaryContainer = styled.div`
   min-width: 140px;
   height: 40px;
   border-radius: 6px;
+`;
+
+export const RulePerformanceTitle = styled.div`
+  font-family: IBM Plex Sans;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 20px;
+  line-height: 32px;
+`;
+
+export const RulePerformancePaper = styled.div<{ $color: string }>`
+  height: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  min-width: 30%;
+  background-color: white;
+  border-radius: 8px;
+
+  & p {
+    margin: 0;
+  }
+
+  & p:first-child {
+    font-size: 16px;
+
+    &::before {
+      content: "";
+      display: inline-block;
+      margin-right: 7px;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background-color: ${(props) => props.$color};
+    }
+  }
+  & p:last-child {
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 32px;
+  }
+`;
+
+export const RulePerformanceDropdownLabel = styled.div`
+  font-family: IBM Plex Sans;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 20px;
+`;
+
+export const RulePerformanceSummaryText = styled.div`
+  font-family: IBM Plex Sans;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 20px;
+`;
+
+export const StyledDropdownDiv = styled.div`
+  z-index: 10;
+  height: 36px;
+  max-width: 211px;
+`;
+
+export const StyledDropdownList = styled.div`
+  padding: 8px;
+  background: #ffffff;
+  z-index: 12;
+  top: 0;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.02);
 `;
