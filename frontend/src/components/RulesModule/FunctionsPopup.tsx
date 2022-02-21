@@ -7,11 +7,11 @@ import {
   getRulesData,
   supportedFunctions,
   FUNCTIONS,
-  ItemModel,
   FunctionChild,
   DATA_TYPES,
   MULTI_FEATURE_FUNCTIONS,
-} from "../../utils/dataProviderUtils";
+} from "../../domain/dataProvider";
+import { FeatureItem } from "../../domain/featureItem";
 import RecursiveDropdown, { DataProps } from "../Common/RecursiveDropdown";
 
 interface Props {
@@ -94,7 +94,7 @@ const FunctionsPopup: React.FC<Props> = (props) => {
   );
   const [featureValue, setFeatureValue] = useState("");
 
-  const getDropdownData = (_data: ItemModel[]) => {
+  const getDropdownData = (_data: FeatureItem[]) => {
     const data: DataProps[] = [];
     _data.forEach((r) => {
       data.push({

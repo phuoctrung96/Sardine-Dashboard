@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Image } from "react-bootstrap";
-import { DROP_DOWN_BG, isDurationValue } from "../../utils/dataProviderUtils";
+import { DROP_DOWN_BG } from "../../domain/dataProvider";
+import { isDurationValue } from "../../utils/ruleUtils";
 import rightArrow from "../../utils/logo/rightArrow.png";
 import rightArrowWhite from "../../utils/logo/rightArrowWhite.png";
 import {

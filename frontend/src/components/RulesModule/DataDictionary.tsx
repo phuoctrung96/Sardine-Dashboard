@@ -2,7 +2,8 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { StyledTable, StyledTr, BackgroundBox, Title, StyledTh, StyledUl } from "./styles";
-import { getRulesData, ItemModel, rulesForDataDictionary } from "../../utils/dataProviderUtils";
+import { getRulesData } from "../../domain/dataProvider";
+import { rulesForDataDictionary } from "../../utils/ruleUtils";
 
 const Cell = styled.td`
   vertical-align: middle;
@@ -39,7 +40,7 @@ const DataDictionary: React.FC = () => {
           </StyledTr>
         </thead>
         <tbody>
-          {rules.map((data: ItemModel) => (
+          {rules.map((data) => (
             <>
               <div style={{ marginTop: 5 }} />
               <TableRow key={data.title} style={{ maxHeight: 150 }}>
