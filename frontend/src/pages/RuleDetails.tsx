@@ -8,6 +8,7 @@ import { PrimaryButton } from "components/Button";
 import { getErrorMessage, captureException } from "utils/errorUtils";
 import { selectIsSuperAdmin, useUserStore } from "store/user";
 import { useQueryClient } from "react-query";
+import { RulePerformanceSection } from "components/RulesModule/Components/RulePerformance";
 import ChartAndTable from "../components/ChartAndTable";
 import Layout from "../components/Layout/Main";
 import PopUp from "../components/Common/PopUp";
@@ -89,6 +90,7 @@ const RuleDetails = (): JSX.Element => {
   const org = paramOrg && organisationFromUserStore ? paramOrg : organisationFromUserStore;
   const clientIdSearchParams = params.get(PARAM_KEYS.CLIENT_ID);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { rulePerformance } = useRulePerformanceFetch(clientId, ruleID || "");
 
   const loadChartData = useCallback(async () => {
@@ -267,26 +269,30 @@ const RuleDetails = (): JSX.Element => {
 
   const isWideScreen = () => window.screen.width > 800;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const renderRulePerformanceMetrics = (performance: RulePerformanceKind | undefined) => {
-    if (performance) {
+    if (isSuperAdmin && performance) {
       return (
         <>
-          <p>
-            Fraud Precision:{" "}
-            {Math.round((performance.FraudCount / (performance.FraudCount + performance.ApprovedCount)) * 100) / 100}
-          </p>
-          <p>
-            Chargeback Precision:{" "}
-            {Math.round(
-              ((performance.FraudCount + performance.ChargebackCount) /
-                (performance.FraudCount + performance.ChargebackCount + performance.ApprovedCount)) *
-                100
-            ) / 100}
-          </p>
-          <p>
-            Declined Precision:{" "}
-            {Math.round((performance.DeclinedCount / (performance.DeclinedCount + performance.ApprovedCount)) * 100) / 100}
-          </p>
+          <div>
+            <p>
+              Fraud Precision:{" "}
+              {Math.round((performance.FraudCount / (performance.FraudCount + performance.ApprovedCount)) * 100) / 100}
+            </p>
+            <p>
+              Chargeback Precision:{" "}
+              {Math.round(
+                ((performance.FraudCount + performance.ChargebackCount) /
+                  (performance.FraudCount + performance.ChargebackCount + performance.ApprovedCount)) *
+                  100
+              ) / 100}
+            </p>
+            <p>
+              Declined Precision:{" "}
+              {Math.round((performance.DeclinedCount / (performance.DeclinedCount + performance.ApprovedCount)) * 100) / 100}
+            </p>
+          </div>
+          <RulePerformanceSection />
         </>
       );
     }
@@ -317,7 +323,7 @@ const RuleDetails = (): JSX.Element => {
       />
       <Container style={{ margin: "auto" }}>
         {ruleDetails ? (
-          <BackgroundBox style={{ boxShadow: "none" }}>
+          <BackgroundBox style={{ boxShadow: "none", backgroundColor: "#FAFBFF" }}>
             <HorizontalContainer
               style={{
                 alignItems: "center",
@@ -377,7 +383,7 @@ const RuleDetails = (): JSX.Element => {
               </StyledUl>
             )}
 
-            <HorizontalContainer>
+            <div>
               <StyledContainer style={{ minWidth: "50%", maxWidth: "90%" }}>
                 <HorizontalContainer>
                   <HorizontalContainer style={{ width: "50%" }}>
@@ -401,7 +407,6 @@ const RuleDetails = (): JSX.Element => {
                 <RuleSection title="Description:" data={ruleDetails.description} />
                 <RuleSection title="Action Tags:" data={getActionsValue()} />
                 <RuleSection title="Rule Performance:" data={renderRulePerformanceMetrics(rulePerformance)} />
-
                 <HorizontalContainer
                   style={{
                     marginTop: 40,
@@ -461,7 +466,7 @@ const RuleDetails = (): JSX.Element => {
                 )}
                 <HorizontalSpace style={{ marginTop: 50 }} />
               </StyledContainer>
-            </HorizontalContainer>
+            </div>
           </BackgroundBox>
         ) : null}
       </Container>

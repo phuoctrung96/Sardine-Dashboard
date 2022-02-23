@@ -71,7 +71,7 @@ import {
   Line,
   CSVParent,
   TextNormal,
-  GridList,
+  ImageList,
   RuleOutputTitle,
   RuleOutputContainer,
   DataDictionaryContainer,
@@ -2095,7 +2095,7 @@ const ManageRule: React.FC = () => {
         </StyledHeading>
         <BackgroundBox style={{ margin: 25 }}>
           <StyledContainer>
-            <GridList>
+            <ImageList>
               {checkpoint === ADD_CUSTOM ? (
                 <CustomInputWrapper
                   actionsData={actionsData}
@@ -2189,7 +2189,7 @@ const ManageRule: React.FC = () => {
                   }}
                 />
               </Container>
-            </GridList>
+            </ImageList>
             {isSuperAdmin && (
               <div>
                 <Button

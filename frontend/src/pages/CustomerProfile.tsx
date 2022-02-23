@@ -5,7 +5,7 @@ import { useToasts } from "react-toast-notifications";
 import { Button, Tabs, Tab } from "react-bootstrap";
 import { Transaction, AnyTodo, CustomerProfileResponse, CustomersResponse } from "sardine-dashboard-typescript-definitions";
 import { captureException } from "utils/errorUtils";
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 import Badge from "components/Common/Badge";
 import { renderReasonCodes, renderReasonCodesFromArray } from "utils/renderReasonCodes";
 import { SESSION_DETAILS_PATH } from "modulePaths";
@@ -69,7 +69,7 @@ import {
 import { GOOGLE_STREET_VIEW_MAP_STYLE, GOOGLE_STREET_VIEW_PANORAMA_OPTIONS } from "../constants";
 
 export const renderCustomerNotFound = (customerId: string): JSX.Element => (
-  <Grid container justify="center">
+  <Grid container justifyContent="center">
     {`No record found for customer id: ${customerId}.`}
   </Grid>
 );

@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import React from "react";
 import moment from "moment";
-import { Card } from "react-bootstrap";
 import { Transaction } from "sardine-dashboard-typescript-definitions";
+import DataCard from "components/Common/DataCard";
 import Badge from "../../Common/Badge";
-import { DetailsCardView, StyledTable, TdValue, StyledTh, Cell, StyledTr, DetailsCardHeader } from "../styles";
+import { DetailsCardView, StyledTable, TransactionTableWrapper, TdValue, StyledTh, Cell, StyledTr } from "../styles";
+import transactionIcon from "../../../utils/logo/transactions_detail.svg";
 
 interface Props {
   transactions: Transaction[];
@@ -17,11 +18,13 @@ const RecentTransaction: React.FC<Props> = (props) => {
   const headers = ["Date & Time", "Transaction Id", "Amount", "Type", "Risk Level", "AML Level", "Category"];
 
   return (
-    <DetailsCardView style={{ width: "100%", height: "unset" }}>
-      <DetailsCardHeader id="recent_transaction_title">
-        Recent Transaction {transactions.length >= 100 && <span style={{ fontSize: 9 }}>(Top 100)</span>}
-      </DetailsCardHeader>
-      <Card.Body>
+    <DataCard
+      header={`Recent Transaction ${transactions.length >= 100 ? "(Top 100)" : ""}`}
+      attributes={[]}
+      bodyStyle={{ display: "block" }}
+      icon={<img src={transactionIcon} alt="Transaction icon" />}
+    >
+      <DetailsCardView style={{ width: "100%", height: "unset", margin: 0, borderRadius: 0 }}>
         {isLoading ? (
           <TdValue>Loading...</TdValue>
         ) : transactions.length === 0 ? (
@@ -29,21 +32,16 @@ const RecentTransaction: React.FC<Props> = (props) => {
             No data available!
           </TdValue>
         ) : (
-          <div
-            style={{
-              maxHeight: 400,
-              overflowY: "scroll",
-            }}
-          >
+          <TransactionTableWrapper>
             <StyledTable id="recent_transaction_table">
               <thead style={{ height: 50 }}>
-                <tr>
+                <StyledTr style={{ color: "#141a39", borderBottomColor: "#f2f6ff" }}>
                   {headers.map((ele) => (
                     <StyledTh id={`th_${ele}`} key={`${ele}`}>
-                      {ele.toUpperCase()}
+                      {ele}
                     </StyledTh>
                   ))}
-                </tr>
+                </StyledTr>
               </thead>
               <tbody>
                 {transactions.map((d, index) => {
@@ -66,10 +64,10 @@ const RecentTransaction: React.FC<Props> = (props) => {
                 })}
               </tbody>
             </StyledTable>
-          </div>
+          </TransactionTableWrapper>
         )}
-      </Card.Body>
-    </DetailsCardView>
+      </DetailsCardView>
+    </DataCard>
   );
 };
 

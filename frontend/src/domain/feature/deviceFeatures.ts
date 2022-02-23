@@ -11,14 +11,18 @@ export const getDeviceFeatures = (checkpoint: string): FeatureItem[] =>
       false
     ),
     new FeatureItem("TransientDeviceIDAggFeatures", [
-      intChild("CountEmails", "number of emails associated with the transient device ID", false),
-      intChild("CountPhones", "number of phone numbers associated with the transient device ID", false),
-      intChild("CountCities", "number of cities associated with the transient device ID", false),
-      intChild("CountCustomerIDs", "number of customers associated with the transient device ID", false),
-      intChild("CountCountries", "number of countries associated with the transient device ID", false),
-      intChild("CountFirstNames", "number of first names associated with the transient device ID", false),
-      intChild("CountLastNames", "number of last names associated with the transient device ID", false),
-      intChild("CountRegions", "number of states associated with the transient device ID", false),
+      intChild("CountEmails", "number of emails (across sardine network) associated with the transient device ID", false),
+      intChild("CountPhones", "number of phone numbers (across sardine network) associated with the transient device ID", false),
+      intChild("CountCities", "number of cities (across sardine network) associated with the transient device ID", false),
+      intChild("CountCustomerIDs", "number of customers (across sardine network) associated with the transient device ID", false),
+      intChild("CountCountries", "number of countries (across sardine network) associated with the transient device ID", false),
+      intChild(
+        "CountFirstNames",
+        "number of first names (across sardine network) associated with the transient device ID",
+        false
+      ),
+      intChild("CountLastNames", "number of last names (across sardine network) associated with the transient device ID", false),
+      intChild("CountRegions", "number of states (across sardine network) associated with the transient device ID", false),
     ]),
     newChild("Fingerprint", "03bbe826-4201-438f-ac25-916ccb7f0952", DATA_TYPES.string, "Fingerprint of the device.", false),
     newChild("FingerprintConfidence", "80", DATA_TYPES.int, "Confidence Score of the fingerprint", false),
@@ -61,53 +65,63 @@ export const getDeviceFeatures = (checkpoint: string): FeatureItem[] =>
     ),
     intChild("DistanceBssidIP", "Distance between BSSID and IP"),
     newChild("FirstSeenAt", "1617137009018", DATA_TYPES.int, "Time in unix timestamp when the device was first seen", false),
-    newChild("CountEmails", "2", DATA_TYPES.int, "Number of unique emails associated with this device-id", false),
-    newChild("CountPhones", "2", DATA_TYPES.int, "Number of unique phone numbers associated with this device-id", false),
-    newChild("CountCities", "2", DATA_TYPES.int, "Number of unique cities used in the addresses from this device-id", false),
-    newChild("CountCustomerIDs", "2", DATA_TYPES.int, "Number of unique customer accounts associated with this device-id", false),
+    newChild(
+      "CountEmails",
+      "2",
+      DATA_TYPES.int,
+      "Number of unique emails (across sardine network) associated with this device-id",
+      false
+    ),
+    newChild(
+      "CountPhones",
+      "2",
+      DATA_TYPES.int,
+      "Number of unique phone numbers (across sardine network) associated with this device-id",
+      false
+    ),
+    newChild(
+      "CountCities",
+      "2",
+      DATA_TYPES.int,
+      "Number of unique cities (across sardine network) used in the addresses from this device-id",
+      false
+    ),
+    newChild(
+      "CountCustomerIDs",
+      "2",
+      DATA_TYPES.int,
+      "Number of unique customer accounts (across sardine network) associated with this device-id",
+      false
+    ),
     newChild(
       "CountFirstNames",
       "2",
       DATA_TYPES.int,
-      "Number of unique first names in the addresses associated with this device-id",
+      "Number of unique first names (across sardine network) in the addresses associated with this device-id",
       false
     ),
     newChild(
       "CountLastNames",
       "2",
       DATA_TYPES.int,
-      "Number of unique last names in the addresses associated with this device-id",
+      "Number of unique last names (across sardine network) in the addresses associated with this device-id",
       false
     ),
     newChild(
       "CountCountries",
       "2",
       DATA_TYPES.int,
-      "Number of unique countries in the addresses associated with this device-id",
+      "Number of unique countries (across sardine network) in the addresses associated with this device-id",
       false
     ),
     newChild(
       "CountStates",
       "2",
       DATA_TYPES.int,
-      "Number of unique states / region codes in the addresses associated with this device-id",
+      "Number of unique states / region codes (across sardine network) in the addresses associated with this device-id",
       false
     ),
-    intChild("CountUsers", "Count of users (that you have sent to sardine APIs) associated with this Device", false),
-    new FeatureItem(
-      "CountLinkedUsers",
-      [
-        new FeatureItem("ALL"),
-        new FeatureItem("3MTH"),
-        new FeatureItem("3WKS"),
-        new FeatureItem("3HRS"),
-        new FeatureItem("3MIN"),
-      ],
-      "1",
-      DATA_TYPES.int,
-      true,
-      "If the device is used by 1 user and the user used two other devices, then count any OTHER users associated those two devices"
-    ),
+    intChild("CountUsers", "Count of users (across sardine network, sent to sardine APIs) associated with this Device", false),
     intChild("CountIPs", "Count of Any IP addresses associated with the device", false),
     intChild("CountStaticIPs", "Count of Home (eg Comcast)/ Static IP associated with the device", false),
   ].concat(

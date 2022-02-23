@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { FormControl } from "react-bootstrap";
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 import { ALL, getFailureResult, getSuccessResult, isFailure, Result } from "sardine-dashboard-typescript-definitions";
 import {
   loadCustomerRiskLevelSessionDistribution,

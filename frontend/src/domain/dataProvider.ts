@@ -211,11 +211,27 @@ export const getRulesData = (
       intChild("EmailAddressAge", "age of the email address", false),
       intChild("FirstVerificationDays", "number days back this email was verified on email intelligence platform", false),
       boolChild("IsNumeric", "true if the email address is numeric", false),
-      intChild("CountSocialMediaLinks", "Count of Social Media like Github,Twitter, FB etc for the email", false),
-      intChild("CountUsers", "Count of customer-ids using this email", false),
-      intChild("CountPhoneNumbers", "Count of phone numbers using this email", false),
-      intChild("CountFirstNames", "Count of first names using this email", false),
-      intChild("CountLastNames", "Count of last names using this email", false),
+      intChild("CountSocialMediaLinks", "Count of Social Media like Github, Twitter, FB etc for the email", false),
+      intChild(
+        "CountUsers",
+        "Count of customer IDs using this email. This count is scoped to your acocunt, not across sardine network.",
+        false
+      ),
+      intChild(
+        "CountPhoneNumbers",
+        "Count of phone numbers using this email. This count is scoped to your acocunt, not across sardine network.",
+        false
+      ),
+      intChild(
+        "CountFirstNames",
+        "Count of first names using this email. This count is scoped to your acocunt, not across sardine network.",
+        false
+      ),
+      intChild(
+        "CountLastNames",
+        "Count of last names using this email. This count is scoped to your acocunt, not across sardine network.",
+        false
+      ),
       newChild("CountSocialMediaFriends", "20", DATA_TYPES.int, "Social media friends", false),
       boolChild("IsVerified", "Email was Verified by you", false),
       stringChild("EmailAddress", "email address"),
@@ -258,10 +274,26 @@ export const getRulesData = (
       newChild("AddressScore", "70", DATA_TYPES.int, "Score to trust the given address", false),
       newChild("NameScore", "60", DATA_TYPES.int, "Score to trust the given name", false),
       newChild("ReasonCodes", `["PIV"]`, DATA_TYPES.stringarray, "ReasonCodes", false),
-      intChild("CountUsers", "Count of users associated with this phone number", false),
-      intChild("CountEmails", "Count of emails associated with this phone number", false),
-      intChild("CountFirstNames", "Count of first name associated with this phone number", false),
-      intChild("CountLastNames", "Count of last name associated with this phone number", false),
+      intChild(
+        "CountUsers",
+        "Count of users associated with this phone number. This count is scoped to your acocunt, not across sardine network.",
+        false
+      ),
+      intChild(
+        "CountEmails",
+        "Count of emails associated with this phone number. This count is scoped to your acocunt, not across sardine network.",
+        false
+      ),
+      intChild(
+        "CountFirstNames",
+        "Count of first name associated with this phone number. This count is scoped to your acocunt, not across sardine network.",
+        false
+      ),
+      intChild(
+        "CountLastNames",
+        "Count of last name associated with this phone number. This count is scoped to your acocunt, not across sardine network.",
+        false
+      ),
       boolChild("DOBMatch", "DoB provided matched the DoB returned by phone intelligence provider", false),
       boolChild("Last4Match", "Last 4 of Tax-Id matched with Tax-Id returned by phone intelligence provider", false),
       boolChild("SSNMatch", "SSN matched with SSN returned by phone intelligence provider", false),

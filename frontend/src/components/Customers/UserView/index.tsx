@@ -1,4 +1,4 @@
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 import { uniqBy } from "lodash-es";
 import { Transaction } from "sardine-dashboard-typescript-definitions";
 import { Link } from "components/Common/Links";
@@ -145,7 +145,7 @@ export const buildCryptoObject = (transaction: Transaction): CryptoObject[] => {
 };
 
 export const renderSessionNotFound = (sessionKey: string): JSX.Element => (
-  <Grid container justify="center">
+  <Grid container justifyContent="center">
     {`No record found for Session: ${sessionKey}.`}
   </Grid>
 );

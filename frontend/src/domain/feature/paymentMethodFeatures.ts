@@ -114,7 +114,11 @@ export const paymentMethodFeatures = [
     newChild("FirstSeenAt", "1617137009018", DATA_TYPES.string, "Date in unix timestamp when the card was first seen."),
     intChild("CountTransactions", "Count of transactions", false),
     intChild("TotalAmountSpent", "Sum of total money spent (in USD)", false),
-    intChild("CountUsers", "Count of users associated with this card", false),
+    intChild(
+      "CountUsers",
+      "Count of users associated with this card. This count is scoped to your acocunt, not across sardine network.",
+      false
+    ),
     intChild("CountTransactionsLastFiveMin", "count of transactions in last 5 mins", false),
     intChild("CountTransactionsLastHalfHour", "count of transactions in last half hour", false),
     intChild("CountTransactionsLastOneDay", "count of transactions in the last 1 day", false),
@@ -125,7 +129,11 @@ export const paymentMethodFeatures = [
     newChild("UserRiskLevel", "high", DATA_TYPES.string, "UserRiskLevel coinbase user risk level ratings", false),
     newChild("Address", "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2", DATA_TYPES.string, "Recipient address", false),
     newChild("Asset", "BTC", DATA_TYPES.string, "Asset eg. BTC", false),
-    intChild("UsersUsingCryptoAddressCount", "UsersUsingCryptoAddressCount number of users using the crypto address", false),
+    intChild(
+      "UsersUsingCryptoAddressCount",
+      "number of users using the crypto address. This count is scoped to your acocunt, not across sardine network.",
+      false
+    ),
     newChild("ReasonCodes", `["address category"]`, DATA_TYPES.stringarray, "ReasonCodes  eg. address category", false),
     boolChild("IsBlocklisted", "crypto address is blocklisted by you", false),
     boolChild("IsBlocklistedByNetwork", "crypto address is blocklisted by any merchant in sardine network", false),

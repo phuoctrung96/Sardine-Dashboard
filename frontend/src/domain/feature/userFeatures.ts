@@ -15,7 +15,7 @@ export const userFeatures = [
   intChild("CountDevices", "Count of devices associated with the user", false),
   intChild(
     "CountLinkedUsers",
-    "If the device is used by 1 user and the user used two other devices, then count any OTHER users associated those two devices",
+    "If the device is used by 1 user and the user used two other devices, then count any OTHER users associated those two devices. This count is scoped to your account (not across sardine network).",
     false
   ),
   intChild("CountIPs", "Count of Any IP addresses associated with the user", false),

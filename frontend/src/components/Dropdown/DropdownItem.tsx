@@ -59,7 +59,12 @@ const DropwdownItem = (props: {
   const { clicked, item, isSelected, id } = props;
   return (
     <StyledItem onClick={() => clicked()} data-tid={id}>
-      <StyledIcon>{item && item.icon ? <img alt="" src={chartsLogo} /> : null}</StyledIcon>
+      {item && item.icon ? (
+        <StyledIcon>
+          {" "}
+          <img alt="" src={chartsLogo} />{" "}
+        </StyledIcon>
+      ) : null}
       <StyledOption>{item && item.option}</StyledOption>
       {isSelected ? (
         <StyledIsSelected>

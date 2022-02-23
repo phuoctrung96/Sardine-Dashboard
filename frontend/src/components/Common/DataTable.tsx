@@ -1,10 +1,10 @@
 import MaterialTable, { MTableCell } from "@material-table/core"; // TODO: Replace it with another library. Headless UI library would be better.
 import styled from "styled-components";
 
-import VerticalAlignBottomIcon from "@material-ui/icons/VerticalAlignBottom";
-import { Toolbar } from "@material-ui/core";
-import { createTheme } from "@material-ui/core/styles";
-import { ThemeProvider } from "@material-ui/styles";
+import VerticalAlignBottomIcon from "@mui/icons-material/VerticalAlignBottom";
+import { Toolbar, adaptV4Theme } from "@mui/material";
+import { createTheme } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/styles";
 import { useToasts } from "react-toast-notifications";
 import { CSVDownloader } from "react-papaparse";
 import { AnyTodo, DocumentVerification } from "sardine-dashboard-typescript-definitions";
@@ -34,7 +34,6 @@ const TableWrapper = styled.div`
   }
   .MuiTableCell-alignLeft {
     width: max-content !important;
-    max-width: 320px !important;
     line-break: anywhere !important;
   }
 `;
@@ -120,23 +119,25 @@ const defaultLocalization = {
   },
 };
 
-const tableTheme = createTheme({
-  overrides: {
-    MuiTableRow: {
-      hover: {
-        "&:hover": {
-          color: "#fff",
-          backgroundColor: "#325078 !important",
+const tableTheme = createTheme(
+  adaptV4Theme({
+    overrides: {
+      MuiTableRow: {
+        hover: {
+          "&:hover": {
+            color: "#fff",
+            backgroundColor: "#325078 !important",
+          },
+        },
+      },
+      MuiTable: {
+        root: {
+          minWidth: "-webkit-fill-available",
         },
       },
     },
-    MuiTable: {
-      root: {
-        minWidth: "-webkit-fill-available",
-      },
-    },
-  },
-});
+  })
+);
 
 interface Editable {
   onRowAdd?: (newData: AnyTodo, oldData?: AnyTodo) => Promise<AnyTodo>;

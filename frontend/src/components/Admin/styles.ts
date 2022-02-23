@@ -48,7 +48,7 @@ export const StyledTd = styled.td`
 `;
 
 export const TableWrapper = styled.div`
-  max-width: 800px;
+  max-width: 900px;
   margin: 24px;
 `;
 
@@ -98,7 +98,7 @@ export const ButtonContainer = styled.div`
   display: flex;
   justify-items: flex-end;
   flex-direction: row-reverse;
-  max-width: 800px;
+  max-width: 900px;
 `;
 
 export const UsersContainer = styled.div`
