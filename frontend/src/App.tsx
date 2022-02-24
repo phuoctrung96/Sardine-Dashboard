@@ -16,6 +16,7 @@ import TransactionDetails from "components/Transactions/TransactionDetails";
 import { INTEGRATION_STATUS_PATH, IntegrationStatus } from "components/IntegrationStatus";
 import { CookiesProvider } from "react-cookie";
 import { useUserStore } from "store/user";
+import { Feedbacks } from "pages/Feedbacks";
 import CustomerProfile from "./pages/CustomerProfile";
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
@@ -65,6 +66,7 @@ import {
   SETTINGS_PATH,
   ADMIN_PATH,
   DATA_DICTIONARY_PATH,
+  FEEDBACKS_PATH,
 } from "./modulePaths";
 import Transactions from "./components/Transactions";
 import AdminNotificatons from "./components/Admin/AdminNotificatons";
@@ -146,6 +148,7 @@ const App = (): JSX.Element => {
                     <Route path={DATA_DICTIONARY_PATH} element={<AuthenticatedOnly element={<DataDictionary />} />} />
                     <Route path={FRAUD_SCORE_PATH} element={<AuthenticatedOnly element={<FraudScore />} />} />
                     <Route path={CUSTOMERS_PATH} element={<AuthenticatedOnly element={<Customers />} />} />
+                    <Route path={FEEDBACKS_PATH} element={<AuthenticatedOnly element={<Feedbacks />} />} />
                     <Route path={DEVICE_VIEW_PATH} element={<AuthenticatedOnly element={<DeviceView />} />} />
                     <Route path={BLOCK_ALLOW_LIST_PATH} element={<AuthenticatedOnly element={<BlockAllowList />} />} />
                     <Route
