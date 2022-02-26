@@ -1,4 +1,4 @@
-import { Table, TableCell, TableContainer, TableHead } from "@mui/material";
+import { Table, TableCell, TableContainer, TableHead, Pagination } from "@mui/material";
 import { Badge, Button, Dropdown, ToggleButtonGroup } from "react-bootstrap";
 import styled from "styled-components";
 
@@ -86,7 +86,7 @@ export const AddFilterBadge = styled(Badge)`
 
 export const StyledTableContainer = styled(TableContainer)`
   border: 1px solid #e6ecfa;
-  overflow-x: auto;
+  /* overflow-x: auto; */
 
   &::-webkit-scrollbar {
     height: 2px;
@@ -113,6 +113,7 @@ export const StyledTHead = styled(TableHead)`
     font-size: 13px;
     line-height: 16px;
     color: #969ab6;
+    white-space: nowrap;
   }
 `;
 
@@ -122,8 +123,7 @@ export const BorderedTCell = styled(TableCell)`
 
 export const StyledTCell = styled.div`
   display: block;
-  width: 200px;
-  padding: 8px 4px;
+  max-width: 170px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -131,4 +131,54 @@ export const StyledTCell = styled.div`
   font-weight: normal;
   font-size: 13px;
   line-height: 16px;
+`;
+
+export const StatusCell = styled.span<{ $color: string }>`
+  &::before {
+    content: "";
+    display: inline-block;
+    margin-right: 8px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: ${(props) => props.$color};
+  }
+`;
+
+export const ReasonCodeBadge = styled(Badge)`
+  background-color: rgba(100, 110, 133, 0.1) !important;
+  border-radius: 4px;
+  font-weight: normal;
+  margin-left: 8px;
+  font-size: 12px;
+  line-height: 16px;
+  color: #636d9c;
+`;
+
+export const StyledPagination = styled(Pagination)`
+  & button {
+    color: #969ab6;
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  & .Mui-selected {
+    background-color: #3147ff !important;
+    color: #fafbff;
+  }
+`;
+
+export const StyledDropdownDiv = styled.div`
+  z-index: 10;
+  height: 36px;
+  max-width: 211px;
+`;
+
+export const StyledDropdownList = styled.div`
+  padding: 8px;
+  background: #ffffff;
+  z-index: 12;
+  top: 0;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.02);
 `;
