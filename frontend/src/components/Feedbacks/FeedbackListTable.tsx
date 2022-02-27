@@ -3,6 +3,8 @@ import { TableBody, TableCell, TableRow, TableSortLabel } from "@mui/material";
 import DropwdownButton from "components/Dropdown/DropdownButton";
 import { replaceAllSpacesWithUnderscores } from "utils/stringUtils";
 import DropdownItem from "components/Dropdown/DropdownItem";
+import { useNavigate } from "react-router-dom";
+import { FEEDBACK_DETAILS_PATH } from "modulePaths";
 import { MOCK_TABLE_DATA } from "./mockData";
 import {
   BorderedTCell,
@@ -82,6 +84,8 @@ export const FeedbackListTable = (): JSX.Element => {
   const [rowsDropdownOpen, setRowsDropdownOpen] = useState(false);
   const [rowsOptionSelected, setRowsOptionSelected] = useState(1);
 
+  const navigate = useNavigate();
+
   return (
     <div>
       <StyledTableContainer>
@@ -116,7 +120,7 @@ export const FeedbackListTable = (): JSX.Element => {
           </StyledTHead>
           <TableBody>
             {MOCK_TABLE_DATA.map((data) => (
-              <TableRow key={data.sessionKey}>
+              <TableRow key={data.sessionKey} onClick={() => navigate(FEEDBACK_DETAILS_PATH)}>
                 <BorderedTCell>
                   <StyledTCell>{data.sessionKey}</StyledTCell>
                 </BorderedTCell>
