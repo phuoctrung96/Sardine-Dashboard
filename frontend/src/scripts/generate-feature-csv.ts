@@ -1,7 +1,7 @@
 import { writeFileSync, existsSync, mkdirSync } from "fs";
 import { CHECKPOINTS } from "sardine-dashboard-typescript-definitions";
-import { getRulesData } from "../domain/dataProvider";
-import { FeatureItem } from "../domain/featureItem";
+import { getRulesData } from "../rulesengine/dataProvider";
+import { FeatureItem } from "../rulesengine/featureItem";
 
 const escapeForCSV = (t: string | boolean) => `"${String(t).replace(/\"/g, '""')}"`;
 

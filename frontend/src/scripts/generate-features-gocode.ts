@@ -1,8 +1,8 @@
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { CHECKPOINTS } from "sardine-dashboard-typescript-definitions";
 import { execSync } from "child_process";
-import { getRulesData, DATA_TYPES, DataType } from "../domain/dataProvider";
-import { FeatureItem } from "../domain/featureItem";
+import { getRulesData, DATA_TYPES, DataType } from "../rulesengine/dataProvider";
+import { FeatureItem } from "../rulesengine/featureItem";
 
 function toGoType(t: string) {
   switch (t as DataType) {

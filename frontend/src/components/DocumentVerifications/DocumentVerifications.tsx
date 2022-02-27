@@ -23,7 +23,7 @@ import { StyledNavTitle, StyledTitleName } from "../Dashboard/styles";
 import { StyledDropdownDiv, StyledStickyNav } from "./styles";
 import { DATE_FORMATS, TIME_UNITS } from "../../constants";
 
-const searchFields = [
+const SEARCH_FIELDS = [
   "session_key",
   "verification_id",
   "customer_id",
@@ -34,50 +34,50 @@ const searchFields = [
   "face_match_level",
 ];
 
+const TABLE_COLUMNS: DataColumn<DocumentVerification>[] = [
+  {
+    title: "Session key",
+    field: "session_key",
+  },
+  {
+    title: "Verification ID",
+    field: "verification_id",
+  },
+  {
+    title: "Customer ID",
+    field: "customer_id",
+  },
+  {
+    title: "Country",
+    field: "document_data.issuingCountry",
+  },
+  {
+    title: "Document Type",
+    field: "document_data.type",
+  },
+  {
+    title: "Date Time",
+    field: "time",
+    render: (rowData: DocumentVerification) => (
+      <div>{formatTimestampInUtc(rowData.time, { format: DATE_FORMATS.DATETIME, unit: TIME_UNITS.MILLISECOND })}</div>
+    ),
+  },
+  {
+    title: "Risk Level",
+    field: "risk_level",
+  },
+  { title: "Forgery Level", field: "forgery_level" },
+  { title: "Face Match Level", field: "face_match_level" },
+  { title: "Document Match Level", field: "document_match_level" },
+  { title: "Image Quality Level", field: "image_quality_level" },
+];
+
 export const DocumentVerifications: React.FC = () => {
   const { search } = useLocation();
-  const [filters, setFilters] = useState(getFilters(search, searchFields));
+  const [filters, setFilters] = useState(getFilters(search, SEARCH_FIELDS));
   const navigate = useNavigate();
 
   const [cookies] = useCookies(["organization"]);
-
-  const tableColumns: DataColumn<DocumentVerification>[] = [
-    {
-      title: "Session key",
-      field: "session_key",
-    },
-    {
-      title: "Verification ID",
-      field: "verification_id",
-    },
-    {
-      title: "Customer ID",
-      field: "customer_id",
-    },
-    {
-      title: "Country",
-      field: "document_data.issuingCountry",
-    },
-    {
-      title: "Document Type",
-      field: "document_data.type",
-    },
-    {
-      title: "Date Time",
-      field: "time",
-      render: (rowData: DocumentVerification) => (
-        <div>{formatTimestampInUtc(rowData.time, { format: DATE_FORMATS.DATETIME, unit: TIME_UNITS.MILLISECOND })}</div>
-      ),
-    },
-    {
-      title: "Risk Level",
-      field: "risk_level",
-    },
-    { title: "Forgery Level", field: "forgery_level" },
-    { title: "Face Match Level", field: "face_match_level" },
-    { title: "Document Match Level", field: "document_match_level" },
-    { title: "Image Quality Level", field: "image_quality_level" },
-  ];
 
   const pushToDetails = (event: MouseEvent, rowData: DocumentVerification) => {
     const url = `${DOCUMENT_VERIFICATIONS_PATH}/${rowData.verification_id}`;
@@ -157,7 +157,7 @@ export const DocumentVerifications: React.FC = () => {
         <FilterField
           placeholder="Search here"
           filters={filters}
-          fields={searchFields}
+          fields={SEARCH_FIELDS}
           onFiltersUpdate={setFilters}
           onApply={updateFilters}
           enableDurationSearch={false}
@@ -173,7 +173,7 @@ export const DocumentVerifications: React.FC = () => {
                     .catch((err) => Sentry.captureException(err));
                 }
               }}
-              columns={tableColumns}
+              columns={TABLE_COLUMNS}
               data={tableData}
               title=""
               isLoading={isLoading || isFetching}

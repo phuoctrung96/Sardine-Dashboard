@@ -19,7 +19,7 @@ export const CapturedDocumentsSection = ({ images }: CapturedDocumentsSectionPro
       </Card.Header>
       <ImageContainer>
         {images.map((image) => (
-          <ImageLink href={image.src}>
+          <ImageLink href={image.src} key={image.src}>
             <img src={image.src} alt={image.alt} />
           </ImageLink>
         ))}

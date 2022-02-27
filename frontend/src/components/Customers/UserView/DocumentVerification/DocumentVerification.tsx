@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import Badge from "components/Common/Badge";
-import { CardText, CardTitle, CardGridItem, CardBody } from "styles/Card";
+import { CardText, CardTitle, CardGridItem, GridCardBody } from "styles/Card";
 import { headerFields, imageFields } from "components/DocumentVerifications/DocumentVerificationsDetails/data";
 import { startCase } from "lodash-es";
 import { MouseEvent } from "react";
@@ -37,7 +37,7 @@ export const DocumentVerificationSection = ({ documentVerification }: DocumentVe
   };
 
   return (
-    <CardBody isGrid>
+    <GridCardBody>
       {headerFields.map(({ key, highFirstOrder }) => {
         const value = documentVerification[key];
         if (!value) return null;
@@ -75,6 +75,6 @@ export const DocumentVerificationSection = ({ documentVerification }: DocumentVe
           View details
         </button>
       </ViewDetailsGridItem>
-    </CardBody>
+    </GridCardBody>
   );
 };

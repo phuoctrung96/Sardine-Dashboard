@@ -3,7 +3,7 @@ import { Button, Form, FloatingLabel } from "react-bootstrap";
 import { useToasts } from "react-toast-notifications";
 import { OrganizationUser, Queue } from "sardine-dashboard-typescript-definitions";
 import { isEmailValid, isUrlValid } from "components/Common/Functions";
-import { DATA_TYPES, DROPDOWN_TYPES } from "../../../domain/dataProvider";
+import { DATA_TYPES, DROPDOWN_TYPES } from "../../../rulesengine/dataProvider";
 import { isWideScreen } from "../../../utils/browserUtils";
 import { BackgroundBox, StyledSubHeading, Container, TextNormal, StyledUl, HorizontalSpace, Line } from "../styles";
 import RecursiveDropdown from "../../Common/RecursiveDropdown";
@@ -166,6 +166,7 @@ const QueueSection = (p: QueueProps) => {
       <Container style={{ padding: "10px 20px", maxWidth: isWideScreen() ? "50%" : "100%" }}>
         {isAddQueue ? (
           <CustomInput
+            name="queue_section"
             allowSpace
             onCancelClick={() => setIsAddQueue(false)}
             onSubmitClick={(value) => {

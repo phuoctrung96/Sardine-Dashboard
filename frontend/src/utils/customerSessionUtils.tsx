@@ -69,38 +69,38 @@ const constructAddressFromAddressField = (addressFields: AddressFields): string 
     .join(", ");
 
 const getEmailReasonCodes = (response: Session): string => {
-  if (response.checkpointOutput === undefined) return "";
+  if (response.checkpointOutput === undefined || response.checkpointOutput.email_reason_code === undefined) return "";
   return response.checkpointOutput.email_reason_code.join(",");
 };
 
 const getPhoneReasonCodes = (response: Session): string => {
-  if (response.checkpointOutput === undefined) return "";
+  if (response.checkpointOutput === undefined || response.checkpointOutput.phone_reason_code === undefined) return "";
   return response.checkpointOutput.phone_reason_code.join(",");
 };
 
 const getPhoneRiskLevel = (response: Session): string => {
-  if (response.checkpointOutput === undefined) return "";
+  if (response.checkpointOutput === undefined || response.checkpointOutput.phone_level === undefined) return "";
   return response.checkpointOutput.phone_level;
 };
 
 const getEmailRiskLevel = (response: Session): string => {
-  if (response.checkpointOutput === undefined) return "";
+  if (response.checkpointOutput === undefined || response.checkpointOutput.email_level === undefined) return "";
   return response.checkpointOutput.email_level;
 };
 
 const getEmailDomainRiskLevel = (response: Session): string => {
-  if (response.checkpointOutput === undefined) return "";
+  if (response.checkpointOutput === undefined || response.checkpointOutput.email_domain_level === undefined) return "";
   return response.checkpointOutput.email_domain_level;
 };
 
 const getCustomerRiskLevel = (response: Session): string => {
   if (response.customer_risk_level) return response.customer_risk_level;
-  if (response.checkpointOutput === undefined) return "";
+  if (response.checkpointOutput === undefined || response.checkpointOutput.customer_risk_level === undefined) return "";
   return response.checkpointOutput.customer_risk_level;
 };
 
 const getTaxIdLevel = (response: Session): string => {
-  if (response.checkpointOutput === undefined) return "";
+  if (response.checkpointOutput === undefined || response.checkpointOutput.tax_id_level === undefined) return "";
   return response.checkpointOutput.tax_id_level;
 };
 

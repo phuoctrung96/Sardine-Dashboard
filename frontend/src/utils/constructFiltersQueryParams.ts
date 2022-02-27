@@ -2,6 +2,8 @@ import { FilterData } from "components/Common/FilterField";
 
 export const CLIENT_QUERY_FIELD = "client";
 export const CLIENT_ID_QUERY_FIELD = "client_id";
+export const START_DATE_QUERY_FIELD = "start_date";
+export const END_DATE_QUERY_FIELD = "end_date";
 
 // extend it if needed
 export function constructFiltersQueryParams(

@@ -8,7 +8,7 @@ import { createOrganisaion, getAllAdminUsers } from "../../utils/api";
 import { ErrorText } from "../RulesModule/styles";
 import { Title } from "./styles";
 import RecursiveDropdown from "../Common/RecursiveDropdown";
-import { DATA_TYPES } from "../../domain/dataProvider";
+import { DATA_TYPES } from "../../rulesengine/dataProvider";
 
 interface IProps {
   show: boolean;

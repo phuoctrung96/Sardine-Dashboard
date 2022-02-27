@@ -1,5 +1,5 @@
-import { arrayCustomerCheckpoints, FeatureItem } from "../domain/featureItem";
-import { issuingCheckpoints } from "../domain/dataProvider";
+import { arrayCustomerCheckpoints, FeatureItem } from "../rulesengine/featureItem";
+import { issuingCheckpoints } from "../rulesengine/dataProvider";
 
 const DURATION_VALUES = ["all", "min", "mins", "hrs", "day", "days", "mth", "mths"] as const;
 

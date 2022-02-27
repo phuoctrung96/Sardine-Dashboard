@@ -121,3 +121,14 @@ export interface OrgAdmin {
 export interface OrgAdminList extends Array<OrgAdmin> {}
 
 export interface GetFeedbacksResponse extends Array<Feedback> {}
+
+export interface GetRuleStatsResponse {
+  key: string;
+  value: string;
+  sessions: RuleStatsSession[];
+}
+
+export interface RuleStatsSession {
+  sessionKey: string;
+  customerId: string;
+}
