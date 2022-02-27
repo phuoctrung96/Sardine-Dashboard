@@ -343,8 +343,35 @@ export const StyledTh = styled.th`
   color: black;
 `;
 
+export const Cell = styled.td`
+  vertical-align: middle;
+  min-height: 25px;
+  padding: 15px 10px;
+  letter-spacing: 0em;
+  text-align: left;
+  font-family: IBM Plex Sans;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 18px;
+  color: #325078;
+
+  max-height: 50px;
+  overflow-y: scroll;
+`;
+
+export const TdValue = styled.div`
+  font-family: IBM Plex Sans;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 14px;
+  color: #001932;
+  padding: 7px 0px;
+`;
+
 export const StyledTr = styled.tr`
-  height: 36px;
+  min-height: 36px;
 
   border-radius: 4px;
   font-family: IBM Plex Mono;
@@ -361,6 +388,9 @@ export const StyledTr = styled.tr`
     background-color: #325078;
     > td {
       color: #ffffff !important;
+      > div > div {
+        color: #ffffff !important;
+      }
     }
   }
 `;
@@ -486,4 +516,8 @@ export const RulePerformanceSummaryText = styled.div`
   font-weight: normal;
   font-size: 14px;
   line-height: 20px;
+`;
+
+export const FilterLinkContainer = styled.div`
+  padding: 10px 0px;
 `;

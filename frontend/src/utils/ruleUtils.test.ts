@@ -1,5 +1,5 @@
-import { DATA_TYPES } from "../domain/dataProvider";
-import { stringChild, FeatureItem } from "../domain/featureItem";
+import { DATA_TYPES } from "../rulesengine/dataProvider";
+import { stringChild, FeatureItem } from "../rulesengine/featureItem";
 import { rulesForDataDictionary } from "./ruleUtils";
 
 // Case #1: No child

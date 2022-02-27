@@ -33,7 +33,7 @@ import CircularRiskLevel from "../components/Common/CircularRiskLevel";
 import Badge from "../components/Common/Badge";
 import ExecutedRulesList from "../components/Common/ExecutedRulesList";
 import { useGetFallbackHistoryState } from "../utils/openUrlNewTabWithHistoryState";
-import { getSourceFromQueryParams } from "../components/FraudScore";
+import { getSourceFromQueryParams } from "./DeviceIntelligence";
 import { getClientFromQueryParams } from "../utils/getClientFromQueryParams";
 import { CLIENT_ID_QUERY_FIELD } from "../utils/constructFiltersQueryParams";
 import deviceIcon from "../utils/logo/device.svg";
@@ -109,7 +109,9 @@ const DeviceView: React.FC = () => {
   const organisation = getClientFromQueryParams(search, isSuperAdmin, organisationFromUserStore, cookies.organization);
   const clientIdFromQP = searchPath.get(CLIENT_ID_QUERY_FIELD);
 
-  const featuresWithLevel = ["device_reputation", "proxy", "vpn", "os_anomaly", "session_risk"];
+  const featuresWithLevel = ["device_reputation", "proxy", "vpn", "os_anomaly", "session_risk", "behavior_biometric_level"];
+  const featuresWithRiskSignal = ["emulator", "remote_software"];
+
   const definitions: DefinitionObject[] = [
     {
       key: "Device Details",
@@ -387,6 +389,8 @@ const DeviceView: React.FC = () => {
                             </Link>
                           ) : featuresWithLevel.includes(d.name) ? (
                             <Badge title={d.value.toString()} style={{ marginLeft: -10, marginTop: 5 }} />
+                          ) : featuresWithRiskSignal.includes(d.name) && d.value === true ? (
+                            <Badge title={d.name} riskState={d.value} style={{ marginLeft: -10, marginTop: 5 }} />
                           ) : (
                             d.value.toString() || "-"
                           )}{" "}

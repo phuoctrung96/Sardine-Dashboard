@@ -107,6 +107,7 @@ export const getHasOperator = (val: string): boolean => {
 export const OPERATORS = [">", ">=", "<", "<=", "==", "!=", " in ", " not in "] as const;
 
 export const DROP_DOWN_BG = "#EAEDF2";
+export const FEATURE_SAPARATOR = "#";
 
 export const DROPDOWN_TYPES = {
   Rules: "condition",

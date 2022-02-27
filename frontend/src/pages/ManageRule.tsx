@@ -89,7 +89,8 @@ import {
   BatchRuleData,
   CheckPoint,
   FunctionChild,
-} from "../domain/dataProvider";
+  FEATURE_SAPARATOR,
+} from "../rulesengine/dataProvider";
 import {
   ADD_CUSTOM,
   saveActionLevelToStorage,
@@ -101,7 +102,7 @@ import {
   isDurationValue,
 } from "../utils/ruleUtils";
 
-import { FeatureItem } from "../domain/featureItem";
+import { FeatureItem } from "../rulesengine/featureItem";
 import { DescriptionAndStats } from "../components/RulesModule/DescriptionAndStats";
 import QueueSection from "../components/RulesModule/Components/QueueSection";
 import CustomInput from "../components/RulesModule/Components/CustomInput";
@@ -164,6 +165,7 @@ const IconArrow = (props: { isSelected: boolean }) => {
 };
 
 const CustomInputWrapper = ({
+  name,
   actionsData,
   checkpoints,
   type,
@@ -174,6 +176,7 @@ const CustomInputWrapper = ({
   setRiskLevel,
   setRiskValue,
 }: {
+  name: string;
   actionsData: string[];
   checkpoints: string[];
   type: DropdownType;
@@ -185,6 +188,7 @@ const CustomInputWrapper = ({
   setRiskValue: React.Dispatch<React.SetStateAction<string>>;
 }): JSX.Element => (
   <CustomInput
+    name={name}
     allowSpace
     onCancelClick={() => {
       if (type === DROPDOWN_TYPES.Checkpoint) {
@@ -264,7 +268,7 @@ const DropdownItem = ({
       let subValues = selectedSubSections;
       // parentTitle would be like PaymentMethod_Bank_PrimaryIdentity_Address_City
       // And we already have first & last value so removing them from the list and considering intermediate features
-      const pathValues = pTitle.split("_");
+      const pathValues = pTitle.split(FEATURE_SAPARATOR);
       if (pathValues.length > 1) {
         pathValues.shift(); // Remove main section value
         pathValues.pop(); // Remove last selected value
@@ -326,7 +330,7 @@ const DropdownItem = ({
           <SubA
             data-tid={`${type}_${parentIndex}_${index}_${item}`.replace(/_NaN/g, "")}
             key={item}
-            onClick={() => handleItemClick(item, type, parentIndex, index, `${parentTitle}_${item.title}`)}
+            onClick={() => handleItemClick(item, type, parentIndex, index, `${parentTitle}${FEATURE_SAPARATOR}${item.title}`)}
             className="dropdown"
           >
             {item}
@@ -335,7 +339,9 @@ const DropdownItem = ({
           <SubA
             data-tid={`${type}_${parentIndex}_${index}_${item.title}`.replace(/_NaN/g, "")}
             key={item.title}
-            onClick={() => handleItemClick(item.title, type, parentIndex, index, `${parentTitle}_${item.title}`)}
+            onClick={() =>
+              handleItemClick(item.title, type, parentIndex, index, `${parentTitle}${FEATURE_SAPARATOR}${item.title}`)
+            }
             className="dropdown"
           >
             {item.title}
@@ -352,8 +358,8 @@ const DropdownItem = ({
                 const section = rulesData.filter((r: AnyTodo) => r.title === selectedSection);
                 if (section.length > 0) {
                   // Splitting each value from path by _
-                  const itemPath = `${parentTitle}_${item.title}`;
-                  const pathValues = itemPath.split("_");
+                  const itemPath = `${parentTitle}${FEATURE_SAPARATOR}${item.title}`;
+                  const pathValues = itemPath.split(FEATURE_SAPARATOR);
                   if (pathValues.length > 0) {
                     pathValues.shift(); // Removing first element as it is section and not subsection
                     setSelectedSubSections(pathValues);
@@ -388,7 +394,7 @@ const DropdownItem = ({
                   type={type}
                   parentIndex={parentIndex}
                   index={index}
-                  parentTitle={`${parentTitle}_${item.title}`}
+                  parentTitle={`${parentTitle}${FEATURE_SAPARATOR}${item.title}`}
                   rules={rules}
                   rulesData={rulesData}
                   selectedSection={selectedSection}
@@ -1568,6 +1574,7 @@ const ManageRule: React.FC = () => {
           {riskValue === ADD_CUSTOM ? (
             <div style={{ margin: "0px 20px" }}>
               <CustomInputWrapper
+                name="add_action_value"
                 actionsData={actionsData}
                 checkpoints={checkpoints}
                 setActionsData={setActionsData}
@@ -1647,6 +1654,7 @@ const ManageRule: React.FC = () => {
         </StyledUl>
         {isCustomAction ? (
           <CustomInputWrapper
+            name="add_action"
             actionsData={actionsData}
             checkpoints={checkpoints}
             setActionsData={setActionsData}
@@ -1661,6 +1669,7 @@ const ManageRule: React.FC = () => {
           <Button
             className="button_add_custom_action"
             id="button_add_custom_action"
+            data-tid="button_add_custom_action"
             style={{
               backgroundColor: "#F8FBFF",
               border: "none",
@@ -1693,7 +1702,7 @@ const ManageRule: React.FC = () => {
       const splitData = ruleData.rule.split(".");
 
       if (splitData.length > 2) {
-        const splitLastEle = splitData[2].split("_");
+        const splitLastEle = splitData[2].split(FEATURE_SAPARATOR);
 
         const sectionFilter = rulesData.filter((r) => r.title === splitData[0]);
         if (sectionFilter.length > 0) {
@@ -1707,7 +1716,7 @@ const ManageRule: React.FC = () => {
         }
       } else if (splitData.length > 1) {
         const sectionFilter = rulesData.filter((r) => r.title === splitData[0]);
-        const splitLastEle = splitData[1].split("_");
+        const splitLastEle = splitData[1].split(FEATURE_SAPARATOR);
         if (sectionFilter.length > 0) {
           const subSection = sectionFilter[0].items.filter(
             (sub: AnyTodo) => splitLastEle[0].toLowerCase() === sub.title.toLowerCase()
@@ -2098,6 +2107,7 @@ const ManageRule: React.FC = () => {
             <ImageList>
               {checkpoint === ADD_CUSTOM ? (
                 <CustomInputWrapper
+                  name="checkpoint"
                   actionsData={actionsData}
                   checkpoints={checkpoints}
                   setActionsData={setActionsData}

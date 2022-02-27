@@ -1,0 +1,72 @@
+name: Docker build test
+
+on:
+  push:
+    paths:
+      - frontend/**
+      - server/**
+      - .github/workflows/**
+    branches: [master]
+  pull_request:
+    branches: [master]
+  # For Dependabot. Dependabot cannot access ENV varibles in steps triggered by pull_request events.
+  # To run check for Dependabot, we use pull_request_target events.
+  # pull_request_target is very similar to pull_request but ENV variables are accessible.
+  # Also, it runs against the forked repo, not against the original, if forked.
+  # pull_request_target was introduced to solve the security problem problem https://github.blog/2020-08-03-github-actions-improvements-for-fork-and-pull-request-workflows/
+  # Article: https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
+  # Official document: https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows#pull_request_target
+  pull_request_target:
+    branches: [master]
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+    # Only Dependabot can run pull_request_target steps. Dependabot cannot run pull_request steps
+    # Non-dependabot can pull_request but cannot run pull_request_target
+    if: |
+      (github.event_name == 'pull_request_target' && github.actor == 'dependabot[bot]') ||
+      (github.event_name != 'pull_request_target' && github.actor != 'dependabot[bot]')
+    name: build
+    steps:
+      - name: Checkout pull_request (Dependabot should not run this step)
+        uses: sardine-ai/checkout@v2
+        if: ${{ github.event_name != 'pull_request_target' }}
+      - name: Checkout pull_request_target (Dependabot can run this step. Other actors including humans should not run this)
+        uses: sardine-ai/checkout@v2
+        if: ${{ github.event_name == 'pull_request_target' }}
+        with:
+          # Need to specify the SHA of the head to identify the target.
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Restore cache for root deps
+        uses: sardine-ai/cache@v2
+        with:
+          path: .npm
+          key: ${{ runner.os }}-root-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-root-
+      - name: Restore cache for shared deps
+        uses: sardine-ai/cache@v2
+        with:
+          path: shared/.npm
+          key: ${{ runner.os }}-server-${{ hashFiles('shared/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-shared-
+      - name: Restore cache for server deps
+        uses: sardine-ai/cache@v2
+        with:
+          path: server/.npm
+          key: ${{ runner.os }}-server-${{ hashFiles('server/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-server-
+      - name: Restore cache for frontend deps
+        uses: sardine-ai/cache@v2
+        with:
+          path: frontend/.npm
+          key: ${{ runner.os }}-frontend-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-frontend-
+      # docker build takes 10+ minutes.
+      - name: Docker build
+        run: |
+          docker build --build-arg=VITE_APP_SARDINE_ENV=staging --build-arg=VITE_APP_FRONTEND_HOST="http://localhost:3000" --build-arg=NODE_OPTIONS=--max_old_space_size=7500 -f deployments/dockerfiles/api/Dockerfile .

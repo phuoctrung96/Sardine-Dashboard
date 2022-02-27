@@ -2,7 +2,7 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { StyledTable, StyledTr, BackgroundBox, Title, StyledTh, StyledUl } from "./styles";
-import { getRulesData } from "../../domain/dataProvider";
+import { getRulesData } from "../../rulesengine/dataProvider";
 import { rulesForDataDictionary } from "../../utils/ruleUtils";
 
 const Cell = styled.td`

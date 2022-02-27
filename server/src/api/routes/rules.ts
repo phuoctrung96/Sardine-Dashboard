@@ -10,6 +10,8 @@ import {
   SARDINE_ADMIN,
   AUDIT_LOG_TYPES,
   AnyTodo,
+  GetRuleStatsResponse,
+  RuleStatsSession,
 } from "sardine-dashboard-typescript-definitions";
 import { db } from "../../commons/db";
 import { mw } from "../../commons/middleware";
@@ -18,6 +20,8 @@ import { RuleService } from "../../commons/RuleService";
 import { getErrorMessage, isErrorWithResponse } from "../../utils/error-utils";
 import { RulePerformance } from "../../commons/models/datastore/rule-performance";
 import { writeAuditLog } from "../utils/routes/audit";
+import { Session } from "../../commons/models/datastore/sessions";
+import dayjs from "dayjs";
 
 const {
   listRuleRoute,
@@ -263,7 +267,40 @@ const rulesRouter = (ruleService: RuleService) => {
       };
       try {
         const { stats } = await ruleService.getRuleStats(payload);
-        return res.json(stats);
+
+        let response: GetRuleStatsResponse[] = stats;
+
+        const startDate = dayjs()
+          .subtract(Number(days) || 1, "day")
+          .unix();
+        const endDate = dayjs().unix();
+        const { sessions } = await Session.queryByTimeRange(clientID, startDate, endDate, { rule_id: ruleId }, undefined, 50);
+
+        if (response.length > 0) {
+          response.forEach((res, index) => {
+            const startTime = dayjs(res.key).unix();
+            let filteredSessions = sessions.filter((s) => s.timestamp <= startTime);
+
+            if (index > 0) {
+              const endTime = dayjs(response[index - 1].key).unix();
+              filteredSessions = sessions.filter((s) => s.timestamp <= startTime && s.timestamp > endTime);
+            }
+
+            if (filteredSessions.length > 0) {
+              response[index].sessions = filteredSessions.map(
+                (s) =>
+                  ({
+                    sessionKey: s.session_key,
+                    customerId: s.customer_id,
+                  } as RuleStatsSession)
+              );
+            } else {
+              response[index].sessions = [];
+            }
+          });
+        }
+
+        return res.json(response);
       } catch (e) {
         Sentry.captureException(e);
         return res.status(406).json({
