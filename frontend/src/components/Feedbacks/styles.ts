@@ -156,7 +156,7 @@ export const StyledTCell = styled.div`
   line-height: 16px;
 `;
 
-export const StatusCell = styled.span<{ $color: string }>`
+export const TextWithStatus = styled.span<{ $color: string }>`
   &::before {
     content: "";
     display: inline-block;

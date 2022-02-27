@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import DataCard, { CardAttribute } from "components/Common/DataCard";
 import { BiUserCircle } from "react-icons/bi";
+import { MOCK_PERSONAL_INFORMATION } from "./mockData";
+import { TextWithStatus } from "./styles";
+import usFlagIcon from "../../utils/logo/usFlag.svg";
 
-export const PersonalInformation = (props): JSX.Element => {
+export const PersonalInformation = (): JSX.Element => {
   const {
     emailAddress,
     isEmailVerified,
@@ -14,7 +17,8 @@ export const PersonalInformation = (props): JSX.Element => {
     facebook,
     linkedIn,
     twitter,
-  } = props;
+  } = MOCK_PERSONAL_INFORMATION;
+
   const attributes: CardAttribute[] = [
     {
       key: "Email Address",
@@ -22,14 +26,18 @@ export const PersonalInformation = (props): JSX.Element => {
     },
     {
       key: "Email Verified",
-      value: isEmailVerified,
+      value: isEmailVerified ? (
+        <TextWithStatus $color="#3147FF">Verified</TextWithStatus>
+      ) : (
+        <TextWithStatus $color="none">Not verified</TextWithStatus>
+      ),
     },
     {
       key: "Phone",
       value: phone,
     },
     {
-      key: "Phone",
+      key: "Work Phone",
       value: phone,
     },
     {
@@ -42,11 +50,20 @@ export const PersonalInformation = (props): JSX.Element => {
     },
     {
       key: "Phone country",
-      value: phoneCountry,
+      value: (
+        <>
+          <img src={usFlagIcon} alt="" />
+          <span style={{ marginLeft: 8 }}>{phoneCountry}</span>
+        </>
+      ),
     },
     {
       key: "Phone verified",
-      value: isPhoneVerified,
+      value: isPhoneVerified ? (
+        <TextWithStatus $color="#3147FF">Verified</TextWithStatus>
+      ) : (
+        <TextWithStatus $color="#969AB6">Not verified</TextWithStatus>
+      ),
     },
     {
       key: "Facebook",

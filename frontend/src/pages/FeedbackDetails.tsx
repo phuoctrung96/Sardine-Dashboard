@@ -1,7 +1,16 @@
+/* eslint-disable react/self-closing-comp */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import CircularRiskLevel from "components/Common/CircularRiskLevel";
+import DataCard from "components/Common/DataCard";
 import { StyledStickyNav } from "components/Dashboard/styles";
+import { Address } from "components/Feedbacks/Address";
+import { BankDetail } from "components/Feedbacks/BankDetail";
+import { CardDetails } from "components/Feedbacks/CardDetails";
+import { DeviceDetails } from "components/Feedbacks/DeviceDetails";
+import { NetworkDetails } from "components/Feedbacks/NetworkDetails";
+import { OS } from "components/Feedbacks/OS";
+import { PersonalInformation } from "components/Feedbacks/PersonalInformation";
 import {
   AddFeedbackDropdown,
   DetailsField,
@@ -24,6 +33,7 @@ import { Dropdown } from "react-bootstrap";
 import { FaAngleDown, FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout/Main";
+import amlIcon from "../utils/logo/aml.svg";
 
 export const FeedbackDetails = () => {
   const navigate = useNavigate();
@@ -118,8 +128,50 @@ export const FeedbackDetails = () => {
         </StyledMainDiv>
       </StyledMenuDiv>
 
-      {/* eslint-disable-next-line react/self-closing-comp */}
-      <StyledMainContentDiv></StyledMainContentDiv>
+      <StyledMainContentDiv>
+        <StyledMainDiv>
+          {/* Personal Information */}
+          <PersonalInformation />
+
+          {/* Address */}
+          <Address />
+
+          {/* Device details */}
+          <DeviceDetails />
+
+          {/* Network details */}
+          <NetworkDetails />
+
+          {/* OS */}
+          <OS />
+
+          {/* Behavior Biometrics */}
+
+          {/* AML */}
+          <DataCard
+            header="AML (Anti Money Laundering)"
+            attributes={[]}
+            bodyStyle={{ display: "block" }}
+            icon={<img src={amlIcon} alt="" />}
+          ></DataCard>
+
+          {/* Card details */}
+          <CardDetails />
+
+          {/* Bank detail */}
+          <BankDetail />
+
+          {/* Transactions */}
+
+          {/* Crypto Addresses */}
+
+          {/* Tax ID details */}
+
+          {/* Phone signals */}
+
+          {/* Email signals */}
+        </StyledMainDiv>
+      </StyledMainContentDiv>
     </Layout>
   );
 };

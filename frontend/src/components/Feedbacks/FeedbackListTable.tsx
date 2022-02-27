@@ -9,7 +9,7 @@ import { MOCK_TABLE_DATA } from "./mockData";
 import {
   BorderedTCell,
   ReasonCodeBadge,
-  StatusCell,
+  TextWithStatus,
   StyledDropdownDiv,
   StyledDropdownList,
   StyledPagination,
@@ -134,7 +134,9 @@ export const FeedbackListTable = (): JSX.Element => {
                 </TableCell>
                 <TableCell>
                   <StyledTCell>
-                    <StatusCell $color={data.status === "ach_chargeback" ? "#F7B904" : "#2FB464"}>{data.status}</StatusCell>
+                    <TextWithStatus $color={data.status === "ach_chargeback" ? "#F7B904" : "#2FB464"}>
+                      {data.status}
+                    </TextWithStatus>
                   </StyledTCell>
                 </TableCell>
                 <TableCell>
