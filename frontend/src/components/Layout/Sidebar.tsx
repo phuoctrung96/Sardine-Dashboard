@@ -14,7 +14,7 @@ import {
   FEATURE_FLAGS_PATH,
   DOCUMENT_VERIFICATIONS_PATH,
   QUEUES_PATH,
-  FRAUD_SCORE_PATH,
+  DEVICE_INTELLIGENCE_PATH,
   CUSTOMERS_PATH,
   LOGIN_PATH,
   PURCHASE_LIMIT_PATH,
@@ -84,7 +84,7 @@ import { AdminVisible } from "../Auth/AdminVisible";
 const filterStartDate = moment().subtract({ days: 1 }).utc().format(DATE_FORMATS.DATETIME);
 const filterEndDate = moment().utc().format(DATE_FORMATS.DATETIME);
 
-const diDefaultPath = `${FRAUD_SCORE_PATH}?session_risk=high&start_date=${filterStartDate}&end_date=${filterEndDate}`;
+const diDefaultPath = `${DEVICE_INTELLIGENCE_PATH}?session_risk=high&start_date=${filterStartDate}&end_date=${filterEndDate}`;
 
 const ciDefaultPath = `${CUSTOMERS_PATH}?risk_level=high&start_date=${filterStartDate}&end_date=${filterEndDate}`;
 
@@ -307,7 +307,7 @@ const Sidebar = (): JSX.Element => {
     {
       title: "Device Intelligence",
       path: diDefaultPath,
-      activePath: FRAUD_SCORE_PATH,
+      activePath: DEVICE_INTELLIGENCE_PATH,
       normalIcon: deviceIntelligence,
       activeIcon: deviceIntelligenceActive,
       tid: "sidebar_link_device_intelligence",

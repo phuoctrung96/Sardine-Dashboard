@@ -1,6 +1,6 @@
 import { DocumentData } from "sardine-dashboard-typescript-definitions";
 import { Card } from "react-bootstrap";
-import { CardText, CardTitle, CardGridItem, CardBody } from "styles/Card";
+import { CardText, CardTitle, CardGridItem, GridCardBody } from "styles/Card";
 
 import { startCase } from "lodash-es";
 
@@ -31,7 +31,7 @@ export const DocumentInformationSection = ({ documentData = {} }: DocumentInform
     <Card.Header className="font-weight-bold" style={{ color: "var(--dark-14)" }}>
       Document information
     </Card.Header>
-    <CardBody isGrid>
+    <GridCardBody>
       {documentInformationSectionFields.map((field) => {
         const formatter = documentInformationFieldFormatters[field];
         const value = formatter ? formatter(documentData[field] || "") : documentData[field];
@@ -39,12 +39,12 @@ export const DocumentInformationSection = ({ documentData = {} }: DocumentInform
         if (!value) return null;
 
         return (
-          <CardGridItem>
+          <CardGridItem key={field}>
             <CardTitle>{startCase(field)}</CardTitle>
             <CardText>{value}</CardText>
           </CardGridItem>
         );
       })}
-    </CardBody>
+    </GridCardBody>
   </Card>
 );

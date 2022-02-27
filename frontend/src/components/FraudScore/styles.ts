@@ -1,20 +1,16 @@
 import styled from "styled-components";
 
-const TableWrapper = styled.div`
+export const TableWrapper = styled.div`
   margin: 30px 0;
   width: inherit;
 `;
 
-const StyledMainDiv = styled.div`
+export const StyledMainDiv = styled.div`
   padding: 0 5%;
   max-width: 90%;
 `;
 
-const TextWrapper = styled.div`
-  width: 300px;
-`;
-
-const InputGroupWrapper = styled.div`
+export const InputGroupWrapper = styled.div`
   background-color: white;
   display: flex;
   justify-content: space-between;
@@ -27,7 +23,7 @@ const InputGroupWrapper = styled.div`
   }
 `;
 
-const PinContainer = styled.div`
+export const PinContainer = styled.div`
   margin: 0,
   padding: 0,
   width: '80vw',
@@ -40,9 +36,3 @@ const PinContainer = styled.div`
   justifyContent: 'center',
   backgroundColor: 'black'
 `;
-
-const Link = styled.a`
-  color: #325078;
-`;
-
-export { TableWrapper, TextWrapper, InputGroupWrapper, StyledMainDiv, PinContainer, Link };

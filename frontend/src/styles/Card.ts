@@ -12,15 +12,10 @@ export const CardText = styled(Card.Text)`
   font-size: 14px;
 `;
 
-// TODO(nghia): reuse components, grep dupplicated styles and ref to here later
-export const CardBody = styled(Card.Body)<{ isGrid: boolean }>`
-  ${({ isGrid }) =>
-    isGrid &&
-    `
-display: grid;
-grid-template-columns: repeat(auto-fill, 250px);
-grid-auto-rows: "auto";
-  `}
+export const GridCardBody = styled(Card.Body)`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 250px);
+  grid-auto-rows: "auto";
 `;
 
 export const CardGridItem = styled.div`

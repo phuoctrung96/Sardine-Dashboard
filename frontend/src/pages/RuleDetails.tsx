@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
-import { RulePerformanceKind, RULE_ENV_MODES, RuleProps } from "sardine-dashboard-typescript-definitions";
+import { RulePerformanceKind, RULE_ENV_MODES, RuleProps, GetRuleStatsResponse } from "sardine-dashboard-typescript-definitions";
 import { useToggle } from "hooks/useToggle";
 import { useToasts } from "react-toast-notifications";
 import { Image } from "react-bootstrap";
@@ -24,11 +24,21 @@ import {
   StyledUl,
   StyledInput,
   HorizontalSpace,
+  FilterLinkContainer,
 } from "../components/RulesModule/styles";
 import { ChartData } from "../interfaces/chartInterfaces";
 import useRulePerformanceFetch from "../hooks/useRulePerformanceFetch";
-import { CACHE_KEYS, RULE_ADMIN_CLIENT_ID } from "../constants";
-import { MANAGE_RULE, SEARCH_PARAM_KEYS, RULE_DETAILS_PATH } from "../modulePaths";
+import { CACHE_KEYS, DATE_FORMATS, RULE_ADMIN_CLIENT_ID } from "../constants";
+import { MANAGE_RULE, SEARCH_PARAM_KEYS, RULE_DETAILS_PATH, CUSTOMERS_PATH, SESSION_DETAILS_PATH } from "../modulePaths";
+import { Link } from "@mui/material";
+import dayjs from "dayjs";
+import {
+  CLIENT_ID_QUERY_FIELD,
+  CLIENT_QUERY_FIELD,
+  END_DATE_QUERY_FIELD,
+  START_DATE_QUERY_FIELD,
+} from "../utils/constructFiltersQueryParams";
+import { RuleStatsTable } from "../components/RulesModule/RuleStatsTable";
 
 const PARAM_KEYS = SEARCH_PARAM_KEYS[RULE_DETAILS_PATH];
 
@@ -79,6 +89,7 @@ const RuleDetails = (): JSX.Element => {
   const [showDisableRulePopup, toggleShowDisableRulePopup] = useToggle(false);
   const [clientId, setClientId] = useState("");
   const queryClient = useQueryClient();
+  const [statsData, setStatsData] = useState<GetRuleStatsResponse[]>([]);
 
   const { addToast } = useToasts();
 
@@ -102,6 +113,7 @@ const RuleDetails = (): JSX.Element => {
         const d =
           resultData.length > 0 ? resultData.filter((r: StatsAttribute) => r.value && parseInt(r.value || "0", 10) > 0) : [];
         if (d.length > 0) {
+          setStatsData(resultData);
           setChartData({
             type: "area",
             tableData: [["Date", "Count"], ...d],
@@ -299,6 +311,10 @@ const RuleDetails = (): JSX.Element => {
     return "-";
   };
 
+  const filterStartDate = dayjs().subtract(7, "day").utc().format(DATE_FORMATS.DATETIME);
+  const filterEndDate = dayjs().utc().format(DATE_FORMATS.DATETIME);
+  const ciPath = `${CUSTOMERS_PATH}?rule_id=${ruleID}&${START_DATE_QUERY_FIELD}=${filterStartDate}&${END_DATE_QUERY_FIELD}=${filterEndDate}&${CLIENT_QUERY_FIELD}=${org}`;
+
   return (
     <Layout>
       <PopUp
@@ -331,8 +347,13 @@ const RuleDetails = (): JSX.Element => {
                 justifyContent: "space-between",
               }}
             >
-              <Title style={{ marginLeft: 20 }} data-tid="title_rule_details">
-                RULE: {ruleDetails.name.toUpperCase()}
+              <Title style={{ margin: "10px 50px" }} data-tid="title_rule_details">
+                <span style={{ marginTop: 10 }}>RULE: {ruleDetails.name.toUpperCase()}</span>
+                <FilterLinkContainer>
+                  <Link href={ciPath} target="_blank">
+                    Show sessions for this rule
+                  </Link>
+                </FilterLinkContainer>
               </Title>
               {ruleDetails.isEditable || clientId === RULE_ADMIN_CLIENT_ID ? (
                 <HorizontalContainer>
@@ -376,7 +397,9 @@ const RuleDetails = (): JSX.Element => {
             </HorizontalContainer>
 
             {!ruleDetails.isEditable && isSuperAdmin && (
-              <StyledUl style={{ justifyContent: "end", padding: "10px 20px", color: "var(--danger)" }}>
+              <StyledUl
+                style={{ justifyContent: "end", padding: "10px 20px", color: "var(--danger)", backgroundColor: "transparent" }}
+              >
                 <span style={{ fontSize: 12, fontWeight: 500 }} data-tid="note_rule_details">
                   *if you want to edit this rule open this rule with demo.sardine.ai
                 </span>
@@ -458,9 +481,20 @@ const RuleDetails = (): JSX.Element => {
                       id="stats"
                       chartType={isWideScreen() ? "large" : "small"}
                       showChart
-                      showTable
+                      showTable={false}
                       data={chartData}
                       title="Usage"
+                    />
+
+                    <RuleStatsTable
+                      statsData={statsData}
+                      onSessionClick={(session) => {
+                        const { sessionKey, customerId } = session;
+                        const sessionPath = `${SESSION_DETAILS_PATH}?${CLIENT_ID_QUERY_FIELD}=${encodeURIComponent(
+                          clientId
+                        )}&sessionKey=${encodeURIComponent(sessionKey)}&customerId=${encodeURIComponent(customerId)}`;
+                        navigate(sessionPath);
+                      }}
                     />
                   </Container>
                 )}

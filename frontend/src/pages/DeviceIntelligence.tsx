@@ -18,26 +18,23 @@ import { useCookies } from "react-cookie";
 import { selectIsAdmin, selectIsSuperAdmin, useUserStore } from "store/user";
 import { getClientFromQueryParams } from "utils/getClientFromQueryParams";
 import { datetimeToTimestamp } from "utils/timeUtils";
-import Layout from "../Layout/Main";
-import { StoreCtx } from "../../utils/store";
-import OrganisationDropDown from "../Dropdown/OrganisationDropDown";
-import { StyledDropdownDiv, StyledNavTitle, StyledStickyNav, StyledTitleName } from "../Dashboard/styles";
-import Map from "../Maps";
-import { LayerContextProvider } from "../Maps/LayerContext";
-import { ActionTypes } from "../../utils/store/actionTypes";
-import { DatesProps } from "../../utils/store/interface";
-import { fetchDeviceDetails } from "../../utils/api";
-import { DataColumn, DataTable, ToolBarWithTitle } from "../Common/DataTable";
-import { StyledMainDiv, TableWrapper } from "./styles";
-import FilterField, { FilterData, getFilters } from "../Common/FilterField";
-import Badge from "../Common/Badge";
-import { FRAUD_SCORE_PATH, DEVICE_VIEW_PATH } from "../../modulePaths";
-import { openUrlNewTabWithHistoryState } from "../../utils/openUrlNewTabWithHistoryState";
-import { TIME_UNITS, DATE_FORMATS, TIMEZONE_TYPES } from "../../constants";
-
-const START_DATE_QUERY_FIELD = "start_date";
-const END_DATE_QUERY_FIELD = "end_date";
-const CLIENT_QUERY_FIELD = "client";
+import Layout from "../components/Layout/Main";
+import { StoreCtx } from "../utils/store";
+import OrganisationDropDown from "../components/Dropdown/OrganisationDropDown";
+import { StyledDropdownDiv, StyledNavTitle, StyledStickyNav, StyledTitleName } from "../components/Dashboard/styles";
+import Map from "../components/Maps";
+import { LayerContextProvider } from "../components/Maps/LayerContext";
+import { ActionTypes } from "../utils/store/actionTypes";
+import { DatesProps } from "../utils/store/interface";
+import { fetchDeviceDetails } from "../utils/api";
+import { DataColumn, DataTable, ToolBarWithTitle } from "../components/Common/DataTable";
+import { StyledMainDiv, TableWrapper } from "../components/FraudScore/styles";
+import FilterField, { FilterData, getFilters } from "../components/Common/FilterField";
+import Badge from "../components/Common/Badge";
+import { DEVICE_INTELLIGENCE_PATH, DEVICE_VIEW_PATH } from "../modulePaths";
+import { openUrlNewTabWithHistoryState } from "../utils/openUrlNewTabWithHistoryState";
+import { TIME_UNITS, DATE_FORMATS, TIMEZONE_TYPES } from "../constants";
+import { CLIENT_QUERY_FIELD, END_DATE_QUERY_FIELD, START_DATE_QUERY_FIELD } from "../utils/constructFiltersQueryParams";
 
 function getDefaultStartDate(): string {
   return moment().subtract({ days: 1 }).utc().format("YYYY-MM-DD HH:mm:ss");
@@ -84,7 +81,7 @@ export function getSourceFromQueryParams(pathSearch: string, isSuperAdmin: boole
   return searchParams.get(SOURCE_QUERY_FIELD) || (isSuperAdmin ? DATA_SOURCE.DATASTORE : DATA_SOURCE.ELASTIC_SEARCH);
 }
 
-const FraudScore = () => {
+const DeviceIntelligence = (): JSX.Element => {
   const limit = 100;
   const { state, dispatch } = useContext(StoreCtx);
   const navigate = useNavigate();
@@ -118,7 +115,7 @@ const FraudScore = () => {
   const organisation = getClientFromQueryParams(search, isAdmin, userOrganization, cookies.organization);
 
   const changeOrganisation = (org: string) => {
-    navigate(`${FRAUD_SCORE_PATH}?${constructQueryParams(filters, startDate, endDate, org, dbSource)}`);
+    navigate(`${DEVICE_INTELLIGENCE_PATH}?${constructQueryParams(filters, startDate, endDate, org, dbSource)}`);
     navigate(0); // Refresh the page. TODO: Change the way to update the filter.
   };
 
@@ -413,7 +410,7 @@ const FraudScore = () => {
           dividerIndex={4}
           onFiltersUpdate={setFilters}
           onApply={() => {
-            navigate(`${FRAUD_SCORE_PATH}?${constructQueryParams(filters, startDate, endDate, organisation, dbSource)}`);
+            navigate(`${DEVICE_INTELLIGENCE_PATH}?${constructQueryParams(filters, startDate, endDate, organisation, dbSource)}`);
             navigate(0); // Refresh the page. TODO: Change the way to update the filter.
           }}
         />
@@ -485,4 +482,4 @@ const FraudScore = () => {
   );
 };
 
-export default FraudScore;
+export default DeviceIntelligence;

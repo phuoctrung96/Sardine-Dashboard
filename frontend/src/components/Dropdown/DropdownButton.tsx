@@ -68,7 +68,7 @@ const DropwdownButton = (props: {
       {item && item.icon && (
         <StyledIcon>
           {" "}
-          <img alt="" src={chartLogo} /> : null
+          <img alt="" src={chartLogo} />
         </StyledIcon>
       )}
       <StyledOption>{item ? item.option : title}</StyledOption>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Form } from "react-bootstrap";
 import RecursiveDropdown from "components/Common/RecursiveDropdown";
 import { StyledUl, Title, HorizontalSpace, Container, Line } from "../styles";
-import { BatchRuleData, BATCH_RULE_DURATIONS, DATA_TYPES } from "../../../domain/dataProvider";
+import { BatchRuleData, BATCH_RULE_DURATIONS, DATA_TYPES } from "../../../rulesengine/dataProvider";
 import { isWideScreen } from "../../../utils/browserUtils";
 
 interface BatchRuleViewProps {

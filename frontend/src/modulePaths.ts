@@ -1,7 +1,7 @@
 export const ADMIN_PATH = "/admin";
 export const DATA_DICTIONARY_PATH = "/data-dictionary";
 export const DEVICE_VIEW_PATH = "/device-view";
-export const FRAUD_SCORE_PATH = "/fraud-score";
+export const DEVICE_INTELLIGENCE_PATH = "/device-intelligence";
 export const TRANSACTIONS_PATH = "/transactions";
 export const REGISTER_PATH = "/register";
 export const RULES_PATH = "/rules";
