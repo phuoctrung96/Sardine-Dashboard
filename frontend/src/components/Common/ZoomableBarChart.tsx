@@ -3,23 +3,12 @@ import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, ReferenceArea, Res
 import { SESSION_RISK_LEVELS } from "sardine-dashboard-typescript-definitions";
 import { DateRiskExpression } from "utils/chartUtils";
 import dayjs from "dayjs";
+import { CategoricalChartState } from "recharts/types/chart/generateCategoricalChart";
 
 const COLORS = ["#775DD0", "#FF4560", "#FEB019", "#01E396", "#018FFB"] as const;
 const FORMAT = "YYYY-MM-DD";
 const VERY_OLD_DATE = dayjs("1000-01-01", FORMAT);
 const NOW_DATE = dayjs();
-
-interface MouseEvent {
-  activeCoordinates: {
-    x: number;
-    y: number;
-  };
-  activeLabel: string;
-  activeTooltipIndex: number;
-  activePayload: unknown[];
-  chartX: number;
-  chartY: number;
-}
 
 const ZoomableBarChart = ({ data, height }: { data: DateRiskExpression[]; height: number }): JSX.Element => {
   const [leftDate, setLeftDate] = useState(VERY_OLD_DATE);
@@ -78,17 +67,21 @@ const ZoomableBarChart = ({ data, height }: { data: DateRiskExpression[]; height
     setMouseMoveLabel("");
   };
 
-  const handleMouseDown = (e: MouseEvent) => {
+  const handleMouseDown = (e: CategoricalChartState) => {
     setIsMouseDown(true);
-    setMouseDownLabel(e.activeLabel);
+    if (e.activeLabel !== undefined) {
+      setMouseDownLabel(e.activeLabel);
+    }
     setLeftDateTemp(dayjs(e.activeLabel, FORMAT));
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = (e: CategoricalChartState) => {
     if (!isMouseDown) {
       return;
     }
-    setMouseMoveLabel(e.activeLabel);
+    if (e.activeLabel !== undefined) {
+      setMouseMoveLabel(e.activeLabel);
+    }
     setRightDateTemp(dayjs(e.activeLabel, FORMAT));
   };
 

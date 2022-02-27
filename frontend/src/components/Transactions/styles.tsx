@@ -6,6 +6,21 @@ const TableWrapper = styled.div`
   width: inherit;
 `;
 
+const TransactionTableWrapper = styled.div`
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 0;
+  &::-webkit-scrollbar {
+    width: 2px;
+    border-radius: 2px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #141a39;
+    border-radius: 2px;
+    outline: 1px solid slategrey;
+  }
+`;
+
 const StyledMainDiv = styled.div`
   @media (min-width: 1400px) {
     width: 95%;
@@ -133,17 +148,16 @@ const StyledTh = styled.th`
   padding: 10px;
   font-family: IBM Plex Sans;
   font-style: normal;
-  font-weight: 600;
+  font-weight: normal;
   font-size: 14px;
-  line-height: 19px;
+  line-height: 20px;
   /* identical to box height */
 
   letter-spacing: 0.14em;
 
   /* Secondary */
 
-  color: #325078;
-  background: #f7f9fc;
+  color: #aba69a;
 `;
 
 const StyledTr = styled.tr`
@@ -160,10 +174,11 @@ const StyledTr = styled.tr`
   padding: 9px 0px;
   background-color: #ffffff;
   border: solid 2px transparent;
-  border-bottom-color: #F7F9FC;
+  border-bottom-color: #f7f9fc;
   width: auto;
   :hover {
-    background-color: #F7F9FC;
+    background-color: #fafbff;
+  }
 `;
 
 const Cell = styled.td`
@@ -177,7 +192,7 @@ const Cell = styled.td`
   font-weight: 500;
   font-size: 14px;
   line-height: 18px;
-  color: #325078;
+  color: #141a39;
 `;
 const TdValue = styled.div`
   font-family: IBM Plex Sans;
@@ -206,6 +221,7 @@ const TitleContainer = styled.div`
 
 export {
   TableWrapper,
+  TransactionTableWrapper,
   InputGroupWrapper,
   StyledMainDiv,
   PinContainer,

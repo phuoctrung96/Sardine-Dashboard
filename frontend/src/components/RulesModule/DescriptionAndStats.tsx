@@ -4,7 +4,7 @@ import { Spinner } from "react-bootstrap";
 import styled from "styled-components";
 import { captureException } from "utils/errorUtils";
 import { getRuleFeatureStats } from "../../utils/api";
-import { DATA_TYPES, FunctionChild, supportedFunctions } from "../../utils/dataProviderUtils";
+import { DATA_TYPES, FunctionChild, supportedFunctions } from "../../rulesengine/dataProvider";
 
 const Container = styled.div`
   margin: 10px 50px;

@@ -549,7 +549,7 @@ const SessionsDetails = (): JSX.Element => {
           }}
           data={customerData}
         />
-        {customerData?.transaction_id ? (
+        {customerData && (
           <FeedbackPopUp
             show={showFeedbackPopUp}
             handleClose={() => {
@@ -569,7 +569,7 @@ const SessionsDetails = (): JSX.Element => {
               transactionId: customerData.transaction_id,
             }}
           />
-        ) : null}
+        )}
         <StyledStickyNav style={{ width: "100%", marginBottom: 0, backgroundColor: "white" }}>
           <HorizontalContainer
             style={{
@@ -601,7 +601,7 @@ const SessionsDetails = (): JSX.Element => {
               </span>
             </HorizontalContainer>
             <HorizontalContainer>
-              {customerData?.transaction_id ? (
+              {customerData && (
                 <Button
                   style={{
                     padding: "8px 16px",
@@ -619,7 +619,7 @@ const SessionsDetails = (): JSX.Element => {
                   <span style={{ marginRight: 5 }}>Add Feedback</span>
                   <FaAngleDown size={14} />
                 </Button>
-              ) : null}
+              )}
               <SubmitButton
                 style={{ fontSize: 14, padding: "8px 16px", marginRight: 16 }}
                 title="Blocklist / Allowlist   +"

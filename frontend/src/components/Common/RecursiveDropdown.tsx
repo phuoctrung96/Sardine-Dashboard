@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Image } from "react-bootstrap";
-import { DROP_DOWN_BG, isDurationValue } from "../../utils/dataProviderUtils";
+import { DROP_DOWN_BG, FEATURE_SAPARATOR } from "../../rulesengine/dataProvider";
+import { isDurationValue } from "../../utils/ruleUtils";
 import rightArrow from "../../utils/logo/rightArrow.png";
 import rightArrowWhite from "../../utils/logo/rightArrowWhite.png";
 import {
@@ -80,7 +81,7 @@ const RecursiveDropdown = (p: RecursiveDropdownProps) => {
       item.items.length === 0 ? (
         <SubA
           key={item.title}
-          onClick={() => handleItemClick(item.title, item.datatype, `${parentTitle}_${item.title}`)}
+          onClick={() => handleItemClick(item.title, item.datatype, `${parentTitle}${FEATURE_SAPARATOR}${item.title}`)}
           className="dropdown"
         >
           {item.title}
@@ -93,7 +94,7 @@ const RecursiveDropdown = (p: RecursiveDropdownProps) => {
               const section = p.data.filter((r: DataProps) => r.title === selectedSection);
               if (section.length > 0) {
                 // Splitting each value from path by _
-                const itemPath = `${parentTitle}_${item.title}`;
+                const itemPath = `${parentTitle}${FEATURE_SAPARATOR}${item.title}`;
                 const pathValues = itemPath.split("_");
                 if (pathValues.length > 0) {
                   pathValues.shift(); // Removing first element as it is section and not subsection
@@ -120,7 +121,7 @@ const RecursiveDropdown = (p: RecursiveDropdownProps) => {
           </SubDropbtn>
           {selectedSubSections.includes(item.title) ? (
             <SubDropDownContent style={{ top: 0, left: 280, display: "block" }} className="dropdown">
-              {renderDropDownItem(item.items, `${parentTitle}_${item.title}`)}
+              {renderDropDownItem(item.items, `${parentTitle}${FEATURE_SAPARATOR}${item.title}`)}
             </SubDropDownContent>
           ) : null}
         </div>

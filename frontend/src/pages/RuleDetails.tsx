@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
-import { RulePerformanceKind, RULE_ENV_MODES, RuleProps } from "sardine-dashboard-typescript-definitions";
+import { RulePerformanceKind, RULE_ENV_MODES, RuleProps, GetRuleStatsResponse } from "sardine-dashboard-typescript-definitions";
 import { useToggle } from "hooks/useToggle";
 import { useToasts } from "react-toast-notifications";
 import { Image } from "react-bootstrap";
@@ -8,6 +8,7 @@ import { PrimaryButton } from "components/Button";
 import { getErrorMessage, captureException } from "utils/errorUtils";
 import { selectIsSuperAdmin, useUserStore } from "store/user";
 import { useQueryClient } from "react-query";
+import { RulePerformanceSection } from "components/RulesModule/Components/RulePerformance";
 import ChartAndTable from "../components/ChartAndTable";
 import Layout from "../components/Layout/Main";
 import PopUp from "../components/Common/PopUp";
@@ -23,11 +24,21 @@ import {
   StyledUl,
   StyledInput,
   HorizontalSpace,
+  FilterLinkContainer,
 } from "../components/RulesModule/styles";
 import { ChartData } from "../interfaces/chartInterfaces";
 import useRulePerformanceFetch from "../hooks/useRulePerformanceFetch";
-import { CACHE_KEYS, RULE_ADMIN_CLIENT_ID } from "../constants";
-import { MANAGE_RULE, SEARCH_PARAM_KEYS, RULE_DETAILS_PATH } from "../modulePaths";
+import { CACHE_KEYS, DATE_FORMATS, RULE_ADMIN_CLIENT_ID } from "../constants";
+import { MANAGE_RULE, SEARCH_PARAM_KEYS, RULE_DETAILS_PATH, CUSTOMERS_PATH, SESSION_DETAILS_PATH } from "../modulePaths";
+import { Link } from "@mui/material";
+import dayjs from "dayjs";
+import {
+  CLIENT_ID_QUERY_FIELD,
+  CLIENT_QUERY_FIELD,
+  END_DATE_QUERY_FIELD,
+  START_DATE_QUERY_FIELD,
+} from "../utils/constructFiltersQueryParams";
+import { RuleStatsTable } from "../components/RulesModule/RuleStatsTable";
 
 const PARAM_KEYS = SEARCH_PARAM_KEYS[RULE_DETAILS_PATH];
 
@@ -78,6 +89,7 @@ const RuleDetails = (): JSX.Element => {
   const [showDisableRulePopup, toggleShowDisableRulePopup] = useToggle(false);
   const [clientId, setClientId] = useState("");
   const queryClient = useQueryClient();
+  const [statsData, setStatsData] = useState<GetRuleStatsResponse[]>([]);
 
   const { addToast } = useToasts();
 
@@ -89,6 +101,7 @@ const RuleDetails = (): JSX.Element => {
   const org = paramOrg && organisationFromUserStore ? paramOrg : organisationFromUserStore;
   const clientIdSearchParams = params.get(PARAM_KEYS.CLIENT_ID);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { rulePerformance } = useRulePerformanceFetch(clientId, ruleID || "");
 
   const loadChartData = useCallback(async () => {
@@ -100,6 +113,7 @@ const RuleDetails = (): JSX.Element => {
         const d =
           resultData.length > 0 ? resultData.filter((r: StatsAttribute) => r.value && parseInt(r.value || "0", 10) > 0) : [];
         if (d.length > 0) {
+          setStatsData(resultData);
           setChartData({
             type: "area",
             tableData: [["Date", "Count"], ...d],
@@ -267,31 +281,39 @@ const RuleDetails = (): JSX.Element => {
 
   const isWideScreen = () => window.screen.width > 800;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const renderRulePerformanceMetrics = (performance: RulePerformanceKind | undefined) => {
-    if (performance) {
+    if (isSuperAdmin && performance) {
       return (
         <>
-          <p>
-            Fraud Precision:{" "}
-            {Math.round((performance.FraudCount / (performance.FraudCount + performance.ApprovedCount)) * 100) / 100}
-          </p>
-          <p>
-            Chargeback Precision:{" "}
-            {Math.round(
-              ((performance.FraudCount + performance.ChargebackCount) /
-                (performance.FraudCount + performance.ChargebackCount + performance.ApprovedCount)) *
-                100
-            ) / 100}
-          </p>
-          <p>
-            Declined Precision:{" "}
-            {Math.round((performance.DeclinedCount / (performance.DeclinedCount + performance.ApprovedCount)) * 100) / 100}
-          </p>
+          <div>
+            <p>
+              Fraud Precision:{" "}
+              {Math.round((performance.FraudCount / (performance.FraudCount + performance.ApprovedCount)) * 100) / 100}
+            </p>
+            <p>
+              Chargeback Precision:{" "}
+              {Math.round(
+                ((performance.FraudCount + performance.ChargebackCount) /
+                  (performance.FraudCount + performance.ChargebackCount + performance.ApprovedCount)) *
+                  100
+              ) / 100}
+            </p>
+            <p>
+              Declined Precision:{" "}
+              {Math.round((performance.DeclinedCount / (performance.DeclinedCount + performance.ApprovedCount)) * 100) / 100}
+            </p>
+          </div>
+          <RulePerformanceSection />
         </>
       );
     }
     return "-";
   };
+
+  const filterStartDate = dayjs().subtract(7, "day").utc().format(DATE_FORMATS.DATETIME);
+  const filterEndDate = dayjs().utc().format(DATE_FORMATS.DATETIME);
+  const ciPath = `${CUSTOMERS_PATH}?rule_id=${ruleID}&${START_DATE_QUERY_FIELD}=${filterStartDate}&${END_DATE_QUERY_FIELD}=${filterEndDate}&${CLIENT_QUERY_FIELD}=${org}`;
 
   return (
     <Layout>
@@ -317,7 +339,7 @@ const RuleDetails = (): JSX.Element => {
       />
       <Container style={{ margin: "auto" }}>
         {ruleDetails ? (
-          <BackgroundBox style={{ boxShadow: "none" }}>
+          <BackgroundBox style={{ boxShadow: "none", backgroundColor: "#FAFBFF" }}>
             <HorizontalContainer
               style={{
                 alignItems: "center",
@@ -325,8 +347,13 @@ const RuleDetails = (): JSX.Element => {
                 justifyContent: "space-between",
               }}
             >
-              <Title style={{ marginLeft: 20 }} data-tid="title_rule_details">
-                RULE: {ruleDetails.name.toUpperCase()}
+              <Title style={{ margin: "10px 50px" }} data-tid="title_rule_details">
+                <span style={{ marginTop: 10 }}>RULE: {ruleDetails.name.toUpperCase()}</span>
+                <FilterLinkContainer>
+                  <Link href={ciPath} target="_blank">
+                    Show sessions for this rule
+                  </Link>
+                </FilterLinkContainer>
               </Title>
               {ruleDetails.isEditable || clientId === RULE_ADMIN_CLIENT_ID ? (
                 <HorizontalContainer>
@@ -370,14 +397,16 @@ const RuleDetails = (): JSX.Element => {
             </HorizontalContainer>
 
             {!ruleDetails.isEditable && isSuperAdmin && (
-              <StyledUl style={{ justifyContent: "end", padding: "10px 20px", color: "var(--danger)" }}>
+              <StyledUl
+                style={{ justifyContent: "end", padding: "10px 20px", color: "var(--danger)", backgroundColor: "transparent" }}
+              >
                 <span style={{ fontSize: 12, fontWeight: 500 }} data-tid="note_rule_details">
                   *if you want to edit this rule open this rule with demo.sardine.ai
                 </span>
               </StyledUl>
             )}
 
-            <HorizontalContainer>
+            <div>
               <StyledContainer style={{ minWidth: "50%", maxWidth: "90%" }}>
                 <HorizontalContainer>
                   <HorizontalContainer style={{ width: "50%" }}>
@@ -401,7 +430,6 @@ const RuleDetails = (): JSX.Element => {
                 <RuleSection title="Description:" data={ruleDetails.description} />
                 <RuleSection title="Action Tags:" data={getActionsValue()} />
                 <RuleSection title="Rule Performance:" data={renderRulePerformanceMetrics(rulePerformance)} />
-
                 <HorizontalContainer
                   style={{
                     marginTop: 40,
@@ -453,15 +481,26 @@ const RuleDetails = (): JSX.Element => {
                       id="stats"
                       chartType={isWideScreen() ? "large" : "small"}
                       showChart
-                      showTable
+                      showTable={false}
                       data={chartData}
                       title="Usage"
+                    />
+
+                    <RuleStatsTable
+                      statsData={statsData}
+                      onSessionClick={(session) => {
+                        const { sessionKey, customerId } = session;
+                        const sessionPath = `${SESSION_DETAILS_PATH}?${CLIENT_ID_QUERY_FIELD}=${encodeURIComponent(
+                          clientId
+                        )}&sessionKey=${encodeURIComponent(sessionKey)}&customerId=${encodeURIComponent(customerId)}`;
+                        navigate(sessionPath);
+                      }}
                     />
                   </Container>
                 )}
                 <HorizontalSpace style={{ marginTop: 50 }} />
               </StyledContainer>
-            </HorizontalContainer>
+            </div>
           </BackgroundBox>
         ) : null}
       </Container>

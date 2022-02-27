@@ -1,7 +1,8 @@
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { CHECKPOINTS } from "sardine-dashboard-typescript-definitions";
 import { execSync } from "child_process";
-import { getRulesData, DATA_TYPES, ItemModel, DataType } from "../utils/dataProviderUtils";
+import { getRulesData, DATA_TYPES, DataType } from "../rulesengine/dataProvider";
+import { FeatureItem } from "../rulesengine/featureItem";
 
 function toGoType(t: string) {
   switch (t as DataType) {
@@ -30,7 +31,7 @@ function toJsonTag(title: string) {
   return `${title.substring(0, prefixSize).toLowerCase()}${title.substring(prefixSize)}`;
 }
 
-function toStructField(i: ItemModel) {
+function toStructField(i: FeatureItem) {
   if (i.title === "RiskLevel") {
     return `\tRiskLevel string`;
   }

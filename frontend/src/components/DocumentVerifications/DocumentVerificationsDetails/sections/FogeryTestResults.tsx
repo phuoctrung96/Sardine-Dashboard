@@ -1,5 +1,5 @@
 import { ForgeryTestResults } from "sardine-dashboard-typescript-definitions";
-import { CardBody } from "styles/Card";
+import { GridCardBody } from "styles/Card";
 import { Card } from "react-bootstrap";
 import { StyledTable, StyledTh, StyledTr, Cell } from "components/Table/styles";
 import classNames from "classnames";
@@ -19,7 +19,7 @@ export const FogeryTestResultsSection = ({ results = [] }: FogeryTestSectionProp
       <Card.Header className="font-weight-bold" style={{ color: "var(--dark-14)" }}>
         Forgery Test Results
       </Card.Header>
-      <CardBody className="d-flex" isGrid>
+      <GridCardBody className="d-flex">
         <StyledTable className="w-100">
           <thead>
             <tr
@@ -46,7 +46,7 @@ export const FogeryTestResultsSection = ({ results = [] }: FogeryTestSectionProp
             const isUnknown = r.result === "UNKNOWN";
 
             return (
-              <tbody>
+              <tbody key={`${r.type}_${r.subtype}_${r.result}`}>
                 <StyledTr>
                   <Cell
                     className={classNames({
@@ -75,7 +75,7 @@ export const FogeryTestResultsSection = ({ results = [] }: FogeryTestSectionProp
             );
           })}
         </StyledTable>
-      </CardBody>
+      </GridCardBody>
     </Card>
   );
 };

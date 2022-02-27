@@ -7,11 +7,11 @@ import {
   getRulesData,
   supportedFunctions,
   FUNCTIONS,
-  ItemModel,
   FunctionChild,
   DATA_TYPES,
   MULTI_FEATURE_FUNCTIONS,
-} from "../../utils/dataProviderUtils";
+} from "../../rulesengine/dataProvider";
+import { FeatureItem } from "../../rulesengine/featureItem";
 import RecursiveDropdown, { DataProps } from "../Common/RecursiveDropdown";
 
 interface Props {
@@ -89,12 +89,13 @@ const FunctionsPopup: React.FC<Props> = (props) => {
   const [feature2, setFeature2] = useState("");
   const [selectedFunction, setSelectedFunction] = useState("");
   const [functionData, setFunctionData] = useState<FunctionChild>();
-  const [rulesData] = useState(
-    getRulesData(isDemoMode, CHECKPOINTS.Customer, isSuperAdmin, organisation).filter((r) => r.title !== FUNCTIONS)
-  );
   const [featureValue, setFeatureValue] = useState("");
 
-  const getDropdownData = (_data: ItemModel[]) => {
+  const loadRulesData = () => {
+    return getRulesData(isDemoMode, CHECKPOINTS.Customer, isSuperAdmin, organisation).filter((r) => r.title !== FUNCTIONS);
+  };
+
+  const getDropdownData = (_data: FeatureItem[]) => {
     const data: DataProps[] = [];
     _data.forEach((r) => {
       data.push({
@@ -148,7 +149,7 @@ const FunctionsPopup: React.FC<Props> = (props) => {
                   setVisibleDropDown("");
                 }}
                 value={feature1}
-                data={getDropdownData(rulesData)}
+                data={getDropdownData(loadRulesData())}
               />
               {functionData && !functionData?.hasOperator && !MULTI_FEATURE_FUNCTIONS.includes(selectedFunction) ? (
                 <FormControl
@@ -176,7 +177,7 @@ const FunctionsPopup: React.FC<Props> = (props) => {
                     setVisibleDropDown("");
                   }}
                   value={feature2}
-                  data={getDropdownData(rulesData)}
+                  data={getDropdownData(loadRulesData())}
                 />
               </StyledUl>
             ) : null}

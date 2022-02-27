@@ -22,6 +22,7 @@ interface IProps {
   title: string;
   style?: React.CSSProperties;
   highFirstOrder?: boolean;
+  riskState?: boolean;
 }
 
 const colorsByLevel = ["#00D060", "#FFBE18", "#FD6871"];
@@ -33,8 +34,10 @@ const keyWordsByLevel = [
 ];
 
 const Badge: React.FC<IProps> = (props) => {
-  const { title, highFirstOrder, style } = props;
-  const getColorCode = () => {
+  const { title, highFirstOrder, style, riskState } = props;
+  let colorCode = "";
+
+  const getColorCodeByLevel = () => {
     const sortedKeyWordsByLevel = highFirstOrder ? keyWordsByLevel.slice().reverse() : keyWordsByLevel;
 
     const level = sortedKeyWordsByLevel.findIndex((keyWords) => keyWords.includes(title.toLowerCase()));
@@ -42,12 +45,16 @@ const Badge: React.FC<IProps> = (props) => {
     return colorsByLevel[level];
   };
 
-  const colorCode = getColorCode();
+  if (riskState) {
+    colorCode = "#FD6871";
+  } else {
+    colorCode = getColorCodeByLevel();
+  }
 
   return (
     <Container style={{ backgroundColor: `${colorCode}10`, ...style }}>
       <div style={{ marginLeft: 10, width: 8, height: 8, borderRadius: "50%", backgroundColor: colorCode }} />
-      <Title style={{ color: colorCode }}>{title}</Title>
+      <Title style={{ color: colorCode }}>{riskState ? riskState.toString() : title}</Title>
     </Container>
   );
 };

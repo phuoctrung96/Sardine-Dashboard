@@ -26,7 +26,7 @@ import RuleDetails from "./pages/RuleDetails";
 import Rules from "./pages/Rules";
 import ManageRule from "./pages/ManageRule";
 import DataDictionary from "./components/RulesModule/DataDictionary";
-import FraudScore from "./components/FraudScore";
+import DeviceIntelligence from "./pages/DeviceIntelligence";
 import Customers from "./pages/Customers";
 import DeviceView from "./pages/DeviceView";
 import { ADD_NEW_BLOCK_ALLOW_LIST_PATH, BLOCK_ALLOW_LIST_PATH } from "./components/BlockAllowList/urls";
@@ -60,7 +60,7 @@ import {
   SESSIONS_PATH,
   MANAGE_RULE,
   REGISTER_PATH,
-  FRAUD_SCORE_PATH,
+  DEVICE_INTELLIGENCE_PATH,
   PURCHASE_LIMIT_PATH,
   SETTINGS_PATH,
   ADMIN_PATH,
@@ -144,7 +144,7 @@ const App = (): JSX.Element => {
                     <Route path={MANAGE_RULE} element={<AuthenticatedOnly element={<ManageRule />} />} />
                     <Route path={ADMIN_PATH} element={<AuthenticatedOnly element={<Admin />} />} />
                     <Route path={DATA_DICTIONARY_PATH} element={<AuthenticatedOnly element={<DataDictionary />} />} />
-                    <Route path={FRAUD_SCORE_PATH} element={<AuthenticatedOnly element={<FraudScore />} />} />
+                    <Route path={DEVICE_INTELLIGENCE_PATH} element={<AuthenticatedOnly element={<DeviceIntelligence />} />} />
                     <Route path={CUSTOMERS_PATH} element={<AuthenticatedOnly element={<Customers />} />} />
                     <Route path={DEVICE_VIEW_PATH} element={<AuthenticatedOnly element={<DeviceView />} />} />
                     <Route path={BLOCK_ALLOW_LIST_PATH} element={<AuthenticatedOnly element={<BlockAllowList />} />} />

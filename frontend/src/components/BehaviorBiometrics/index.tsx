@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { makeStyles, Step, StepConnector, StepLabel, Stepper, Tooltip } from "@material-ui/core";
+import { Step, StepConnector, StepLabel, Stepper, Tooltip } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { withStyles } from "@material-ui/styles";
+import { withStyles } from "@mui/styles";
 import clsx from "clsx";
 import { Card, Col, Container, Row, Tooltip as TooltipBT, OverlayTrigger } from "react-bootstrap";
 import { BehaviorBiometricsPerFlow, BiometricField, AnyTodo } from "sardine-dashboard-typescript-definitions";

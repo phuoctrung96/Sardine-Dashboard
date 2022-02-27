@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { RadioButtonUncheckedOutlined, CheckOutlined } from "@material-ui/icons";
+import { RadioButtonUncheckedOutlined, CheckOutlined } from "@mui/icons-material";
 
 const Container = styled.div`
   display: flex;

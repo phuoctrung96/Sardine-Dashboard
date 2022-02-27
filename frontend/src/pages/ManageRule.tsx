@@ -71,34 +71,38 @@ import {
   Line,
   CSVParent,
   TextNormal,
-  GridList,
+  ImageList,
   RuleOutputTitle,
   RuleOutputContainer,
   DataDictionaryContainer,
 } from "../components/RulesModule/styles";
 import {
   getRulesData,
-  getReasonCodeData,
   DROPDOWN_TYPES,
   DropdownType,
   OPERATORS,
-  getRiskValues,
   DROP_DOWN_BG,
-  getActionData,
   DATA_TYPES,
-  saveActionToStorage,
   FUNCTIONS,
   supportedFunctions,
   getHasOperator,
+  BatchRuleData,
+  CheckPoint,
+  FunctionChild,
+  FEATURE_SAPARATOR,
+} from "../rulesengine/dataProvider";
+import {
   ADD_CUSTOM,
   saveActionLevelToStorage,
-  BatchRuleData,
-  isDurationValue,
-  CheckPoint,
+  saveActionToStorage,
   Reason,
-  ItemModel,
-  FunctionChild,
-} from "../utils/dataProviderUtils";
+  getReasonCodeData,
+  getRiskValues,
+  getActionData,
+  isDurationValue,
+} from "../utils/ruleUtils";
+
+import { FeatureItem } from "../rulesengine/featureItem";
 import { DescriptionAndStats } from "../components/RulesModule/DescriptionAndStats";
 import QueueSection from "../components/RulesModule/Components/QueueSection";
 import CustomInput from "../components/RulesModule/Components/CustomInput";
@@ -149,7 +153,19 @@ const LinkToDictionary = ({
   );
 };
 
+const IconArrow = (props: { isSelected: boolean }) => {
+  const { isSelected } = props;
+  return (
+    <Image
+      src={isSelected ? rightArrowWhite : rightArrow}
+      style={{ width: 10, height: 10, alignSelf: "center" }}
+      className="dropdown"
+    />
+  );
+};
+
 const CustomInputWrapper = ({
+  name,
   actionsData,
   checkpoints,
   type,
@@ -160,6 +176,7 @@ const CustomInputWrapper = ({
   setRiskLevel,
   setRiskValue,
 }: {
+  name: string;
   actionsData: string[];
   checkpoints: string[];
   type: DropdownType;
@@ -171,6 +188,7 @@ const CustomInputWrapper = ({
   setRiskValue: React.Dispatch<React.SetStateAction<string>>;
 }): JSX.Element => (
   <CustomInput
+    name={name}
     allowSpace
     onCancelClick={() => {
       if (type === DROPDOWN_TYPES.Checkpoint) {
@@ -200,6 +218,207 @@ const CustomInputWrapper = ({
   />
 );
 
+const DropdownItem = ({
+  items,
+  type,
+  parentIndex,
+  index,
+  parentTitle,
+  reasonCodes,
+  rules,
+  rulesData,
+  selectedSection,
+  selectedSubSections,
+  setRiskLevel,
+  setRules,
+  setSelectedSubSections,
+  setSelectedSection,
+  setSelectedReasonSection,
+  setReasonCodes,
+  selectedReasonSection,
+  setRiskValue,
+  setVisibleDropDown,
+}: {
+  items: readonly (FeatureItem | string)[];
+  type: DropdownType;
+  parentIndex: number;
+  index: number;
+  parentTitle: string; // Added title to capture the path of the node by creating parent_node string
+  reasonCodes: string;
+  rules: Rule[];
+  rulesData: FeatureItem[];
+  selectedSection: string;
+  selectedSubSections: string[];
+  setRules: React.Dispatch<React.SetStateAction<Rule[]>>;
+  setRiskLevel: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedSection: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedSubSections: React.Dispatch<React.SetStateAction<string[]>>;
+  setSelectedReasonSection: React.Dispatch<React.SetStateAction<string>>;
+  setReasonCodes: React.Dispatch<React.SetStateAction<string>>;
+  selectedReasonSection: string;
+  setRiskValue: React.Dispatch<React.SetStateAction<string>>;
+  setVisibleDropDown: React.Dispatch<React.SetStateAction<string>>;
+}): JSX.Element => {
+  const handleItemClick = (value: AnyTodo, dropdownType: DropdownType, pIndex: number, idx: number, pTitle: string) => {
+    if (!value) return;
+
+    if (dropdownType === DROPDOWN_TYPES.Rules) {
+      const newRules = [...rules];
+
+      let subValues = selectedSubSections;
+      // parentTitle would be like PaymentMethod_Bank_PrimaryIdentity_Address_City
+      // And we already have first & last value so removing them from the list and considering intermediate features
+      const pathValues = pTitle.split(FEATURE_SAPARATOR);
+      if (pathValues.length > 1) {
+        pathValues.shift(); // Remove main section value
+        pathValues.pop(); // Remove last selected value
+        subValues = pathValues;
+      }
+
+      const val =
+        subValues.length > 0
+          ? `${selectedSection}.${subValues.join(".")}${
+              value.toLowerCase() !== "all" ? (isDurationValue(value) ? `_${value}` : `.${value}`) : ""
+            }`
+          : `${selectedSection}.${value}`;
+
+      const valueForSampleData = subValues.length > 0 && isDurationValue(value) ? subValues[subValues.length - 1] : value;
+      const { sample, datatype } = getSampleValue(selectedSection, valueForSampleData);
+
+      const hasOperator = getHasOperator(val);
+
+      if (pIndex === -1) {
+        newRules[idx].rule = val;
+        newRules[idx].sample = sample;
+        newRules[idx].datatype = datatype;
+        newRules[idx].hasOperator = hasOperator;
+      } else {
+        newRules[pIndex].rules[idx].rule = val;
+        newRules[pIndex].rules[idx].sample = sample;
+        newRules[pIndex].rules[idx].datatype = datatype;
+        newRules[pIndex].rules[idx].hasOperator = hasOperator;
+      }
+      setRules(newRules);
+      setSelectedSubSections([]);
+      setSelectedSection("");
+    } else if (dropdownType === DROPDOWN_TYPES.Operator) {
+      const newRules = [...rules];
+      if (pIndex === -1) {
+        newRules[idx].operator = value;
+      } else {
+        newRules[pIndex].rules[idx].operator = value;
+      }
+      setRules(newRules);
+    } else if (dropdownType === DROPDOWN_TYPES.ReasonCode) {
+      setSelectedReasonSection(value);
+      setReasonCodes(`${reasonCodes} ${selectedReasonSection}.${value}`);
+    } else if (dropdownType === DROPDOWN_TYPES.ReasonOperator) {
+      setReasonCodes(`${reasonCodes} ${value}`);
+    } else if (dropdownType === DROPDOWN_TYPES.RiskLevel) {
+      setRiskLevel(value);
+    } else if (dropdownType === DROPDOWN_TYPES.RiskValue) {
+      setRiskValue(value);
+    }
+
+    setVisibleDropDown("");
+  };
+
+  return (
+    <>
+      {items.map((item: AnyTodo) =>
+        item.title === undefined ? (
+          <SubA
+            data-tid={`${type}_${parentIndex}_${index}_${item}`.replace(/_NaN/g, "")}
+            key={item}
+            onClick={() => handleItemClick(item, type, parentIndex, index, `${parentTitle}${FEATURE_SAPARATOR}${item.title}`)}
+            className="dropdown"
+          >
+            {item}
+          </SubA>
+        ) : item.items.length === 0 ? (
+          <SubA
+            data-tid={`${type}_${parentIndex}_${index}_${item.title}`.replace(/_NaN/g, "")}
+            key={item.title}
+            onClick={() =>
+              handleItemClick(item.title, type, parentIndex, index, `${parentTitle}${FEATURE_SAPARATOR}${item.title}`)
+            }
+            className="dropdown"
+          >
+            {item.title}
+          </SubA>
+        ) : (
+          <div
+            className={`rule-editor-dropdown-subcontent-${type}-li`}
+            id={`rule_editor_dropdown_subcontent_${type}_li_${item.title}`}
+            key={item.title}
+          >
+            <SubDropbtn
+              key={item.title}
+              onClick={() => {
+                const section = rulesData.filter((r: AnyTodo) => r.title === selectedSection);
+                if (section.length > 0) {
+                  // Splitting each value from path by _
+                  const itemPath = `${parentTitle}${FEATURE_SAPARATOR}${item.title}`;
+                  const pathValues = itemPath.split(FEATURE_SAPARATOR);
+                  if (pathValues.length > 0) {
+                    pathValues.shift(); // Removing first element as it is section and not subsection
+                    setSelectedSubSections(pathValues);
+                  }
+                }
+              }}
+              style={{
+                width: 280,
+                backgroundColor: selectedSubSections.includes(item.title) ? "#2173FF" : "#fff",
+              }}
+              className="dropdown"
+            >
+              <Title
+                style={{ height: 20, color: selectedSubSections.includes(item.title) ? "#FFFFFF" : "#325078" }}
+                className="dropdown"
+              >
+                {item.title}
+              </Title>
+              {item.items.length > 0 ? <IconArrow isSelected={selectedSubSections.includes(item.title)} /> : null}
+            </SubDropbtn>
+            {selectedSubSections.includes(item.title) && (
+              <SubDropDownContent
+                style={{
+                  top: document.getElementById(`rule_editor_dropdown_subcontent_${type}_li_${item.title}`)?.offsetTop || 0,
+                  left: 280,
+                  display: "block",
+                }}
+                className="dropdown"
+              >
+                <DropdownItem
+                  items={item.items}
+                  type={type}
+                  parentIndex={parentIndex}
+                  index={index}
+                  parentTitle={`${parentTitle}${FEATURE_SAPARATOR}${item.title}`}
+                  rules={rules}
+                  rulesData={rulesData}
+                  selectedSection={selectedSection}
+                  selectedSubSections={selectedSubSections}
+                  setSelectedSubSections={setSelectedSubSections}
+                  setRiskLevel={setRiskLevel}
+                  setRules={setRules}
+                  setSelectedSection={setSelectedSection}
+                  setSelectedReasonSection={setSelectedReasonSection}
+                  setReasonCodes={setReasonCodes}
+                  reasonCodes={reasonCodes}
+                  selectedReasonSection={selectedReasonSection}
+                  setRiskValue={setRiskValue}
+                  setVisibleDropDown={setVisibleDropDown}
+                />
+              </SubDropDownContent>
+            )}
+          </div>
+        )
+      )}
+    </>
+  );
+};
+
 interface Organisation {
   name: string;
 }
@@ -212,7 +431,6 @@ const DropdownContainer = ({
   getDescription,
   handleDropdownClick,
   index,
-  IconArrow,
   isDemoMode,
   isSuperAdmin,
   jiraAPICall,
@@ -222,10 +440,10 @@ const DropdownContainer = ({
   organisations,
   reasonCodes,
   reasonData,
-  renderDropDownItem,
   rules,
   rulesData,
   selectedSection,
+  selectedSubSections,
   selectedReasonSection,
   setActions,
   setActionsData,
@@ -256,7 +474,6 @@ const DropdownContainer = ({
   getDescription: (parentIndex: number, index: number) => string;
   handleDropdownClick: (type: string) => void;
   index: AnyTodo;
-  IconArrow: React.MemoExoticComponent<(props: AnyTodo) => JSX.Element>;
   isDemoMode: boolean;
   isSuperAdmin: boolean;
   jiraAPICall: (org: string) => Promise<void>;
@@ -266,16 +483,10 @@ const DropdownContainer = ({
   organisations: Organisation[];
   reasonCodes: string;
   reasonData: Reason[];
-  renderDropDownItem: (
-    items: readonly (ItemModel | string)[],
-    type: DropdownType,
-    parentIndex: number,
-    index: number,
-    parentTitle: string
-  ) => JSX.Element | JSX.Element[];
   rules: Rule[];
-  rulesData: ItemModel[];
+  rulesData: FeatureItem[];
   selectedSection: string;
+  selectedSubSections: string[];
   selectedReasonSection: string;
   setActions: React.Dispatch<React.SetStateAction<RuleActionTag[]>>;
   setActionsData: React.Dispatch<React.SetStateAction<string[]>>;
@@ -289,7 +500,7 @@ const DropdownContainer = ({
   setRiskLevel: React.Dispatch<React.SetStateAction<string>>;
   setRiskValue: React.Dispatch<React.SetStateAction<string>>;
   setRules: React.Dispatch<React.SetStateAction<Rule[]>>;
-  setRulesData: React.Dispatch<React.SetStateAction<ItemModel[]>>;
+  setRulesData: React.Dispatch<React.SetStateAction<FeatureItem[]>>;
   setSelectedReasonSection: React.Dispatch<React.SetStateAction<string>>;
   setSelectedSection: React.Dispatch<React.SetStateAction<string>>;
   setSelectedSubSections: React.Dispatch<React.SetStateAction<string[]>>;
@@ -414,7 +625,7 @@ const DropdownContainer = ({
             <Title style={{ color: selectedSection === element.title ? "#FFFFFF" : "#325078" }} className="dropdown">
               {element.title}
             </Title>
-            {element.items.length > 0 ? <IconArrow className="dropdown" isSelected={selectedSection === element.title} /> : null}
+            {element.items.length > 0 ? <IconArrow isSelected={selectedSection === element.title} /> : null}
           </SubDropbtn>
           {selectedSection === element.title && (
             <SubDropDownContent
@@ -427,7 +638,27 @@ const DropdownContainer = ({
               className="dropdown"
             >
               {" "}
-              {renderDropDownItem(element.items, typeRuleOrCheckpoint, pIndex, idx, element.title)}
+              <DropdownItem
+                items={element.items}
+                type={typeRuleOrCheckpoint}
+                parentIndex={pIndex}
+                index={idx}
+                parentTitle={element.title}
+                rules={rules}
+                rulesData={rulesData}
+                selectedSection={selectedSection}
+                selectedSubSections={selectedSubSections}
+                setSelectedSubSections={setSelectedSubSections}
+                setRiskLevel={setRiskLevel}
+                setRules={setRules}
+                setSelectedSection={setSelectedSection}
+                setSelectedReasonSection={setSelectedReasonSection}
+                setReasonCodes={setReasonCodes}
+                reasonCodes={reasonCodes}
+                selectedReasonSection={selectedReasonSection}
+                setRiskValue={setRiskValue}
+                setVisibleDropDown={setVisibleDropDown}
+              />
             </SubDropDownContent>
           )}
         </DropDownLi>
@@ -644,7 +875,27 @@ const DropdownContainer = ({
                     : "",
               }}
             >
-              {renderDropDownItem(OPERATORS, subtype, parentIndex, index, "")}
+              <DropdownItem
+                items={OPERATORS}
+                type={subtype}
+                parentIndex={parentIndex}
+                index={index}
+                parentTitle=""
+                rules={rules}
+                rulesData={rulesData}
+                selectedSection={selectedSection}
+                selectedSubSections={selectedSubSections}
+                setSelectedSubSections={setSelectedSubSections}
+                setRiskLevel={setRiskLevel}
+                setRules={setRules}
+                setSelectedSection={setSelectedSection}
+                setSelectedReasonSection={setSelectedReasonSection}
+                setReasonCodes={setReasonCodes}
+                reasonCodes={reasonCodes}
+                selectedReasonSection={selectedReasonSection}
+                setRiskValue={setRiskValue}
+                setVisibleDropDown={setVisibleDropDown}
+              />
             </DropDownContent>
           </DropDownLi>
         )
@@ -729,7 +980,7 @@ const ManageRule: React.FC = () => {
   const [enableCaseManagement, setEnableCaseManagement] = useState(false);
 
   const [error, setError] = useState("");
-  const [rulesData, setRulesData] = useState<ItemModel[]>([]);
+  const [rulesData, setRulesData] = useState<FeatureItem[]>([]);
   const [reasonData, setReasonData] = useState<Reason[]>([...getReasonCodeData(), { title: ADD_CUSTOM, items: [] }]);
 
   const [actionsData, setActionsData] = useState(getActionData(isSuperAdmin, CHECKPOINTS.Customer));
@@ -1214,13 +1465,6 @@ const ManageRule: React.FC = () => {
     }
   };
 
-  const IconArrow = memo((props: AnyTodo) => {
-    const { isSelected, style } = props;
-    return (
-      <Image src={isSelected ? rightArrowWhite : rightArrow} style={{ ...style, width: 10, height: 10, alignSelf: "center" }} />
-    );
-  });
-
   const prepareValueForString = (r: Rule, validate: boolean) => {
     if (!validate) {
       return r.value;
@@ -1268,148 +1512,6 @@ const ManageRule: React.FC = () => {
     return finalRule.length === 0 ? "N/A" : finalRule.trim();
   };
 
-  const handleItemClick = (value: AnyTodo, type: DropdownType, parentIndex: number, index: number, parentTitle: string) => {
-    if (!value) return;
-
-    if (type === DROPDOWN_TYPES.Rules) {
-      const newRules = [...rules];
-
-      let subValues = selectedSubSections;
-      // parentTitle would be like PaymentMethod_Bank_PrimaryIdentity_Address_City
-      // And we already have first & last value so removing them from the list and considering intermediate features
-      const pathValues = parentTitle.split("_");
-      if (pathValues.length > 1) {
-        pathValues.shift(); // Remove main section value
-        pathValues.pop(); // Remove last selected value
-        subValues = pathValues;
-      }
-
-      const val =
-        subValues.length > 0
-          ? `${selectedSection}.${subValues.join(".")}${
-              value.toLowerCase() !== "all" ? (isDurationValue(value) ? `_${value}` : `.${value}`) : ""
-            }`
-          : `${selectedSection}.${value}`;
-
-      const valueForSampleData = subValues.length > 0 && isDurationValue(value) ? subValues[subValues.length - 1] : value;
-      const { sample, datatype } = getSampleValue(selectedSection, valueForSampleData);
-
-      const hasOperator = getHasOperator(val);
-
-      if (parentIndex === -1) {
-        newRules[index].rule = val;
-        newRules[index].sample = sample;
-        newRules[index].datatype = datatype;
-        newRules[index].hasOperator = hasOperator;
-      } else {
-        newRules[parentIndex].rules[index].rule = val;
-        newRules[parentIndex].rules[index].sample = sample;
-        newRules[parentIndex].rules[index].datatype = datatype;
-        newRules[parentIndex].rules[index].hasOperator = hasOperator;
-      }
-      setRules(newRules);
-      setSelectedSubSections([]);
-      setSelectedSection("");
-    } else if (type === DROPDOWN_TYPES.Operator) {
-      const newRules = [...rules];
-      if (parentIndex === -1) {
-        newRules[index].operator = value;
-      } else {
-        newRules[parentIndex].rules[index].operator = value;
-      }
-      setRules(newRules);
-    } else if (type === DROPDOWN_TYPES.ReasonCode) {
-      setSelectedReasonSection(value);
-      setReasonCodes(`${reasonCodes} ${selectedReasonSection}.${value}`);
-    } else if (type === DROPDOWN_TYPES.ReasonOperator) {
-      setReasonCodes(`${reasonCodes} ${value}`);
-    } else if (type === DROPDOWN_TYPES.RiskLevel) {
-      setRiskLevel(value);
-    } else if (type === DROPDOWN_TYPES.RiskValue) {
-      setRiskValue(value);
-    }
-
-    setVisibleDropDown("");
-  };
-
-  const renderDropDownItem = (
-    items: readonly (ItemModel | string)[],
-    type: DropdownType,
-    parentIndex: number,
-    index: number,
-    parentTitle: string // Added title to capture the path of the node by creating parent_node string
-  ): JSX.Element | JSX.Element[] =>
-    items.map((item: AnyTodo) =>
-      item.title === undefined ? (
-        <SubA
-          data-tid={`${type}_${parentIndex}_${index}_${item}`.replace(/_NaN/g, "")}
-          key={item}
-          onClick={() => handleItemClick(item, type, parentIndex, index, `${parentTitle}_${item.title}`)}
-          className="dropdown"
-        >
-          {item}
-        </SubA>
-      ) : item.items.length === 0 ? (
-        <SubA
-          data-tid={`${type}_${parentIndex}_${index}_${item.title}`.replace(/_NaN/g, "")}
-          key={item.title}
-          onClick={() => handleItemClick(item.title, type, parentIndex, index, `${parentTitle}_${item.title}`)}
-          className="dropdown"
-        >
-          {item.title}
-        </SubA>
-      ) : (
-        <div
-          className={`rule-editor-dropdown-subcontent-${type}-li`}
-          id={`rule_editor_dropdown_subcontent_${type}_li_${item.title}`}
-          key={item.title}
-        >
-          <SubDropbtn
-            key={item.title}
-            onClick={() => {
-              const section = rulesData.filter((r: AnyTodo) => r.title === selectedSection);
-              if (section.length > 0) {
-                // Splitting each value from path by _
-                const itemPath = `${parentTitle}_${item.title}`;
-                const pathValues = itemPath.split("_");
-                if (pathValues.length > 0) {
-                  pathValues.shift(); // Removing first element as it is section and not subsection
-                  setSelectedSubSections(pathValues);
-                }
-              }
-            }}
-            style={{
-              width: 280,
-              backgroundColor: selectedSubSections.includes(item.title) ? "#2173FF" : "#fff",
-            }}
-            className="dropdown"
-          >
-            <Title
-              style={{ height: 20, color: selectedSubSections.includes(item.title) ? "#FFFFFF" : "#325078" }}
-              className="dropdown"
-            >
-              {item.title}
-            </Title>
-            {item.items.length > 0 ? (
-              <IconArrow className="dropdown" isSelected={selectedSubSections.includes(item.title)} />
-            ) : null}
-          </SubDropbtn>
-          {selectedSubSections.includes(item.title) && (
-            <SubDropDownContent
-              style={{
-                top: document.getElementById(`rule_editor_dropdown_subcontent_${type}_li_${item.title}`)?.offsetTop || 0,
-                left: 280,
-                display: "block",
-              }}
-              className="dropdown"
-            >
-              {renderDropDownItem(item.items, type, parentIndex, index, `${parentTitle}_${item.title}`)}
-            </SubDropDownContent>
-          )}
-        </div>
-      )
-    );
-
   const handleDropdownClick = (type: string) => {
     const t = visibleDropDown === type ? "" : type;
     setVisibleDropDown(t);
@@ -1446,12 +1548,33 @@ const ManageRule: React.FC = () => {
               }}
               className="dropdown"
             >
-              {renderDropDownItem(actionsData, DROPDOWN_TYPES.RiskLevel, NaN, NaN, "")}
+              <DropdownItem
+                items={actionsData}
+                type={DROPDOWN_TYPES.RiskLevel}
+                parentIndex={NaN}
+                index={NaN}
+                parentTitle=""
+                rules={rules}
+                rulesData={rulesData}
+                selectedSection={selectedSection}
+                selectedSubSections={selectedSubSections}
+                setSelectedSubSections={setSelectedSubSections}
+                setRiskLevel={setRiskLevel}
+                setRules={setRules}
+                setSelectedSection={setSelectedSection}
+                setSelectedReasonSection={setSelectedReasonSection}
+                setReasonCodes={setReasonCodes}
+                reasonCodes={reasonCodes}
+                selectedReasonSection={selectedReasonSection}
+                setRiskValue={setRiskValue}
+                setVisibleDropDown={setVisibleDropDown}
+              />
             </DropDownContent>
           </DropDownLi>
           {riskValue === ADD_CUSTOM ? (
             <div style={{ margin: "0px 20px" }}>
               <CustomInputWrapper
+                name="add_action_value"
                 actionsData={actionsData}
                 checkpoints={checkpoints}
                 setActionsData={setActionsData}
@@ -1480,7 +1603,27 @@ const ManageRule: React.FC = () => {
                 {riskValue.length === 0 ? "Value" : riskValue}
               </Dropbtn>
               <DropDownContent data-tid="action_value_options" style={additionalStyle} className="dropdown">
-                {renderDropDownItem(getRiskValues(), DROPDOWN_TYPES.RiskValue, NaN, NaN, "")}
+                <DropdownItem
+                  items={getRiskValues()}
+                  type={DROPDOWN_TYPES.RiskValue}
+                  parentIndex={NaN}
+                  index={NaN}
+                  parentTitle=""
+                  rules={rules}
+                  rulesData={rulesData}
+                  selectedSection={selectedSection}
+                  selectedSubSections={selectedSubSections}
+                  setSelectedSubSections={setSelectedSubSections}
+                  setRiskLevel={setRiskLevel}
+                  setRules={setRules}
+                  setSelectedSection={setSelectedSection}
+                  setSelectedReasonSection={setSelectedReasonSection}
+                  setReasonCodes={setReasonCodes}
+                  reasonCodes={reasonCodes}
+                  selectedReasonSection={selectedReasonSection}
+                  setRiskValue={setRiskValue}
+                  setVisibleDropDown={setVisibleDropDown}
+                />
               </DropDownContent>
             </DropDownLi>
           )}
@@ -1511,6 +1654,7 @@ const ManageRule: React.FC = () => {
         </StyledUl>
         {isCustomAction ? (
           <CustomInputWrapper
+            name="add_action"
             actionsData={actionsData}
             checkpoints={checkpoints}
             setActionsData={setActionsData}
@@ -1525,6 +1669,7 @@ const ManageRule: React.FC = () => {
           <Button
             className="button_add_custom_action"
             id="button_add_custom_action"
+            data-tid="button_add_custom_action"
             style={{
               backgroundColor: "#F8FBFF",
               border: "none",
@@ -1557,7 +1702,7 @@ const ManageRule: React.FC = () => {
       const splitData = ruleData.rule.split(".");
 
       if (splitData.length > 2) {
-        const splitLastEle = splitData[2].split("_");
+        const splitLastEle = splitData[2].split(FEATURE_SAPARATOR);
 
         const sectionFilter = rulesData.filter((r) => r.title === splitData[0]);
         if (sectionFilter.length > 0) {
@@ -1571,7 +1716,7 @@ const ManageRule: React.FC = () => {
         }
       } else if (splitData.length > 1) {
         const sectionFilter = rulesData.filter((r) => r.title === splitData[0]);
-        const splitLastEle = splitData[1].split("_");
+        const splitLastEle = splitData[1].split(FEATURE_SAPARATOR);
         if (sectionFilter.length > 0) {
           const subSection = sectionFilter[0].items.filter(
             (sub: AnyTodo) => splitLastEle[0].toLowerCase() === sub.title.toLowerCase()
@@ -1657,7 +1802,6 @@ const ManageRule: React.FC = () => {
           getDescription={getDescription}
           handleDropdownClick={handleDropdownClick}
           index={index}
-          IconArrow={IconArrow}
           isDemoMode={isDemoMode}
           isSuperAdmin={isSuperAdmin}
           jiraAPICall={jiraAPICall}
@@ -1667,10 +1811,10 @@ const ManageRule: React.FC = () => {
           organisations={organisations}
           reasonCodes={reasonCodes}
           reasonData={reasonData}
-          renderDropDownItem={renderDropDownItem}
           rules={rules}
           rulesData={rulesData}
           selectedSection={selectedSection}
+          selectedSubSections={selectedSubSections}
           selectedReasonSection={selectedReasonSection}
           setActions={setActions}
           setActionsData={setActionsData}
@@ -1960,9 +2104,10 @@ const ManageRule: React.FC = () => {
         </StyledHeading>
         <BackgroundBox style={{ margin: 25 }}>
           <StyledContainer>
-            <GridList>
+            <ImageList>
               {checkpoint === ADD_CUSTOM ? (
                 <CustomInputWrapper
+                  name="checkpoint"
                   actionsData={actionsData}
                   checkpoints={checkpoints}
                   setActionsData={setActionsData}
@@ -1982,7 +2127,6 @@ const ManageRule: React.FC = () => {
                   getDescription={getDescription}
                   handleDropdownClick={handleDropdownClick}
                   index={undefined}
-                  IconArrow={IconArrow}
                   isDemoMode={isDemoMode}
                   isSuperAdmin={isSuperAdmin}
                   jiraAPICall={jiraAPICall}
@@ -1992,10 +2136,10 @@ const ManageRule: React.FC = () => {
                   organisations={organisations}
                   reasonCodes={reasonCodes}
                   reasonData={reasonData}
-                  renderDropDownItem={renderDropDownItem}
                   rules={rules}
                   rulesData={rulesData}
                   selectedSection={selectedSection}
+                  selectedSubSections={selectedSubSections}
                   selectedReasonSection={selectedReasonSection}
                   setActions={setActions}
                   setActionsData={setActionsData}
@@ -2055,7 +2199,7 @@ const ManageRule: React.FC = () => {
                   }}
                 />
               </Container>
-            </GridList>
+            </ImageList>
             {isSuperAdmin && (
               <div>
                 <Button

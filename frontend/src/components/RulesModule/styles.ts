@@ -100,8 +100,19 @@ export const HorizontalContainer = styled.div`
   flex-direction: row;
 `;
 
+export const HorizontalContainerSpaceBetween = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
 export const HorizontalSpace = styled.div`
   margin: 15px;
+`;
+
+export const VerticalContainer = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 
 export const TitleWithLogo = styled.div`
@@ -332,8 +343,35 @@ export const StyledTh = styled.th`
   color: black;
 `;
 
+export const Cell = styled.td`
+  vertical-align: middle;
+  min-height: 25px;
+  padding: 15px 10px;
+  letter-spacing: 0em;
+  text-align: left;
+  font-family: IBM Plex Sans;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 18px;
+  color: #325078;
+
+  max-height: 50px;
+  overflow-y: scroll;
+`;
+
+export const TdValue = styled.div`
+  font-family: IBM Plex Sans;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 14px;
+  color: #001932;
+  padding: 7px 0px;
+`;
+
 export const StyledTr = styled.tr`
-  height: 36px;
+  min-height: 36px;
 
   border-radius: 4px;
   font-family: IBM Plex Mono;
@@ -350,6 +388,9 @@ export const StyledTr = styled.tr`
     background-color: #325078;
     > td {
       color: #ffffff !important;
+      > div > div {
+        color: #ffffff !important;
+      }
     }
   }
 `;
@@ -402,7 +443,7 @@ export const CSVParent = styled.div`
   }
 `;
 
-export const GridList = styled.div`
+export const ImageList = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, 250px);
   grid-auto-rows: auto;
@@ -433,4 +474,50 @@ export const DataDictionaryContainer = styled.div`
   min-width: 140px;
   height: 40px;
   border-radius: 6px;
+`;
+
+export const RulePerformancePaper = styled.div<{ $color: string }>`
+  height: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  min-width: 30%;
+  background-color: white;
+  border-radius: 8px;
+
+  & p {
+    margin: 0;
+  }
+
+  & p:first-child {
+    font-size: 16px;
+
+    &::before {
+      content: "";
+      display: inline-block;
+      margin-right: 7px;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background-color: ${(props) => props.$color};
+    }
+  }
+  & p:last-child {
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 32px;
+  }
+`;
+
+export const RulePerformanceSummaryText = styled.div`
+  font-family: IBM Plex Sans;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 20px;
+`;
+
+export const FilterLinkContainer = styled.div`
+  padding: 10px 0px;
 `;
