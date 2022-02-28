@@ -181,3 +181,23 @@ export const MOCK_BANK_DETAIL = [
     totalSpent: "- USD",
   },
 ];
+
+export const MOCK_TRANSACTIONS = [
+  {
+    amount: "USD 1.578",
+    paymentMode: "Bank transfer",
+    itemCategory: "USD",
+    date: "December 31, 1969 - 9:00 PM",
+    actionType: "Buy",
+  },
+];
+
+export const MOCK_CRYPTO_ADDRESSES = [
+  {
+    currencyCode: "ETH - Ethereum",
+    address: "15e15hWo6CShMgbAfo8c2Ykj4C6BLq6Not",
+    addressRiskLevel: "high",
+    userRiskLevel: "very_high",
+    addressCategories: "0.568421",
+  },
+];

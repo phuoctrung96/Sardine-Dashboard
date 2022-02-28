@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import CircularRiskLevel from "components/Common/CircularRiskLevel";
+import CustomerTaxDetails from "components/Common/Customer/CustomerTaxDetails";
 import DataCard from "components/Common/DataCard";
 import { StyledStickyNav } from "components/Dashboard/styles";
 import { Address } from "components/Feedbacks/Address";
@@ -166,6 +167,29 @@ export const FeedbackDetails = () => {
           {/* Crypto Addresses */}
 
           {/* Tax ID details */}
+          <CustomerTaxDetails
+            abuseScore={693}
+            firstPartySyntheticScore={318}
+            idTheftScore={57}
+            nameDobSharedCount={0}
+            nameSsnSyntheticAddress={false}
+            ssnBogus={false}
+            ssnHistoryLongerMonths={0}
+            ssnIssuanceBeforeDob={false}
+            ssnIssuanceDobMismatch={false}
+            ssnSharedCount={0}
+            ssnNamesExactMatch={[]}
+            ssnPhonesExactMatch={[]}
+            ssnEmailsExactMatch={[]}
+            ssnDobsExactMatch={[]}
+            taxId="high"
+            taxIdLevel="medium"
+            taxIdMatch="No match"
+            taxIdNameMatch="No match"
+            taxIdDobMatch=""
+            taxIdStateMatch=""
+            thirdPartySyntheticScore="750"
+          />
 
           {/* Phone signals */}
 
