@@ -2,7 +2,7 @@
 import DataCard, { CardAttribute } from "components/Common/DataCard";
 import Badge from "components/Common/Badge";
 import { MOCK_OS } from "./mockData";
-import terminalIcon from "../../utils/logo/terminal.svg";
+import osIcon from "../../utils/logo/os.svg";
 
 export const OS = (): JSX.Element => {
   const { os, trueOS, osAnomally } = MOCK_OS;
@@ -22,5 +22,5 @@ export const OS = (): JSX.Element => {
     },
   ];
 
-  return <DataCard header="OS" attributes={attributes} icon={<img src={terminalIcon} alt="" />} />;
+  return <DataCard header="OS" attributes={attributes} icon={<img src={osIcon} alt="" />} />;
 };

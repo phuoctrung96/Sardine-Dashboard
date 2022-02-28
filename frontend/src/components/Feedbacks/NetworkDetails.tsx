@@ -2,7 +2,7 @@
 import DataCard, { CardAttribute } from "components/Common/DataCard";
 import Badge from "components/Common/Badge";
 import { MOCK_NETWORK_DETAILS } from "./mockData";
-import networkDetailsIcon from "../../utils/logo/network-details.svg";
+import cloudIcon from "../../utils/logo/cloud.svg";
 import usFlagIcon from "../../utils/logo/usFlag.svg";
 
 export const NetworkDetails = (): JSX.Element => {
@@ -48,5 +48,5 @@ export const NetworkDetails = (): JSX.Element => {
     },
   ];
 
-  return <DataCard header="Network details" attributes={attributes} icon={<img src={networkDetailsIcon} alt="" />} />;
+  return <DataCard header="Network details" attributes={attributes} icon={<img src={cloudIcon} alt="" />} />;
 };

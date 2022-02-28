@@ -14,7 +14,7 @@ export const BankDetail = (): JSX.Element => {
           <img src={bankIcon} alt="" />
           <span>Bank Detail</span>
         </div>
-        <ViewDetailsText>View details &gt;</ViewDetailsText>
+        <ViewDetailsText>View all &gt;</ViewDetailsText>
       </Card.Header>
       <TableContainer style={{ backgroundColor: "white" }}>
         <Table>

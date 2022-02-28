@@ -162,6 +162,45 @@ export const MOCK_OS = {
   osAnomally: "low",
 };
 
+export const MOCK_BEHAVIOR_BIOMETRICS = [
+  {
+    num_distraction_events: 0,
+    num_context_switches: 26,
+    hesitation_percentile: {
+      ltm: 0,
+      non_ltm: 0,
+    },
+    fields: [
+      {
+        name: "town",
+        is_ltm: true,
+        num_auto_fill_events: 0,
+        hesitation_percentage: 0,
+        num_expert_key_events: 0,
+        num_clipboard_events: 0,
+        num_copy_paste_events: 0,
+      },
+      {
+        name: "street2",
+        num_copy_paste_events: 0,
+        num_expert_key_events: 0,
+        hesitation_percentage: 0,
+        num_clipboard_events: 0,
+        is_ltm: true,
+        num_auto_fill_events: 0,
+      },
+    ],
+    flow: "automated_test",
+    updated_at: 1646029162,
+    created_at: 1646029160,
+    hesitations_percentage: {
+      amount: 0,
+      ltm: 0,
+    },
+    num_context_switch_events: 26,
+  },
+];
+
 export const MOCK_CARD_DETAILS = [
   {
     type: "Credit Card",
@@ -199,5 +238,6 @@ export const MOCK_CRYPTO_ADDRESSES = [
     addressRiskLevel: "high",
     userRiskLevel: "very_high",
     addressCategories: "0.568421",
+    coinbaseDashboard: "View",
   },
 ];

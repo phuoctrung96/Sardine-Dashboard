@@ -1,14 +1,19 @@
 /* eslint-disable react/self-closing-comp */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
+import BehaviorBiometrics from "components/BehaviorBiometrics";
 import CircularRiskLevel from "components/Common/CircularRiskLevel";
+import CustomerEmail from "components/Common/Customer/CustomerEmail";
+import CustomerPhone from "components/Common/Customer/CustomerPhone";
 import CustomerTaxDetails from "components/Common/Customer/CustomerTaxDetails";
 import DataCard from "components/Common/DataCard";
 import { StyledStickyNav } from "components/Dashboard/styles";
 import { Address } from "components/Feedbacks/Address";
 import { BankDetail } from "components/Feedbacks/BankDetail";
 import { CardDetails } from "components/Feedbacks/CardDetails";
+import { CryptoAddresses } from "components/Feedbacks/CryptoAddresses";
 import { DeviceDetails } from "components/Feedbacks/DeviceDetails";
+import { MOCK_BEHAVIOR_BIOMETRICS } from "components/Feedbacks/mockData";
 import { NetworkDetails } from "components/Feedbacks/NetworkDetails";
 import { OS } from "components/Feedbacks/OS";
 import { PersonalInformation } from "components/Feedbacks/PersonalInformation";
@@ -23,6 +28,7 @@ import {
   Title,
   ViewDetailsText,
 } from "components/Feedbacks/styles";
+import { Transactions } from "components/Feedbacks/Transactions";
 import {
   DetailsHeaderValue,
   HorizontalContainer,
@@ -129,7 +135,7 @@ export const FeedbackDetails = () => {
         </StyledMainDiv>
       </StyledMenuDiv>
 
-      <StyledMainContentDiv>
+      <StyledMainContentDiv style={{ marginBottom: 64 }}>
         <StyledMainDiv>
           {/* Personal Information */}
           <PersonalInformation />
@@ -147,6 +153,7 @@ export const FeedbackDetails = () => {
           <OS />
 
           {/* Behavior Biometrics */}
+          <BehaviorBiometrics behavior_biometrics={MOCK_BEHAVIOR_BIOMETRICS} />
 
           {/* AML */}
           <DataCard
@@ -163,8 +170,10 @@ export const FeedbackDetails = () => {
           <BankDetail />
 
           {/* Transactions */}
+          <Transactions />
 
           {/* Crypto Addresses */}
+          <CryptoAddresses />
 
           {/* Tax ID details */}
           <CustomerTaxDetails
@@ -192,8 +201,26 @@ export const FeedbackDetails = () => {
           />
 
           {/* Phone signals */}
+          <CustomerPhone
+            phoneLevel="low"
+            phoneReasonCodes="LIMITED_INFORMATION_PHONE"
+            phoneScoreReason="-"
+            nameScore="-"
+            addressScore="-"
+          />
 
           {/* Email signals */}
+          <CustomerEmail
+            emailLevel="high"
+            emailDomainLevel="low"
+            emailReasonCodes="231"
+            emailReason="-"
+            emailOwnerName=""
+            emailOwnerNameMatch=""
+            emailPhoneRiskLevel="very_high"
+            riskBand=""
+            billaddressReason=""
+          />
         </StyledMainDiv>
       </StyledMainContentDiv>
     </Layout>

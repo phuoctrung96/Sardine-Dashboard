@@ -15,7 +15,7 @@ export const CardDetails = (): JSX.Element => {
           <img src={creditCardIcon} alt="" />
           <span>Card Details</span>
         </div>
-        <ViewDetailsText>View details &gt;</ViewDetailsText>
+        <ViewDetailsText>View all &gt;</ViewDetailsText>
       </Card.Header>
       <TableContainer style={{ backgroundColor: "white" }}>
         <Table>
