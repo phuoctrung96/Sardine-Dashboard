@@ -9,7 +9,8 @@ export const SpaceBetweenContainer = styled.div`
 `;
 
 export const StyledButton = styled(Button)`
-  box-shadow: none !important;
+  box-shadow: none;
+  outline: none;
   background-color: white;
 `;
 
@@ -30,7 +31,7 @@ export const FeedbackChartSwitch = styled(ToggleButtonGroup)`
     align-items: center;
     gap: 7px;
     padding: 8px 16px;
-    box-shadow: none !important;
+    box-shadow: none;
     &:hover,
     &:active,
     &:focus {
@@ -59,10 +60,10 @@ export const AddFeedbackDropdown = styled(Dropdown)`
     color: white;
     font-size: 14;
     margin-right: 72;
-    box-shadow: none !important;
+    box-shadow: none;
   }
   & .dropdown-toggle::after {
-    display: none !important;
+    display: none;
   }
 
   & .dropdown-menu {
@@ -78,22 +79,19 @@ export const AddFeedbackDropdown = styled(Dropdown)`
 `;
 
 export const AddFilterBadge = styled(Badge)`
-  border-radius: 100px;
   background-color: #808dff !important;
+  color: white;
   font-weight: normal;
-  margin-left: 8px;
+  margin-left: 6px;
+  border-radius: 100px;
 `;
 
 export const StyledTableContainer = styled(TableContainer)`
   border: 1px solid #e6ecfa;
-  /* overflow-x: auto; */
 
   &::-webkit-scrollbar {
     height: 2px;
     border-radius: 2px;
-  }
-  &::-webkit-scrollbar-track {
-    /* box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3); */
   }
   &::-webkit-scrollbar-thumb {
     background-color: #969ab6;
@@ -102,9 +100,7 @@ export const StyledTableContainer = styled(TableContainer)`
   }
 `;
 
-export const StyledTable = styled(Table)`
-  /* overflow-x: scroll; */
-`;
+export const StyledTable = styled(Table)``;
 
 export const StyledTHead = styled(TableHead)`
   & th {

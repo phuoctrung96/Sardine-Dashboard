@@ -76,11 +76,11 @@ export const Feedbacks = (): JSX.Element => {
         <StyledMainDiv style={{ backgroundColor: "#F2F6FF", padding: "16px 32px", minHeight: 320 }}>
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
             <FeedbackChartSwitch type="radio" name="feedback-chart" value={chartType} onChange={handleChartTypeSwitch}>
-              <ToggleButton id="feedback-chart-graph-toggle" value="graph">
+              <ToggleButton value="graph">
                 <img src={graphIcon} alt="Graph icon" />
                 Graph
               </ToggleButton>
-              <ToggleButton id="feedback-chart-map-toggle" value="map">
+              <ToggleButton value="map">
                 <img src={mapIcon} alt="Map icon" />
                 Map
               </ToggleButton>
