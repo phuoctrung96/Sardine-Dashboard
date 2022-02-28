@@ -1,7 +1,7 @@
 import { Card } from "@mui/material";
 import { GetRuleStatsResponse, RuleStatsSession } from "sardine-dashboard-typescript-definitions";
 import { isWideScreen } from "../../utils/browserUtils";
-import { Cell, StyledTable, StyledTd, StyledTh, StyledTr, TdValue } from "./styles";
+import { Cell, StyledTable, StyledTh, StyledTr, TdValue } from "./styles";
 
 interface RuleStatsTableProps {
   statsData: GetRuleStatsResponse[];
@@ -46,7 +46,7 @@ export const RuleStatsTable = (props: RuleStatsTableProps): JSX.Element => {
                       </TdValue>
                     ))
                   ) : (
-                    <TdValue>{"-"}</TdValue>
+                    <TdValue>-</TdValue>
                   )}
                 </div>
               </Cell>

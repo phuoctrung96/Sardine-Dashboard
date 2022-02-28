@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Col from "react-bootstrap/Col";
 import ChangePasswordModal from "../components/Settings/ChangePasswordModal";
 import ChangeEmailModal from "../components/Settings/ChangeEmailModal";
 import Layout from "../components/Layout/Main";
 import { StyledContainer, StyledRow, StyledButton } from "../components/Settings/styles";
 import UsersList from "../components/Settings/UsersList";
-import InviteEmailModal from "../components/Settings/InviteEmailModal";
+import InviteEmail from "../components/Admin/InviteEmail";
 import { useUserStore } from "../store/user";
+
 const Settings = (): JSX.Element => {
   const [showChangeEmailModal, setShowChangeEmailModal] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
@@ -40,11 +41,19 @@ const Settings = (): JSX.Element => {
       </StyledContainer>
 
       <StyledContainer fluid="md">
-        <StyledButton onClick={() => setShowInviteEmail(true)}>Invite</StyledButton>
-        <UsersList />
+        <StyledRow>
+          <Col>
+            <StyledButton onClick={() => setShowInviteEmail(true)}>Invite</StyledButton>
+          </Col>
+        </StyledRow>
+        <StyledRow>
+          <Col>
+            <UsersList />
+          </Col>
+        </StyledRow>
       </StyledContainer>
 
-      <InviteEmailModal show={showInviteEmail} handleClose={() => setShowInviteEmail(false)} organisation={organisation} />
+      <InviteEmail show={showInviteEmail} handleClose={() => setShowInviteEmail(false)} organisation={organisation} />
 
       <ChangePasswordModal
         show={showChangePasswordModal}

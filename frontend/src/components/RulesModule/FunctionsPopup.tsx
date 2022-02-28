@@ -91,9 +91,7 @@ const FunctionsPopup: React.FC<Props> = (props) => {
   const [functionData, setFunctionData] = useState<FunctionChild>();
   const [featureValue, setFeatureValue] = useState("");
 
-  const loadRulesData = () => {
-    return getRulesData(isDemoMode, CHECKPOINTS.Customer, isSuperAdmin, organisation).filter((r) => r.title !== FUNCTIONS);
-  };
+  const loadRulesData = () => getRulesData(isDemoMode, CHECKPOINTS.Customer, isSuperAdmin, organisation).filter((r) => r.title !== FUNCTIONS);
 
   const getDropdownData = (_data: FeatureItem[]) => {
     const data: DataProps[] = [];
