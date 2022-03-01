@@ -120,7 +120,7 @@ export const FeedbackListTable = (): JSX.Element => {
           </StyledTHead>
           <TableBody>
             {MOCK_TABLE_DATA.map((data) => (
-              <TableRow key={data.sessionKey} onClick={() => navigate(FEEDBACK_DETAILS_PATH)}>
+              <TableRow key={data.sessionKey} onClick={() => navigate(FEEDBACK_DETAILS_PATH)} style={{cursor: "pointer"}}>
                 <BorderedTCell>
                   <StyledTCell>{data.sessionKey}</StyledTCell>
                 </BorderedTCell>
