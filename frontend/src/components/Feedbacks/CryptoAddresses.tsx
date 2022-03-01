@@ -1,7 +1,6 @@
 /* eslint-disable arrow-body-style */
 import { Table, TableBody, TableCell, TableContainer, TableRow, TableSortLabel } from "@mui/material";
 import { DetailsCardView } from "components/Queues/styles";
-import { Card } from "react-bootstrap";
 import Badge from "components/Common/Badge";
 import { Link } from "components/Common/Links";
 import { MOCK_CRYPTO_ADDRESSES } from "./mockData";
@@ -11,12 +10,12 @@ import walletIcon from "../../utils/logo/wallet.svg";
 export const CryptoAddresses = (): JSX.Element => {
   return (
     <DetailsCardView>
-      <Card.Header>
+      <div className="card-header">
         <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
           <img src={walletIcon} alt="" />
           <span>Crypto Addresses</span>
         </div>
-      </Card.Header>
+      </div>
       <TableContainer style={{ backgroundColor: "white" }}>
         <Table>
           <StyledTHead>

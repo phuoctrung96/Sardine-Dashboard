@@ -1,7 +1,6 @@
 /* eslint-disable arrow-body-style */
 import { Table, TableBody, TableCell, TableContainer, TableRow } from "@mui/material";
 import { DetailsCardView } from "components/Queues/styles";
-import { Card } from "react-bootstrap";
 import { GrGlobe } from "react-icons/gr";
 import { GoogleMapsWrapper, GoogleStreetViewMap } from "components/GoogleMaps";
 import { Link } from "components/Common/Links";
@@ -13,13 +12,13 @@ import usFlag from "../../utils/logo/usFlag.svg";
 export const Address = (): JSX.Element => {
   return (
     <DetailsCardView>
-      <Card.Header style={{ alignItems: "center", justifyContent: "space-between" }}>
+      <div className="card-header" style={{ alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
           <GrGlobe size={28} />
           <span>Address</span>
         </div>
         <ViewDetailsText>View details &gt;</ViewDetailsText>
-      </Card.Header>
+      </div>
       <TableContainer style={{ backgroundColor: "white" }}>
         <Table>
           <StyledTHead>

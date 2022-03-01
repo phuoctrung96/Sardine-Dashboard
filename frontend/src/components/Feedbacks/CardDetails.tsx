@@ -1,7 +1,6 @@
 /* eslint-disable arrow-body-style */
 import { Table, TableBody, TableCell, TableContainer, TableRow } from "@mui/material";
 import { DetailsCardView } from "components/Queues/styles";
-import { Card } from "react-bootstrap";
 import { MOCK_CARD_DETAILS } from "./mockData";
 import { StyledTHead, ViewDetailsText } from "./styles";
 import visaLogo from "../../utils/logo/visaLogo.svg";
@@ -10,13 +9,13 @@ import creditCardIcon from "../../utils/logo/credit_card.svg";
 export const CardDetails = (): JSX.Element => {
   return (
     <DetailsCardView>
-      <Card.Header style={{ alignItems: "center", justifyContent: "space-between" }}>
+      <div className="card-header" style={{ alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
           <img src={creditCardIcon} alt="" />
           <span>Card Details</span>
         </div>
         <ViewDetailsText>View all &gt;</ViewDetailsText>
-      </Card.Header>
+      </div>
       <TableContainer style={{ backgroundColor: "white" }}>
         <Table>
           <StyledTHead>
