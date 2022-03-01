@@ -24,5 +24,6 @@ export const PAYMENT_METHOD_DETAILS_PATH = "/payment-method";
 export const SESSION_DETAILS_PATH = "/session-details";
 export const SETTINGS_PATH = "/settings";
 export const FEEDBACKS_PATH = "/feedbacks";
+export const FEEDBACK_DETAILS_PATH = "/feedback_details";
 
 export const SEARCH_PARAM_KEYS = { [RULE_DETAILS_PATH]: { RULE_ID: "ruleID", CLIENT_ID: "client_id", ORG: "org" } } as const;

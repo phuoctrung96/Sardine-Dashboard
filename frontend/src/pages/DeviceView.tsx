@@ -220,6 +220,7 @@ const DeviceView: React.FC = () => {
 
         if (d.behavior_biometrics) {
           setBehaviorBiometrics(d.behavior_biometrics);
+          console.log(d.behavior_biometrics);
         }
 
         setDeviceData(data);
