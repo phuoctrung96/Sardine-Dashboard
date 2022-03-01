@@ -14,7 +14,7 @@ export const Address = (): JSX.Element => {
   return (
     <DetailsCardView>
       <Card.Header style={{ alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ display: "flex", gap: 16, alginItems: "center" }}>
+        <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
           <GrGlobe size={28} />
           <span>Address</span>
         </div>

@@ -30,7 +30,7 @@ export const Transactions = (): JSX.Element => {
           </StyledTHead>
           <TableBody>
             {MOCK_TRANSACTIONS.map((data) => (
-              <TableRow key={`transaction_row_${data.data}_${data.amount}`}>
+              <TableRow key={`transaction_row_${data.id}`}>
                 <TableCell>{data.amount}</TableCell>
                 <TableCell>{data.paymentMode}</TableCell>
                 <TableCell>{data.itemCategory}</TableCell>

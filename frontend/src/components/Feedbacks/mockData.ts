@@ -223,6 +223,7 @@ export const MOCK_BANK_DETAIL = [
 
 export const MOCK_TRANSACTIONS = [
   {
+    id: 1,
     amount: "USD 1.578",
     paymentMode: "Bank transfer",
     itemCategory: "USD",
