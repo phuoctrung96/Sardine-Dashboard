@@ -29,6 +29,7 @@ export const Feedbacks = (): JSX.Element => {
   const handleChartTypeSwitch = (type: string) => setChartType(type);
 
   const [feedbacksData, setFeedbacksData] = useState<FeedbackRow[]>([]);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
@@ -37,22 +38,27 @@ export const Feedbacks = (): JSX.Element => {
         endDate: undefined,
         offset: 0,
       });
+      setIsDataLoaded(true);
+
       if (isFailure(res)) {
         captureFailure(res);
         return;
       }
       const feedbacks = getSuccessResult(res) || [];
-      setFeedbacksData(feedbacks);
+      setFeedbacksData(feedbacksData.concat(feedbacks));
     } catch (e) {
+      setIsDataLoaded(true);
       captureException(e);
     }
-  }, []);
+  }, [feedbacksData]);
 
   useEffect(() => {
-    fetchData()
-      .then()
-      .catch((e) => Sentry.captureException(e));
-  }, []);
+    if (!isDataLoaded) {
+      fetchData()
+        .then()
+        .catch((e) => Sentry.captureException(e));
+    }
+  }, [isDataLoaded]);
 
   return (
     <Layout>
@@ -180,7 +186,7 @@ export const Feedbacks = (): JSX.Element => {
               </div>
             </div>
           </SpaceBetweenContainer>
-          <FeedbackListTable feedbacks={feedbacksData} />
+          <FeedbackListTable feedbacks={feedbacksData} isLoading={!isDataLoaded} />
         </StyledMainDiv>
       </StyledMainContentDiv>
     </Layout>

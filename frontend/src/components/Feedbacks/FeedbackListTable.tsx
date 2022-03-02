@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { TableBody, TableCell, TableRow, TableSortLabel } from "@mui/material";
+import { CircularProgress, TableBody, TableCell, TableRow, TableSortLabel } from "@mui/material";
 import DropwdownButton from "components/Dropdown/DropdownButton";
 import { replaceAllSpacesWithUnderscores } from "utils/stringUtils";
 import DropdownItem from "components/Dropdown/DropdownItem";
@@ -20,8 +20,6 @@ import {
 } from "./styles";
 import settlementIcon from "../../utils/logo/settlement.svg";
 import chargebackIcon from "../../utils/logo/chargeback.svg";
-import japanFlag from "../../utils/logo/japanFlag.svg";
-import usFlag from "../../utils/logo/usFlag.svg";
 
 const RowsDropdown = (props: {
   open?: boolean;
@@ -81,16 +79,26 @@ const RowsDropdown = (props: {
 
 type FeedbackListTableProps = {
   feedbacks: GetFeedbacksListResponse;
+  isLoading?: boolean;
 };
 
 export const FeedbackListTable = (props: FeedbackListTableProps): JSX.Element => {
-  const { feedbacks } = props;
+  const { feedbacks, isLoading } = props;
 
   const options = ["10 rows", "15 rows", "20 rows"];
   const [rowsDropdownOpen, setRowsDropdownOpen] = useState(false);
   const [rowsOptionSelected, setRowsOptionSelected] = useState(1);
 
   const navigate = useNavigate();
+
+  if (isLoading) {
+    return (
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 16 }}>
+        <CircularProgress color="inherit" />
+        <span>Loading...</span>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -135,20 +143,22 @@ export const FeedbackListTable = (props: FeedbackListTableProps): JSX.Element =>
                 </TableCell>
                 <TableCell>
                   <StyledTCell>
-                    <img src={data.type === "Settlement" ? settlementIcon : chargebackIcon} alt="" /> {data.type}
+                    {data.type ? (
+                      <>
+                        <img src={data.type === "settlement" ? settlementIcon : chargebackIcon} alt="" /> {data.type}
+                      </>
+                    ) : null}
                   </StyledTCell>
                 </TableCell>
                 <TableCell>
                   <StyledTCell>
-                    <TextWithStatus $color={data.status === "ach_chargeback" ? "#F7B904" : "#2FB464"}>
+                    <TextWithStatus $color={data.status.toLowerCase().includes("approved") ? "#2FB464" : "#F7B904"}>
                       {data.status}
                     </TextWithStatus>
                   </StyledTCell>
                 </TableCell>
                 <TableCell>
-                  <StyledTCell>
-                    <img src={data.country === "Japan" ? japanFlag : usFlag} alt="" /> {data.country}
-                  </StyledTCell>
+                  <StyledTCell>{data.country}</StyledTCell>
                 </TableCell>
                 <TableCell>
                   <StyledTCell>{data.city}</StyledTCell>
