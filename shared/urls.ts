@@ -161,6 +161,7 @@ export const feedbackUrls = createUrls({
   routes: {
     submitFeedbackRoute: { path: "", httpMethod: "post" },
     getFeedbacksRoute: { path: "", httpMethod: "get" },
+    getFeedbacksTableRoute: { path: "/list", httpMethod: "get" },
   },
 });
 

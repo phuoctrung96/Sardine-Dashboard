@@ -5,7 +5,7 @@ import { replaceAllSpacesWithUnderscores } from "utils/stringUtils";
 import DropdownItem from "components/Dropdown/DropdownItem";
 import { useNavigate } from "react-router-dom";
 import { FEEDBACK_DETAILS_PATH } from "modulePaths";
-import { MOCK_TABLE_DATA } from "./mockData";
+import { GetFeedbacksListResponse } from "sardine-dashboard-typescript-definitions";
 import {
   BorderedTCell,
   ReasonCodeBadge,
@@ -79,7 +79,13 @@ const RowsDropdown = (props: {
   );
 };
 
-export const FeedbackListTable = (): JSX.Element => {
+type FeedbackListTableProps = {
+  feedbacks: GetFeedbacksListResponse;
+};
+
+export const FeedbackListTable = (props: FeedbackListTableProps): JSX.Element => {
+  const { feedbacks } = props;
+
   const options = ["10 rows", "15 rows", "20 rows"];
   const [rowsDropdownOpen, setRowsDropdownOpen] = useState(false);
   const [rowsOptionSelected, setRowsOptionSelected] = useState(1);
@@ -119,8 +125,8 @@ export const FeedbackListTable = (): JSX.Element => {
             </TableRow>
           </StyledTHead>
           <TableBody>
-            {MOCK_TABLE_DATA.map((data) => (
-              <TableRow key={data.sessionKey} onClick={() => navigate(FEEDBACK_DETAILS_PATH)} style={{cursor: "pointer"}}>
+            {feedbacks.map((data) => (
+              <TableRow key={data.sessionKey} onClick={() => navigate(FEEDBACK_DETAILS_PATH)} style={{ cursor: "pointer" }}>
                 <BorderedTCell>
                   <StyledTCell>{data.sessionKey}</StyledTCell>
                 </BorderedTCell>
@@ -149,14 +155,14 @@ export const FeedbackListTable = (): JSX.Element => {
                 </TableCell>
                 <TableCell>
                   <StyledTCell>
-                    {data.reasonCodes.map((code) => (
+                    {data.reasonCodes.split(" ").map((code) => (
                       <ReasonCodeBadge key={`reason-code-badge-${data.sessionKey}-${code}`}>{code}</ReasonCodeBadge>
                     ))}
                   </StyledTCell>
                 </TableCell>
                 <TableCell>
                   <StyledTCell>
-                    {data.date} <span style={{ color: "#969AB6" }}>{data.time}</span>
+                    {data.dateTime} <span style={{ color: "#969AB6" }}>{data.dateTime}</span>
                   </StyledTCell>
                 </TableCell>
               </TableRow>

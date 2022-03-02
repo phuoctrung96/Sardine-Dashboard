@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/react";
 import { StyledStickyNav } from "components/Dashboard/styles";
 import { FeedbackGraph } from "components/Feedbacks/FeedbackChart";
 import { FeedbackListTable } from "components/Feedbacks/FeedbackListTable";
@@ -9,20 +10,49 @@ import {
   StyledButton,
 } from "components/Feedbacks/styles";
 import { HorizontalContainer, StyledMainContentDiv, StyledMainDiv } from "components/Queues/styles";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Dropdown, ToggleButton } from "react-bootstrap";
 import { FaAngleDown, FaPlus } from "react-icons/fa";
+import { FeedbackRow, getSuccessResult, isFailure } from "sardine-dashboard-typescript-definitions";
+import { getFeedbacksTable } from "utils/api";
+import { captureException, captureFailure } from "utils/errorUtils";
+import columnsIcon from "../utils/logo/columns.svg";
 import Layout from "../components/Layout/Main";
 import exportIcon from "../utils/logo/export.svg";
 import graphIcon from "../utils/logo/graph.svg";
 import mapIcon from "../utils/logo/map.svg";
 import readonlyIcon from "../utils/logo/readonly.svg";
 import upDownArrowIcon from "../utils/logo/up-down-arrow.svg";
-import columnsIcon from "../utils/logo/columns.svg";
 
 export const Feedbacks = (): JSX.Element => {
   const [chartType, setChartType] = useState("graph");
   const handleChartTypeSwitch = (type: string) => setChartType(type);
+
+  const [feedbacksData, setFeedbacksData] = useState<FeedbackRow[]>([]);
+
+  const fetchData = useCallback(async () => {
+    try {
+      const res = await getFeedbacksTable({
+        startDate: undefined,
+        endDate: undefined,
+        offset: 0,
+      });
+      if (isFailure(res)) {
+        captureFailure(res);
+        return;
+      }
+      const feedbacks = getSuccessResult(res) || [];
+      setFeedbacksData(feedbacks);
+    } catch (e) {
+      captureException(e);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchData()
+      .then()
+      .catch((e) => Sentry.captureException(e));
+  }, []);
 
   return (
     <Layout>
@@ -150,7 +180,7 @@ export const Feedbacks = (): JSX.Element => {
               </div>
             </div>
           </SpaceBetweenContainer>
-          <FeedbackListTable />
+          <FeedbackListTable feedbacks={feedbacksData} />
         </StyledMainDiv>
       </StyledMainContentDiv>
     </Layout>
