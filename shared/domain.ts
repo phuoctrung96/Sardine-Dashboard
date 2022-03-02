@@ -22,6 +22,20 @@ export interface Feedback {
   time: number;
 }
 
+export interface FeedbackRow {
+  reason: string;
+  scope: string;
+  status: string;
+  type: string;
+  time: number;
+  sessionKey: string;
+  userId: string;
+  country: string;
+  city: string;
+  reasonCodes: string;
+  dateTime: string;
+}
+
 export interface DashboardInvitation {
   email: string; // "ryo+test-client-2@sardine.ai"
   expiredAt: string; // "2021-11-22T03:29:34.125Z"

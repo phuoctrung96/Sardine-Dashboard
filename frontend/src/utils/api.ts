@@ -74,6 +74,8 @@ import {
   UserAggregationKind,
   GetFeedbacksResponse,
   FetchInvitationsResponse,
+  GetFeedbacksListResponse,
+  FeedbacksRequestBody,
 } from "sardine-dashboard-typescript-definitions";
 import { CryptoObject } from "components/Customers/UserView";
 
@@ -146,7 +148,7 @@ const { getDeviceProfileRoute, getDeviceDetailsRoute, getUserAggregationsRoute }
 
 const { getChartValues } = dataDistributionUrls.routes;
 
-const { submitFeedbackRoute, getFeedbacksRoute } = feedbackUrls.routes;
+const { submitFeedbackRoute, getFeedbacksRoute, getFeedbacksTableRoute } = feedbackUrls.routes;
 
 const axiosInstance = axios.create();
 
@@ -965,6 +967,19 @@ export const getFeedbacks = async (sessionKey: string): Promise<Result<GetFeedba
     url.searchParams.append("sessionKey", sessionKey);
     const res = await httpMethods[getFeedbacksRoute.httpMethod]({ url: String(url) });
     return createSuccess<GetFeedbacksResponse>(res.result);
+  } catch (e) {
+    if (e instanceof Error) {
+      return createFailure(e);
+    }
+    return createFailure(new Error("Failed to get feedbacks."));
+  }
+};
+
+export const getFeedbacksTable = async (data: FeedbacksRequestBody): Promise<Result<GetFeedbacksListResponse>> => {
+  try {
+    const url = new URL(getApiPath(feedbackUrls.basePath, getFeedbacksTableRoute.path), window.location.origin);
+    const res = await httpMethods[getFeedbacksTableRoute.httpMethod]({ url: String(url), data });
+    return createSuccess<GetFeedbacksListResponse>(res.result);
   } catch (e) {
     if (e instanceof Error) {
       return createFailure(e);

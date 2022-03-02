@@ -252,6 +252,7 @@ export interface SendNotificationRequest {
   users: EmailConfig[];
 }
 
+// ---------- FEEDBACKS --------
 export interface FeedbackRequest {
   sessionKey: string;
   customer: {
@@ -266,6 +267,12 @@ export interface FeedbackRequest {
     type: string;
     reason: string;
   };
+}
+
+export interface FeedbacksRequestBody {
+  startDate?: string;
+  endDate?: string;
+  offset?: number;
 }
 
 //----------- Audit Logs -------------------

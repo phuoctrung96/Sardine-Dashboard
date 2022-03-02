@@ -3,7 +3,13 @@ import axios from "axios";
 import config from "config";
 import { query } from "express-validator";
 
-import { FeedbackRequest, FEEDBACK_SCOPES, GetFeedbacksResponse } from "sardine-dashboard-typescript-definitions";
+import {
+  FeedbackRequest,
+  FeedbacksRequestBody,
+  FEEDBACK_SCOPES,
+  GetFeedbacksListResponse,
+  GetFeedbacksResponse,
+} from "sardine-dashboard-typescript-definitions";
 import { mw } from "../../commons/middleware";
 import { RequestWithUser } from "../request-interface";
 import { captureException } from "../../utils/error-utils";
@@ -40,6 +46,43 @@ const feedbacksRouter = () => {
         }
 
         return res.status(500).json({ error: "Internal server error" });
+      }
+    }
+  );
+
+  router.get(
+    "/list",
+    [],
+    [mw.validateRequest, mw.requireLoggedIn],
+    async (req: RequestWithUser<FeedbacksRequestBody>, res: Response) => {
+      try {
+        const feedbacks = await Feedback.getFeedbackListTable(60, req.body);
+        return res.json({
+          result: feedbacks.reduce<GetFeedbacksListResponse>((acc, feedback) => {
+            acc.push({
+              scope: FEEDBACK_SCOPES[feedback.Feedback.Scope],
+              status: feedback.Feedback.Status,
+              reason: feedback.Feedback.Reason,
+              type: feedback.Feedback.Type,
+              time: feedback.Feedback.Time,
+              sessionKey: feedback.SessionKey,
+              userId: feedback.CustomerFeedback?.Id,
+              country: feedback.CustomerFeedback?.ShippingAddress?.CountryCode,
+              city: feedback.CustomerFeedback?.ShippingAddress?.City,
+              reasonCodes: "-",
+              dateTime: "-",
+            });
+            return acc;
+          }, []),
+        });
+      } catch (err: unknown) {
+        captureException(err);
+
+        if (err instanceof Error) {
+          return res.status(500).json({ error: err.message, err });
+        }
+
+        return res.status(500).json({ error: "Internal server error", err });
       }
     }
   );
