@@ -13,9 +13,9 @@ import { HorizontalContainer, StyledMainContentDiv, StyledMainDiv } from "compon
 import { useCallback, useEffect, useState } from "react";
 import { Dropdown, ToggleButton } from "react-bootstrap";
 import { FaAngleDown, FaPlus } from "react-icons/fa";
-import { FeedbackRow, getSuccessResult, isFailure } from "sardine-dashboard-typescript-definitions";
+import { FeedbackRow } from "sardine-dashboard-typescript-definitions";
 import { getFeedbacksTable } from "utils/api";
-import { captureException, captureFailure } from "utils/errorUtils";
+import { isErrorWithResponseStatus } from "utils/errorUtils";
 import columnsIcon from "../utils/logo/columns.svg";
 import Layout from "../components/Layout/Main";
 import exportIcon from "../utils/logo/export.svg";
@@ -30,25 +30,23 @@ export const Feedbacks = (): JSX.Element => {
 
   const [feedbacksData, setFeedbacksData] = useState<FeedbackRow[]>([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [isLastPage, setIsLastPage] = useState(true);
 
   const fetchData = useCallback(async () => {
     try {
       const res = await getFeedbacksTable({
         startDate: undefined,
         endDate: undefined,
-        offset: 0,
+        offset: isLastPage ? 0 : feedbacksData.length,
       });
-      setIsDataLoaded(true);
+      const { feedbacks, isLast } = res;
 
-      if (isFailure(res)) {
-        captureFailure(res);
-        return;
-      }
-      const feedbacks = getSuccessResult(res) || [];
-      setFeedbacksData(feedbacksData.concat(feedbacks));
-    } catch (e) {
       setIsDataLoaded(true);
-      captureException(e);
+      setIsLastPage(isLast);
+      setFeedbacksData(feedbacksData.concat(feedbacks));
+    } catch (error) {
+      setIsDataLoaded(true);
+      if (!isErrorWithResponseStatus(error)) throw error;
     }
   }, [feedbacksData]);
 
@@ -186,7 +184,16 @@ export const Feedbacks = (): JSX.Element => {
               </div>
             </div>
           </SpaceBetweenContainer>
-          <FeedbackListTable feedbacks={feedbacksData} isLoading={!isDataLoaded} />
+          <FeedbackListTable
+            feedbacks={feedbacksData}
+            isLoading={!isDataLoaded}
+            onChangePage={(page: number, pageSize: number) => {
+              const totalPages = Math.floor(feedbacksData.length / pageSize);
+              if (totalPages - page - 1 <= 0 && !isLastPage) {
+                setIsDataLoaded(false);
+              }
+            }}
+          />
         </StyledMainDiv>
       </StyledMainContentDiv>
     </Layout>
