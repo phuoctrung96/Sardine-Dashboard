@@ -56,7 +56,7 @@ const feedbacksRouter = () => {
     [mw.validateRequest, mw.requireLoggedIn],
     async (req: RequestWithUser<FeedbacksRequestBody>, res: Response) => {
       try {
-        const { feedbacks, isLast } = await Feedback.getFeedbackListTable(60, req.body);
+        const { feedbacks, isLast } = await Feedback.getFeedbackListTable(10, req.body);
         return res.json({
           feedbacks: feedbacks.reduce<GetFeedbacksListResponse>((acc, feedback) => {
             acc.push({
@@ -67,9 +67,9 @@ const feedbacksRouter = () => {
               time: feedback.Feedback.Time,
               sessionKey: feedback.SessionKey,
               userId: feedback.CustomerFeedback?.Id,
-              country: feedback.CustomerFeedback?.ShippingAddress?.CountryCode,
-              city: feedback.CustomerFeedback?.ShippingAddress?.City,
-              reasonCodes: "-",
+              country: "US",
+              city: "California",
+              reasonCodes: "PRM POM PNS",
               dateTime: "-",
             });
             return acc;

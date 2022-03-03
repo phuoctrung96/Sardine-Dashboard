@@ -1,17 +1,12 @@
-import { useEffect, useRef, useState } from "react";
 import { CircularProgress, TableBody, TableCell, TableRow, TableSortLabel } from "@mui/material";
-import DropwdownButton from "components/Dropdown/DropdownButton";
-import { replaceAllSpacesWithUnderscores } from "utils/stringUtils";
-import DropdownItem from "components/Dropdown/DropdownItem";
 import { useNavigate } from "react-router-dom";
+import { Form } from "react-bootstrap";
 import { FEEDBACK_DETAILS_PATH } from "modulePaths";
 import { GetFeedbacksListResponse } from "sardine-dashboard-typescript-definitions";
 import {
   BorderedTCell,
   ReasonCodeBadge,
   TextWithStatus,
-  StyledDropdownDiv,
-  StyledDropdownList,
   StyledPagination,
   StyledTable,
   StyledTableContainer,
@@ -20,82 +15,37 @@ import {
 } from "./styles";
 import settlementIcon from "../../utils/logo/settlement.svg";
 import chargebackIcon from "../../utils/logo/chargeback.svg";
-
-const RowsDropdown = (props: {
-  open?: boolean;
-  setOpen: (open: boolean) => void;
-  selectedIndex: number;
-  setSelectedIndex: (index: number) => void;
-  options: string[];
-}) => {
-  const { open, setOpen, selectedIndex, setSelectedIndex, options } = props;
-  const ref = useRef<HTMLDivElement>(null);
-
-  const onItemClicked = (index: number) => {
-    setSelectedIndex(index);
-    setOpen(false);
-  };
-
-  const handleClick = (e: MouseEvent) => {
-    if (!(ref && ref.current && ref.current.contains(e.target as Node))) {
-      setOpen(false);
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClick);
-    return () => {
-      document.removeEventListener("mousedown", handleClick);
-    };
-  }, []);
-
-  return (
-    <div style={{ width: 120 }}>
-      {open ? (
-        <StyledDropdownDiv ref={ref}>
-          <StyledDropdownList>
-            {options.map((ele, index) => (
-              <DropdownItem
-                clicked={() => onItemClicked(index)}
-                key={ele}
-                item={{ option: ele }}
-                isSelected={index === selectedIndex}
-                id={`dropdown_item_${replaceAllSpacesWithUnderscores(ele)}`}
-              />
-            ))}
-          </StyledDropdownList>
-        </StyledDropdownDiv>
-      ) : (
-        <DropwdownButton
-          id="rule-performance-start-from"
-          clicked={() => {}}
-          item={{ option: options[selectedIndex] }}
-          style={{ backgroundColor: "white", marginLeft: 0 }}
-        />
-      )}
-    </div>
-  );
-};
+import usFlagIcon from "../../utils/logo/usFlag.svg";
 
 type FeedbackListTableProps = {
   feedbacks: GetFeedbacksListResponse;
   isLoading?: boolean;
-  onChangePage?: (page: number, pageSize: number) => void;
+  page: number;
+  setPage: (page: number) => void;
+  rows: number;
+  setRows: (rows: number) => void;
 };
 
 export const FeedbackListTable = (props: FeedbackListTableProps): JSX.Element => {
-  const { feedbacks, isLoading, onChangePage } = props;
+  const { feedbacks, isLoading, page, setPage, rows, setRows } = props;
 
-  const options = ["10 rows", "15 rows", "20 rows"];
-  const [rowsDropdownOpen, setRowsDropdownOpen] = useState(false);
-  const [rowsOptionSelected, setRowsOptionSelected] = useState(1);
+  const options = [
+    {
+      title: "15 rows",
+      value: 15,
+    },
+    {
+      title: "20 rows",
+      value: 20,
+    },
+    {
+      title: "30 rows",
+      value: 30,
+    },
+  ];
 
-  const [page, setPage] = useState(1);
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
-    setPage(value);
-    if (onChangePage) {
-      onChangePage(page, 10);
-    }
+    if (setPage) setPage(value);
   };
 
   const navigate = useNavigate();
@@ -142,8 +92,13 @@ export const FeedbackListTable = (props: FeedbackListTableProps): JSX.Element =>
             </TableRow>
           </StyledTHead>
           <TableBody>
-            {feedbacks.map((data) => (
-              <TableRow key={data.sessionKey} onClick={() => navigate(FEEDBACK_DETAILS_PATH)} style={{ cursor: "pointer" }}>
+            {feedbacks.map((data, index) => (
+              <TableRow
+                // eslint-disable-next-line react/no-array-index-key
+                key={`${data.sessionKey}_${data.userId}_${index}`}
+                onClick={() => navigate(FEEDBACK_DETAILS_PATH)}
+                style={{ cursor: "pointer" }}
+              >
                 <BorderedTCell>
                   <StyledTCell>{data.sessionKey}</StyledTCell>
                 </BorderedTCell>
@@ -167,7 +122,10 @@ export const FeedbackListTable = (props: FeedbackListTableProps): JSX.Element =>
                   </StyledTCell>
                 </TableCell>
                 <TableCell>
-                  <StyledTCell>{data.country}</StyledTCell>
+                  <StyledTCell>
+                    <img src={usFlagIcon} alt="" style={{ marginRight: 6 }} />
+                    {data.country}
+                  </StyledTCell>
                 </TableCell>
                 <TableCell>
                   <StyledTCell>{data.city}</StyledTCell>
@@ -181,7 +139,7 @@ export const FeedbackListTable = (props: FeedbackListTableProps): JSX.Element =>
                 </TableCell>
                 <TableCell>
                   <StyledTCell>
-                    {data.dateTime} <span style={{ color: "#969AB6" }}>{data.dateTime}</span>
+                    2021-11-30 <span style={{ color: "#969AB6" }}>12:15</span>
                   </StyledTCell>
                 </TableCell>
               </TableRow>
@@ -190,13 +148,13 @@ export const FeedbackListTable = (props: FeedbackListTableProps): JSX.Element =>
         </StyledTable>
       </StyledTableContainer>
       <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 16 }}>
-        <RowsDropdown
-          open={rowsDropdownOpen}
-          setOpen={setRowsDropdownOpen}
-          selectedIndex={rowsOptionSelected}
-          setSelectedIndex={setRowsOptionSelected}
-          options={options}
-        />
+        <Form.Select style={{ maxWidth: 110 }} value={rows} onChange={(e) => setRows(+e.target.value)}>
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.title}
+            </option>
+          ))}
+        </Form.Select>
         <StyledPagination count={12} page={page} onChange={handleChange} showFirstButton showLastButton />
       </div>
     </div>
