@@ -56,9 +56,9 @@ const feedbacksRouter = () => {
     [mw.validateRequest, mw.requireLoggedIn],
     async (req: RequestWithUser<FeedbacksRequestBody>, res: Response) => {
       try {
-        const feedbacks = await Feedback.getFeedbackListTable(60, req.body);
+        const { feedbacks, isLast } = await Feedback.getFeedbackListTable(60, req.body);
         return res.json({
-          result: feedbacks.reduce<GetFeedbacksListResponse>((acc, feedback) => {
+          feedbacks: feedbacks.reduce<GetFeedbacksListResponse>((acc, feedback) => {
             acc.push({
               scope: FEEDBACK_SCOPES[feedback.Feedback.Scope],
               status: feedback.Feedback.Status,
@@ -74,6 +74,7 @@ const feedbacksRouter = () => {
             });
             return acc;
           }, []),
+          isLast,
         });
       } catch (err: unknown) {
         captureException(err);

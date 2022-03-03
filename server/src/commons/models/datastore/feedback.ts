@@ -18,7 +18,7 @@ export class Feedback {
     return entities;
   }
 
-  public static async getFeedbackListTable(limit: number, filters: FeedbacksRequestBody): Promise<Array<FeedbackKind>> {
+  public static async getFeedbackListTable(limit: number, filters: FeedbacksRequestBody) {
     const { startDate, endDate, offset } = filters;
     const dsQuery = ds.createQuery(FEEDBACK_KIND);
 
@@ -28,11 +28,9 @@ export class Feedback {
 
     if (limit > 0) dsQuery.limit(limit);
 
-    const [entities] = await ds.runQuery(dsQuery);
-    if (entities.length === 0) {
-      return [];
-    }
+    const [entities, info] = await ds.runQuery(dsQuery);
+    const isLast = info.moreResults === "NO_MORE_RESULTS";
 
-    return entities;
+    return { feedbacks: (entities as FeedbackKind[]) ?? [], isLast };
   }
 }

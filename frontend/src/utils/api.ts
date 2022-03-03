@@ -74,7 +74,6 @@ import {
   UserAggregationKind,
   GetFeedbacksResponse,
   FetchInvitationsResponse,
-  GetFeedbacksListResponse,
   FeedbacksRequestBody,
 } from "sardine-dashboard-typescript-definitions";
 import { CryptoObject } from "components/Customers/UserView";
@@ -975,15 +974,7 @@ export const getFeedbacks = async (sessionKey: string): Promise<Result<GetFeedba
   }
 };
 
-export const getFeedbacksTable = async (data: FeedbacksRequestBody): Promise<Result<GetFeedbacksListResponse>> => {
-  try {
-    const url = new URL(getApiPath(feedbackUrls.basePath, getFeedbacksTableRoute.path), window.location.origin);
-    const res = await httpMethods[getFeedbacksTableRoute.httpMethod]({ url: String(url), data });
-    return createSuccess<GetFeedbacksListResponse>(res.result);
-  } catch (e) {
-    if (e instanceof Error) {
-      return createFailure(e);
-    }
-    return createFailure(new Error("Failed to get feedbacks."));
-  }
+export const getFeedbacksTable = (data: FeedbacksRequestBody) => {
+  const url = new URL(getApiPath(feedbackUrls.basePath, getFeedbacksTableRoute.path), window.location.origin);
+  return httpMethods[getFeedbacksTableRoute.httpMethod]({ url: String(url), data });
 };

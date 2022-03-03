@@ -80,14 +80,23 @@ const RowsDropdown = (props: {
 type FeedbackListTableProps = {
   feedbacks: GetFeedbacksListResponse;
   isLoading?: boolean;
+  onChangePage?: (page: number, pageSize: number) => void;
 };
 
 export const FeedbackListTable = (props: FeedbackListTableProps): JSX.Element => {
-  const { feedbacks, isLoading } = props;
+  const { feedbacks, isLoading, onChangePage } = props;
 
   const options = ["10 rows", "15 rows", "20 rows"];
   const [rowsDropdownOpen, setRowsDropdownOpen] = useState(false);
   const [rowsOptionSelected, setRowsOptionSelected] = useState(1);
+
+  const [page, setPage] = useState(1);
+  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+    if (onChangePage) {
+      onChangePage(page, 10);
+    }
+  };
 
   const navigate = useNavigate();
 
@@ -188,7 +197,7 @@ export const FeedbackListTable = (props: FeedbackListTableProps): JSX.Element =>
           setSelectedIndex={setRowsOptionSelected}
           options={options}
         />
-        <StyledPagination count={12} showFirstButton showLastButton />
+        <StyledPagination count={12} page={page} onChange={handleChange} showFirstButton showLastButton />
       </div>
     </div>
   );
