@@ -18,15 +18,14 @@ export class Feedback {
     return entities;
   }
 
-  public static async getFeedbackListTable(limit: number, filters: FeedbacksRequestBody) {
-    const { startDate, endDate, offset } = filters;
+  public static async getFeedbackListTable(filters: FeedbacksRequestBody) {
+    const { startDate, endDate, page = 0, rows = 0 } = filters;
     const dsQuery = ds.createQuery(FEEDBACK_KIND);
 
     if (startDate) dsQuery.filter("CustomerFeedback.CreatedAtMillis", ">=", moment(startDate).unix() * 1000);
     if (endDate) dsQuery.filter("CustomerFeedback.CreatedAtMillis", "<=", moment(endDate).unix() * 1000);
-    if (offset) dsQuery.offset(offset);
-
-    if (limit > 0) dsQuery.limit(limit);
+    if (page) dsQuery.offset(page * rows);
+    if (rows > 0) dsQuery.limit(rows);
 
     const [entities, info] = await ds.runQuery(dsQuery);
     const isLast = info.moreResults === "NO_MORE_RESULTS";
