@@ -272,7 +272,8 @@ export interface FeedbackRequest {
 export interface FeedbacksRequestBody {
   startDate?: string;
   endDate?: string;
-  offset?: number;
+  page?: number;
+  rows?: number;
 }
 
 //----------- Audit Logs -------------------
