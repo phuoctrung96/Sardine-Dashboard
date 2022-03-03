@@ -30,33 +30,32 @@ export const Feedbacks = (): JSX.Element => {
 
   const [feedbacksData, setFeedbacksData] = useState<FeedbackRow[]>([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
-  const [isLastPage, setIsLastPage] = useState(true);
+
+  const [rows, setRows] = useState(15);
+  const [page, setPage] = useState(1);
 
   const fetchData = useCallback(async () => {
     try {
       const res = await getFeedbacksTable({
         startDate: undefined,
         endDate: undefined,
-        offset: isLastPage ? 0 : feedbacksData.length,
+        offset: rows * page,
       });
-      const { feedbacks, isLast } = res;
+      const { feedbacks } = res;
 
       setIsDataLoaded(true);
-      setIsLastPage(isLast);
-      setFeedbacksData(feedbacksData.concat(feedbacks));
+      setFeedbacksData(feedbacks);
     } catch (error) {
       setIsDataLoaded(true);
       if (!isErrorWithResponseStatus(error)) throw error;
     }
-  }, [feedbacksData]);
+  }, [feedbacksData, rows, page]);
 
   useEffect(() => {
-    if (!isDataLoaded) {
-      fetchData()
-        .then()
-        .catch((e) => Sentry.captureException(e));
-    }
-  }, [isDataLoaded]);
+    fetchData()
+      .then()
+      .catch((e) => Sentry.captureException(e));
+  }, [isDataLoaded, page, rows]);
 
   return (
     <Layout>
@@ -189,12 +188,10 @@ export const Feedbacks = (): JSX.Element => {
           <FeedbackListTable
             feedbacks={feedbacksData}
             isLoading={!isDataLoaded}
-            onChangePage={(page: number, pageSize: number) => {
-              const totalPages = Math.floor(feedbacksData.length / pageSize);
-              if (totalPages - page - 1 <= 0 && !isLastPage) {
-                setIsDataLoaded(false);
-              }
-            }}
+            page={page}
+            setPage={setPage}
+            rows={rows}
+            setRows={setRows}
           />
         </StyledMainDiv>
       </StyledMainContentDiv>
