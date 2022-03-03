@@ -56,7 +56,7 @@ const feedbacksRouter = () => {
     [mw.validateRequest, mw.requireLoggedIn],
     async (req: RequestWithUser<FeedbacksRequestBody>, res: Response) => {
       try {
-        const { feedbacks, isLast } = await Feedback.getFeedbackListTable(10, req.body);
+        const { feedbacks, isLast } = await Feedback.getFeedbackListTable(req.query);
         return res.json({
           feedbacks: feedbacks.reduce<GetFeedbacksListResponse>((acc, feedback) => {
             acc.push({
