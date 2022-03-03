@@ -39,7 +39,8 @@ export const Feedbacks = (): JSX.Element => {
       const res = await getFeedbacksTable({
         startDate: undefined,
         endDate: undefined,
-        offset: rows * page,
+        page,
+        rows
       });
       const { feedbacks } = res;
 
