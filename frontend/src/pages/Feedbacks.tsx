@@ -1,3 +1,4 @@
+import { useLocation } from "react-router-dom";
 import * as Sentry from "@sentry/react";
 import { StyledStickyNav } from "components/Dashboard/styles";
 import { FeedbackGraph } from "components/Feedbacks/FeedbackChart";
@@ -15,6 +16,8 @@ import { Dropdown, ToggleButton } from "react-bootstrap";
 import { FaAngleDown, FaPlus } from "react-icons/fa";
 import { FeedbackRow } from "sardine-dashboard-typescript-definitions";
 import { getFeedbacksTable } from "utils/api";
+import { getDatesFromQueryParams } from "components/Transactions";
+import DaysDropdown from "components/Dropdown/DaysDropdown";
 import { isErrorWithResponseStatus } from "utils/errorUtils";
 import columnsIcon from "../utils/logo/columns.svg";
 import Layout from "../components/Layout/Main";
@@ -23,6 +26,7 @@ import graphIcon from "../utils/logo/graph.svg";
 import mapIcon from "../utils/logo/map.svg";
 import readonlyIcon from "../utils/logo/readonly.svg";
 import upDownArrowIcon from "../utils/logo/up-down-arrow.svg";
+import { DatesProps } from "../utils/store/interface";
 
 export const Feedbacks = (): JSX.Element => {
   const [chartType, setChartType] = useState("graph");
@@ -31,16 +35,27 @@ export const Feedbacks = (): JSX.Element => {
   const [feedbacksData, setFeedbacksData] = useState<FeedbackRow[]>([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
+  const { search } = useLocation();
+
   const [rows, setRows] = useState(15);
   const [page, setPage] = useState(1);
+
+  const dates = getDatesFromQueryParams(search);
+  const [startDate, setStartDate] = useState(dates.startDate);
+  const [endDate, setEndDate] = useState(dates.endDate);
+
+  const updateDate = (index: number, dateData: DatesProps) => {
+    setStartDate(dateData.startDate);
+    setEndDate(dateData.endDate);
+  };
 
   const fetchData = useCallback(async () => {
     try {
       const res = await getFeedbacksTable({
-        startDate: undefined,
-        endDate: undefined,
+        startDate,
+        endDate,
         page,
-        rows
+        rows,
       });
       const { feedbacks } = res;
 
@@ -50,13 +65,13 @@ export const Feedbacks = (): JSX.Element => {
       setIsDataLoaded(true);
       if (!isErrorWithResponseStatus(error)) throw error;
     }
-  }, [feedbacksData, rows, page]);
+  }, [feedbacksData, rows, page, startDate, endDate]);
 
   useEffect(() => {
     fetchData()
       .then()
       .catch((e) => Sentry.captureException(e));
-  }, [isDataLoaded, page, rows]);
+  }, [isDataLoaded, page, rows, startDate, endDate]);
 
   return (
     <Layout>
@@ -128,11 +143,12 @@ export const Feedbacks = (): JSX.Element => {
             <StyledButton style={{ backgroundColor: "#141A39" }}>
               Add filter <AddFilterBadge>1</AddFilterBadge>
             </StyledButton>
-            <div style={{ display: "flex", gap: 12 }}>
-              <StyledButton variant="outline-secondary" style={{ border: "1px solid #E6ECFA" }}>
+            <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+              {/* <StyledButton variant="outline-secondary" style={{ border: "1px solid #E6ECFA" }}>
                 <span style={{ fontWeight: 500 }}>Last 30 days -</span>{" "}
                 <span style={{ color: "#969AB6" }}> Dec 23, 2021 - Feb 02, 2022</span>
-              </StyledButton>
+              </StyledButton> */}
+              <DaysDropdown handleUpdateDate={updateDate} startDateString={startDate} endDateString={endDate} />
               <StyledButton variant="outline-secondary" style={{ border: "1px solid #E6ECFA" }}>
                 <img src={readonlyIcon} alt="" />
               </StyledButton>

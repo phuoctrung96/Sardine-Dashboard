@@ -70,7 +70,7 @@ const feedbacksRouter = () => {
               country: "US",
               city: "California",
               reasonCodes: "PRM POM PNS",
-              dateTime: "-",
+              dateTime: feedback.CustomerFeedback?.CreatedAtMillis,
             });
             return acc;
           }, []),
