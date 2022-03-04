@@ -13,6 +13,7 @@ export interface FeedbackKind {
   SessionKey: string;
   CustomerFeedback: {
     CreatedDate: string;
+    CreatedAtMillis: string;
     ShippingAddress: {
       CountryCode: string;
       PostalCode: string;
