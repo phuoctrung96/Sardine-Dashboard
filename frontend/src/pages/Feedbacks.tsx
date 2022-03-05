@@ -6,6 +6,7 @@ import { FeedbackListTable } from "components/Feedbacks/FeedbackListTable";
 import {
   AddFeedbackDropdown,
   AddFilterBadge,
+  StyledDaysDropdown,
   FeedbackChartSwitch,
   SpaceBetweenContainer,
   StyledButton,
@@ -17,7 +18,6 @@ import { FaAngleDown, FaPlus } from "react-icons/fa";
 import { FeedbackRow } from "sardine-dashboard-typescript-definitions";
 import { getFeedbacksTable } from "utils/api";
 import { getDatesFromQueryParams } from "components/Transactions";
-import DaysDropdown from "components/Dropdown/DaysDropdown";
 import { isErrorWithResponseStatus } from "utils/errorUtils";
 import columnsIcon from "../utils/logo/columns.svg";
 import Layout from "../components/Layout/Main";
@@ -148,7 +148,12 @@ export const Feedbacks = (): JSX.Element => {
                 <span style={{ fontWeight: 500 }}>Last 30 days -</span>{" "}
                 <span style={{ color: "#969AB6" }}> Dec 23, 2021 - Feb 02, 2022</span>
               </StyledButton> */}
-              <DaysDropdown handleUpdateDate={updateDate} startDateString={startDate} endDateString={endDate} />
+              <StyledDaysDropdown
+                handleUpdateDate={updateDate}
+                startDateString={startDate}
+                endDateString={endDate}
+                style={{ backgroundColor: "white", zIndex: 100 }}
+              />
               <StyledButton variant="outline-secondary" style={{ border: "1px solid #E6ECFA" }}>
                 <img src={readonlyIcon} alt="" />
               </StyledButton>

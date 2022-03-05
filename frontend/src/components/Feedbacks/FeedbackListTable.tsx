@@ -1,6 +1,7 @@
 import { CircularProgress, TableBody, TableCell, TableRow, TableSortLabel } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { Form } from "react-bootstrap";
+import moment from "moment";
 import { FEEDBACK_DETAILS_PATH } from "modulePaths";
 import { GetFeedbacksListResponse } from "sardine-dashboard-typescript-definitions";
 import {
@@ -16,6 +17,14 @@ import {
 import settlementIcon from "../../utils/logo/settlement.svg";
 import chargebackIcon from "../../utils/logo/chargeback.svg";
 import usFlagIcon from "../../utils/logo/usFlag.svg";
+
+const convertTimestampToDateAndTime = (timestamp: string) => {
+  const date = new Date(timestamp);
+  return {
+    date: moment(date).format("YYYY-MM-DD"),
+    time: moment(date).format("h:mm"),
+  };
+};
 
 type FeedbackListTableProps = {
   feedbacks: GetFeedbacksListResponse;
@@ -59,6 +68,14 @@ export const FeedbackListTable = (props: FeedbackListTableProps): JSX.Element =>
     );
   }
 
+  if (!feedbacks.length) {
+    return (
+      <div style={{ height: "50vh", marginTop: 64, display: "flex", justifyContent: "center" }}>
+        <span>No data found</span>
+      </div>
+    );
+  }
+
   return (
     <div>
       <StyledTableContainer>
@@ -92,58 +109,61 @@ export const FeedbackListTable = (props: FeedbackListTableProps): JSX.Element =>
             </TableRow>
           </StyledTHead>
           <TableBody>
-            {feedbacks.map((data, index) => (
-              <TableRow
-                // eslint-disable-next-line react/no-array-index-key
-                key={`${data.sessionKey}_${data.userId}_${index}`}
-                onClick={() => navigate(FEEDBACK_DETAILS_PATH)}
-                style={{ cursor: "pointer" }}
-              >
-                <BorderedTCell>
-                  <StyledTCell>{data.sessionKey}</StyledTCell>
-                </BorderedTCell>
-                <TableCell>
-                  <StyledTCell>{data.userId}</StyledTCell>
-                </TableCell>
-                <TableCell>
-                  <StyledTCell>
-                    {data.type ? (
-                      <>
-                        <img src={data.type === "settlement" ? settlementIcon : chargebackIcon} alt="" /> {data.type}
-                      </>
-                    ) : null}
-                  </StyledTCell>
-                </TableCell>
-                <TableCell>
-                  <StyledTCell>
-                    <TextWithStatus $color={data.status.toLowerCase().includes("approved") ? "#2FB464" : "#F7B904"}>
-                      {data.status}
-                    </TextWithStatus>
-                  </StyledTCell>
-                </TableCell>
-                <TableCell>
-                  <StyledTCell>
-                    <img src={usFlagIcon} alt="" style={{ marginRight: 6 }} />
-                    {data.country}
-                  </StyledTCell>
-                </TableCell>
-                <TableCell>
-                  <StyledTCell>{data.city}</StyledTCell>
-                </TableCell>
-                <TableCell>
-                  <StyledTCell>
-                    {data.reasonCodes.split(" ").map((code) => (
-                      <ReasonCodeBadge key={`reason-code-badge-${data.sessionKey}-${code}`}>{code}</ReasonCodeBadge>
-                    ))}
-                  </StyledTCell>
-                </TableCell>
-                <TableCell>
-                  <StyledTCell>
-                    2021-11-30 <span style={{ color: "#969AB6" }}>12:15</span>
-                  </StyledTCell>
-                </TableCell>
-              </TableRow>
-            ))}
+            {feedbacks.map((data, index) => {
+              const dateTime = convertTimestampToDateAndTime(data.dateTime);
+              return (
+                <TableRow
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={`${data.sessionKey}_${data.userId}_${index}`}
+                  onClick={() => navigate(FEEDBACK_DETAILS_PATH)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <BorderedTCell>
+                    <StyledTCell>{data.sessionKey}</StyledTCell>
+                  </BorderedTCell>
+                  <TableCell>
+                    <StyledTCell>{data.userId}</StyledTCell>
+                  </TableCell>
+                  <TableCell>
+                    <StyledTCell>
+                      {data.type ? (
+                        <>
+                          <img src={data.type === "settlement" ? settlementIcon : chargebackIcon} alt="" /> {data.type}
+                        </>
+                      ) : null}
+                    </StyledTCell>
+                  </TableCell>
+                  <TableCell>
+                    <StyledTCell>
+                      <TextWithStatus $color={data.status.toLowerCase().includes("approved") ? "#2FB464" : "#F7B904"}>
+                        {data.status}
+                      </TextWithStatus>
+                    </StyledTCell>
+                  </TableCell>
+                  <TableCell>
+                    <StyledTCell>
+                      <img src={usFlagIcon} alt="" style={{ marginRight: 6 }} />
+                      {data.country}
+                    </StyledTCell>
+                  </TableCell>
+                  <TableCell>
+                    <StyledTCell>{data.city}</StyledTCell>
+                  </TableCell>
+                  <TableCell>
+                    <StyledTCell>
+                      {data.reasonCodes.split(" ").map((code) => (
+                        <ReasonCodeBadge key={`reason-code-badge-${data.sessionKey}-${code}`}>{code}</ReasonCodeBadge>
+                      ))}
+                    </StyledTCell>
+                  </TableCell>
+                  <TableCell>
+                    <StyledTCell>
+                      {dateTime.date} <span style={{ color: "#969AB6" }}>{dateTime.time}</span>
+                    </StyledTCell>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </StyledTable>
       </StyledTableContainer>

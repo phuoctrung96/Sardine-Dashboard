@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, CSSProperties } from "react";
 import styled from "styled-components";
 import moment, { Moment } from "moment";
 import { replaceAllSpacesWithUnderscores } from "utils/stringUtils";
@@ -119,6 +119,7 @@ const DaysDropdown = (props: {
   startDateString?: string;
   endDateString?: string;
   handleUpdateDate: (index: number, dateData: DatesProps) => void;
+  style?: CSSProperties;
 }): JSX.Element => {
   const daysDropdownRef = useRef<HTMLDivElement>(null);
   const { handleUpdateDate } = props;
@@ -179,7 +180,7 @@ const DaysDropdown = (props: {
   };
 
   return open ? (
-    <StyledDropdownDiv ref={daysDropdownRef}>
+    <StyledDropdownDiv ref={daysDropdownRef} style={props.style}>
       <StyledDropdownList>
         {CHARTS_DROPDOWN.map((ele, index) => (
           <DropwdownItem
@@ -211,6 +212,7 @@ const DaysDropdown = (props: {
             }
           : CHARTS_DROPDOWN[selectedIndex]
       }
+      style={props.style}
     />
   );
 };

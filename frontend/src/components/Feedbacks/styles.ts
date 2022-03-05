@@ -1,4 +1,5 @@
 import { Table, TableCell, TableContainer, TableHead, Pagination } from "@mui/material";
+import DaysDropdown from "components/Dropdown/DaysDropdown";
 import { Badge, Button, Dropdown, ToggleButtonGroup } from "react-bootstrap";
 import styled from "styled-components";
 
@@ -260,4 +261,10 @@ export const ViewDetailsText = styled.a`
   line-height: 20px;
   color: #3147ff;
   text-decoration: none;
+`;
+
+export const StyledDaysDropdown = styled(DaysDropdown)`
+  & div {
+    background-color: white;
+  }
 `;
