@@ -1,4 +1,5 @@
 import { useLocation } from "react-router-dom";
+import moment from "moment";
 import * as Sentry from "@sentry/react";
 import { StyledStickyNav } from "components/Dashboard/styles";
 import { FeedbackGraph } from "components/Feedbacks/FeedbackChart";
@@ -43,10 +44,20 @@ export const Feedbacks = (): JSX.Element => {
   const dates = getDatesFromQueryParams(search);
   const [startDate, setStartDate] = useState(dates.startDate);
   const [endDate, setEndDate] = useState(dates.endDate);
+  const [selectedDateLabel, setSelectedDateLabel] = useState("Last 24 hours");
+
+  const [order, setOrder] = useState<"asc" | "desc">("asc");
+  const [orderBy, setOrderBy] = useState("");
 
   const updateDate = (index: number, dateData: DatesProps) => {
     setStartDate(dateData.startDate);
     setEndDate(dateData.endDate);
+  };
+
+  const handleRequestSort = (event: React.MouseEvent<unknown>, property: string) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
   };
 
   const fetchData = useCallback(async () => {
@@ -56,6 +67,8 @@ export const Feedbacks = (): JSX.Element => {
         endDate,
         page,
         rows,
+        order,
+        orderBy,
       });
       const { feedbacks } = res;
 
@@ -65,13 +78,13 @@ export const Feedbacks = (): JSX.Element => {
       setIsDataLoaded(true);
       if (!isErrorWithResponseStatus(error)) throw error;
     }
-  }, [feedbacksData, rows, page, startDate, endDate]);
+  }, [feedbacksData, rows, page, startDate, endDate, order, orderBy]);
 
   useEffect(() => {
     fetchData()
       .then()
       .catch((e) => Sentry.captureException(e));
-  }, [isDataLoaded, page, rows, startDate, endDate]);
+  }, [isDataLoaded, page, rows, startDate, endDate, order, orderBy]);
 
   return (
     <Layout>
@@ -144,15 +157,12 @@ export const Feedbacks = (): JSX.Element => {
               Add filter <AddFilterBadge>1</AddFilterBadge>
             </StyledButton>
             <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-              {/* <StyledButton variant="outline-secondary" style={{ border: "1px solid #E6ECFA" }}>
-                <span style={{ fontWeight: 500 }}>Last 30 days -</span>{" "}
-                <span style={{ color: "#969AB6" }}> Dec 23, 2021 - Feb 02, 2022</span>
-              </StyledButton> */}
               <StyledDaysDropdown
                 handleUpdateDate={updateDate}
                 startDateString={startDate}
                 endDateString={endDate}
                 style={{ backgroundColor: "white", zIndex: 100 }}
+                setSelectedLabel={(label) => setSelectedDateLabel(label)}
               />
               <StyledButton variant="outline-secondary" style={{ border: "1px solid #E6ECFA" }}>
                 <img src={readonlyIcon} alt="" />
@@ -179,8 +189,11 @@ export const Feedbacks = (): JSX.Element => {
                   fontSize: 13,
                 }}
               >
-                <span>Last 7 days</span>
-                <span style={{ color: "#969AB6" }}> / From Dec 23 - Dec 29</span>
+                <span>{selectedDateLabel}</span>
+                <span style={{ color: "#969AB6" }}>
+                  {" "}
+                  / From {moment(startDate).format("MMM DD")} - {moment(endDate).format("MMM DD")}
+                </span>
               </span>
             </div>
             <div className="d-flex align-items-center" style={{ gap: 16 }}>
@@ -212,6 +225,9 @@ export const Feedbacks = (): JSX.Element => {
             setPage={setPage}
             rows={rows}
             setRows={setRows}
+            order={order}
+            orderBy={orderBy}
+            onRequestSort={handleRequestSort}
           />
         </StyledMainDiv>
       </StyledMainContentDiv>
