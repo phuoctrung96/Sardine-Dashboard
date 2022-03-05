@@ -274,6 +274,8 @@ export interface FeedbacksRequestBody {
   endDate?: string;
   page?: number;
   rows?: number;
+  orderBy?: string;
+  order?: "asc" | "desc";
 }
 
 //----------- Audit Logs -------------------

@@ -18,6 +18,37 @@ import settlementIcon from "../../utils/logo/settlement.svg";
 import chargebackIcon from "../../utils/logo/chargeback.svg";
 import usFlagIcon from "../../utils/logo/usFlag.svg";
 
+const tableHeadCells = [
+  {
+    id: "CustomerFeedback.Id",
+    label: "User ID",
+  },
+  {
+    id: "Feedback.Type",
+    label: "Type",
+  },
+  {
+    id: "Feedback.Status",
+    label: "Status",
+  },
+  {
+    id: "country",
+    label: "Country",
+  },
+  {
+    id: "city",
+    label: "City",
+  },
+  {
+    id: "reasonCodes",
+    label: "Reason Codes",
+  },
+  {
+    id: "CustomerFeedback.CreatedAtMillis",
+    label: "Date/time",
+  },
+];
+
 const convertTimestampToDateAndTime = (timestamp: string) => {
   const date = new Date(timestamp);
   return {
@@ -33,10 +64,13 @@ type FeedbackListTableProps = {
   setPage: (page: number) => void;
   rows: number;
   setRows: (rows: number) => void;
+  order: "asc" | "desc";
+  orderBy: string;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: string) => void;
 };
 
 export const FeedbackListTable = (props: FeedbackListTableProps): JSX.Element => {
-  const { feedbacks, isLoading, page, setPage, rows, setRows } = props;
+  const { feedbacks, isLoading, page, setPage, rows, setRows, order, orderBy, onRequestSort } = props;
 
   const options = [
     {
@@ -55,6 +89,10 @@ export const FeedbackListTable = (props: FeedbackListTableProps): JSX.Element =>
 
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     if (setPage) setPage(value);
+  };
+
+  const createSortHandler = (property: string) => (event: React.MouseEvent<unknown>) => {
+    onRequestSort(event, property);
   };
 
   const navigate = useNavigate();
@@ -82,30 +120,26 @@ export const FeedbackListTable = (props: FeedbackListTableProps): JSX.Element =>
         <StyledTable>
           <StyledTHead>
             <TableRow>
-              <BorderedTCell>
-                <TableSortLabel>Session Key</TableSortLabel>
+              <BorderedTCell sortDirection={orderBy === "SessionKey" ? order : false}>
+                <TableSortLabel
+                  active={orderBy === "SessionKey"}
+                  direction={orderBy === "SessionKey" ? order : undefined}
+                  onClick={createSortHandler("SessionKey")}
+                >
+                  Session Key
+                </TableSortLabel>
               </BorderedTCell>
-              <TableCell>
-                <TableSortLabel>User ID</TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel>Type</TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel>Status</TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel>Country</TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel>City</TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel>Reason Codes</TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel>Date/time</TableSortLabel>
-              </TableCell>
+              {tableHeadCells.map((cell) => (
+                <TableCell key={cell.id} sortDirection={orderBy === cell.id ? order : false}>
+                  <TableSortLabel
+                    active={orderBy === cell.id}
+                    direction={orderBy === cell.id ? order : undefined}
+                    onClick={createSortHandler(cell.id)}
+                  >
+                    {cell.label}
+                  </TableSortLabel>
+                </TableCell>
+              ))}
             </TableRow>
           </StyledTHead>
           <TableBody>

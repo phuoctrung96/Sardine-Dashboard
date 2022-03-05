@@ -120,9 +120,10 @@ const DaysDropdown = (props: {
   endDateString?: string;
   handleUpdateDate: (index: number, dateData: DatesProps) => void;
   style?: CSSProperties;
+  setSelectedLabel?: (label: string) => void;
 }): JSX.Element => {
   const daysDropdownRef = useRef<HTMLDivElement>(null);
-  const { handleUpdateDate } = props;
+  const { handleUpdateDate, setSelectedLabel } = props;
   const { startDateString, endDateString } = props;
   let startDate: Date | null;
   let endDate: Date | null;
@@ -173,6 +174,7 @@ const DaysDropdown = (props: {
 
   const clickedItem = (days: number, index: number) => {
     setSelectedIndex(index);
+    if (setSelectedLabel) setSelectedLabel(CHARTS_DROPDOWN[index].option);
     if (index !== INDEX_CUSTOM_DATES) {
       updateDate(index, moment().subtract({ days }), moment());
       setOpen(false);

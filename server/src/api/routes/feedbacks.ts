@@ -78,6 +78,7 @@ const feedbacksRouter = () => {
         });
       } catch (err: unknown) {
         captureException(err);
+        console.log(err);
 
         if (err instanceof Error) {
           return res.status(500).json({ error: err.message, err });
