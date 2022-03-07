@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-import { Table, TableCell, TableContainer, TableHead, Pagination, Badge, Button } from "@mui/material";
-import { Dropdown, ToggleButtonGroup } from "react-bootstrap";
-=======
 import { Table, TableCell, TableContainer, TableHead, Pagination } from "@mui/material";
 import DaysDropdown from "components/Dropdown/DaysDropdown";
 import { Badge, Button, Dropdown, ToggleButtonGroup } from "react-bootstrap";
->>>>>>> 6e27512 (Fix datetime data)
 import styled from "styled-components";
 
 export const SpaceBetweenContainer = styled.div`
