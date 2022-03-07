@@ -7,9 +7,10 @@ import menuCloseDark from "../../utils/logo/menuCloseDark.svg";
 import menuOpen from "../../utils/logo/menuOpen.svg";
 import sardineLogoGradient from "../../utils/logo/sardineLogoGradient.svg";
 import { useSearchQuery } from "../../hooks/useSearchQuery";
+import { ErrorBoundary } from "../ErrorBoundary";
+import { GenericError } from "../Error/GenericError";
 
 const StyledMainDiv = styled.div<{ open: boolean }>`
-  // height : 100vh;
   min-width: 100%;
   display: flex;
   overflow: hidden;
@@ -135,7 +136,11 @@ const Main: React.FC = ({ children }) => {
           </StyledMobileNavBar>
         </StyledDivWithNav>
         {open ? <StyledBackdrop onClick={() => open && setOpen(false)} /> : null}
-        {children ? <StyledChildren open={open}>{children}</StyledChildren> : null}
+        {children ? (
+          <StyledChildren open={open}>
+            <ErrorBoundary fallback={<GenericError />}>{children}</ErrorBoundary>
+          </StyledChildren>
+        ) : null}
       </StyledMainContentDiv>
     </StyledMainDiv>
   );

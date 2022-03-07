@@ -4,15 +4,18 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import http from "http";
 import path from "path";
+import pinoHttp from "pino-http";
 import * as Sentry from "@sentry/node";
-import contentSecurityPolicy from "helmet/dist/middlewares/content-security-policy";
+import helmet from "helmet";
 import router from "./router";
 import { loadSecrets } from "../commons/secrets";
+import { logger } from "../commons/logger";
 import { db } from "../commons/db";
 import { mw } from "../commons/middleware";
 import { authService } from "../commons/AuthService";
 import { ruleService } from "../commons/RuleService";
 import { UnleashService } from "../commons/UnleashService";
+import { captureException } from "../utils/error-utils";
 
 const env = process.env.SARDINE_ENV;
 Sentry.init({
@@ -22,35 +25,29 @@ Sentry.init({
 });
 
 process.on("unhandledRejection", async (reason, promise) => {
-  console.log("Unhandled Rejection at:", promise, "reason:", reason);
-  Sentry.captureException(reason);
+  logger.error({ promise, reason }, "unhandled rejection");
+  captureException(reason);
   await db.logs.logUnhandledRejectionError(reason, promise);
 });
 
 process.on("uncaughtException", async (err) => {
-  console.log("Uncaught Exception", err);
-  Sentry.captureException(err);
+  logger.error(err, "uncaught exception");
+  captureException(err);
   await db.logs.logUncaughtExceptionError(err.message, err.stack);
 });
 
-console.log(`NODE_ENV is set to ${process.env.NODE_ENV}`);
+logger.info(`NODE_ENV is set to ${process.env.NODE_ENV}`);
+logger.info(`SARDINE_ENV is set to ${process.env.SARDINE_ENV}`);
 
-const startHttpServer = async function () {
+const startHttpServer = async () => {
   await loadSecrets();
   const app = express();
-  require("../commons/middleware-wrapper");
-  /**
-   * https://github.com/davidbanham/express-async-errors
-   * https://expressjs.com/en/guide/error-handling.html
-   * normally, You must catch errors that occur in asynchronous code invoked by route handlers or middleware and pass them to Express for processing.
-   * this lib handles that automatically, and pass to the next fn. just throw error in your router
-   */
-  require("express-async-errors");
+  app.use(pinoHttp());
   app.use(Sentry.Handlers.requestHandler());
   app.use(mw.assignId);
   app.enable("trust proxy");
   app.use(
-    contentSecurityPolicy({
+    helmet.contentSecurityPolicy({
       useDefaults: true,
       directives: {
         defaultSrc: ["'self'", "img-src * 'self' data: https:", "https://*.sardine.ai"],
@@ -125,7 +122,7 @@ const startHttpServer = async function () {
   const port = process.env.PORT || config.get("SERVER_PORT");
   const server = http.createServer(app).listen(port, async () => {
     await loadSecrets();
-    console.log(`server listening on port ${port}`);
+    logger.info(`server listening on port ${port}`);
   });
 
   return server;

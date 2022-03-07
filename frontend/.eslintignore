@@ -1,3 +1,4 @@
 /.eslintrc.js
+/lint-staged.config.mjs
 /jest.config.ts
 /coverage/**/*.js

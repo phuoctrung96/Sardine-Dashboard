@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { BackgroundBox, StyledUl, StyledInput, StyledLi, ChipCancelButton, Container, SubmitButton, DashedLine } from "./styles";
 
-const CustomRule = (props) => {
+const CustomRule = (props: {
+  submitCallback: (data: { title: string; items: string[] }) => void;
+  cancelCallback: () => void;
+}): JSX.Element => {
+  const { submitCallback, cancelCallback } = props;
   const [name, setName] = useState("");
   const [params, setParams] = useState([""]);
 
@@ -52,7 +56,6 @@ const CustomRule = (props) => {
   return (
     <BackgroundBox
       style={{
-        ...props.style,
         backgroundColor: "rgb(240,240,240)",
         margin: "10px 0px 10px 0px",
       }}
@@ -70,7 +73,7 @@ const CustomRule = (props) => {
         <ChipCancelButton
           style={{ alignSelf: "flex-end" }}
           onClick={() => {
-            props.cancelCallback();
+            cancelCallback();
           }}
         >
           ×
@@ -99,7 +102,6 @@ const CustomRule = (props) => {
             color: "#2173FF",
             textDecorationLine: "underline",
           }}
-          type="submit"
           onClick={() => {
             setParams([...params, ""]);
           }}
@@ -113,7 +115,7 @@ const CustomRule = (props) => {
           style={{ margin: 10, width: "90%", backgroundColor: isValidForm() ? "#2173FF" : "lightgrey" }}
           type="submit"
           onClick={() => {
-            props.submitCallback({ title: name, items: params.filter((p) => p.length > 0) });
+            submitCallback({ title: name, items: params.filter((p) => p.length > 0) });
           }}
         >
           <span>Submit</span>

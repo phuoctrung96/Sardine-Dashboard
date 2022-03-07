@@ -5,7 +5,7 @@ const getRandomColor = () => {
   return colors[Math.floor(Math.random() * colors.length - 1) + 1];
 };
 
-concurrently(
+const { result } = concurrently(
   [
     {
       command: `cd frontend && npm start`,
@@ -23,6 +23,8 @@ concurrently(
     killOthers: ["failure", "success"],
     restartTries: 3,
   }
-).then(() => {
+);
+
+result.then(() => {
   console.log("services started");
 });

@@ -121,6 +121,16 @@ const Transactions: React.FC = () => {
 
   const tableColumns: DataColumn<AnyTodo>[] = [
     {
+      title: "AML Level",
+      field: "aml_level",
+      render: (rowData: AnyTodo) => <Badge title={rowData.aml_level || "unknown"} />,
+    },
+    {
+      title: "Risk Level",
+      field: "risk_level",
+      render: (rowData: AnyTodo) => <Badge title={rowData.risk_level || "unknown"} />,
+    },
+    {
       title: "Customer Id",
       field: "customer_id",
       render: (rowData: AnyTodo) => (
@@ -146,16 +156,6 @@ const Transactions: React.FC = () => {
     {
       title: "Session Key",
       field: "session_key",
-    },
-    {
-      title: "Risk Level",
-      field: "risk_level",
-      render: (rowData: AnyTodo) => <Badge title={rowData.risk_level || "unknown"} />,
-    },
-    {
-      title: "AML Level",
-      field: "aml_level",
-      render: (rowData: AnyTodo) => <Badge title={rowData.aml_level || "unknown"} />,
     },
     {
       title: "Category",

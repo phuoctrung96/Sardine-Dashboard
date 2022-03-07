@@ -22,6 +22,7 @@ import {
   ADMIN_PATH,
   SETTINGS_PATH,
   RULES_PATH,
+  FEEDBACKS_PATH,
 } from "modulePaths";
 import { useUserStore } from "store/user";
 import { CLIENT_QUERY_FIELD } from "utils/constructFiltersQueryParams";
@@ -75,6 +76,8 @@ import queuesIcon from "../../utils/logo/sidebar/ic_queue.svg";
 import queuesIconActive from "../../utils/logo/sidebar/ic_queue_active.svg";
 import infoIcon from "../../utils/logo/sidebar/ic_info.svg";
 import infoIconActive from "../../utils/logo/sidebar/ic_info_active.svg";
+import feedbacks from "../../utils/logo/sidebar/ic_feedbacks.svg";
+import feedbacksActive from "../../utils/logo/sidebar/ic_feedbacks_active.svg";
 import { SuperAdminVisible } from "../Auth/SuperAdminVisible";
 import { AdminVisible } from "../Auth/AdminVisible";
 
@@ -317,6 +320,15 @@ const Sidebar = (): JSX.Element => {
       normalIcon: customers,
       activeIcon: customersActive,
       tid: "sidebar_link_customer_intelligence",
+      badge: null,
+    },
+    {
+      title: "Feedback",
+      path: FEEDBACKS_PATH,
+      activePath: FEEDBACKS_PATH,
+      normalIcon: feedbacks,
+      activeIcon: feedbacksActive,
+      tid: "sidebar_link_feedbacks",
       badge: null,
     },
     {

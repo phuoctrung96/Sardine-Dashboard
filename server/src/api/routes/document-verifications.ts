@@ -9,7 +9,7 @@ import {
 } from "sardine-dashboard-typescript-definitions";
 import { db } from "../../commons/db";
 import { mw } from "../../commons/middleware";
-import { RequestWithUser } from "../request-interface";
+import { RequestWithCurrentUser, RequestWithUser } from "../request-interface";
 import { WHITELISTED_FILTERS, DocumentVerficationDS } from "../../commons/models/datastore/document-verifications";
 import { generateSignedDocumentVerificationImages } from "../utils/routes/document-verifications";
 import { handleClientIDNotFoundError } from "../../utils/error-utils";
@@ -37,8 +37,12 @@ const documentVerificationsRouter = () => {
     detailsUrl.path,
     param("id").isString(),
     [mw.validateRequest, mw.requireLoggedIn],
-    async (req: RequestWithUser, res: Response): Promise<Response<AnyTodo, Record<string, AnyTodo>> | void> => {
+    async (
+      req: RequestWithCurrentUser<AnyTodo, AnyTodo, AnyTodo>,
+      res: Response
+    ): Promise<Response<AnyTodo, Record<string, AnyTodo>> | void> => {
       const data = await DocumentVerficationDS.queryById(req.params.id);
+
       if (!data) return res.status(404);
 
       const images = await generateSignedDocumentVerificationImages(data, documentVerificationImages);

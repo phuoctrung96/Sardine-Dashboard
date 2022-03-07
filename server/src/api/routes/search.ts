@@ -15,7 +15,7 @@ import { db } from "../../commons/db";
 import { captureException } from "../../utils/error-utils";
 import { loadEsClient } from "../search/esClient";
 import { Devices } from "../../commons/models/datastore/devices";
-import { DATE_FORMATS } from "../../utils/constants";
+import { DATE_FORMATS } from "../../constants";
 import { RequestWithUser, RequestWithCurrentUser } from "../request-interface";
 
 const router = express.Router();

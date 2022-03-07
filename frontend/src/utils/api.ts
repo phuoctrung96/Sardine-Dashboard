@@ -75,6 +75,7 @@ import {
   GetFeedbacksResponse,
   FetchInvitationsResponse,
 } from "sardine-dashboard-typescript-definitions";
+import { CryptoObject } from "components/Customers/UserView";
 
 import { FilterData } from "components/Common/FilterField";
 import { captureException, getErrorMessage } from "./errorUtils";
@@ -468,7 +469,7 @@ export const sendAdminNotification = (subject: string, users: EmailConfig[], mes
 
 export const getEmailFromToken = (token: string) => get({ url: `/api/auth/get-email-from-token?token=${token}` });
 
-export const getDocumentVerification = (id: string): Promise<DocumentVerification> => {
+export const fetchDocumentVerification = (id: string): Promise<DocumentVerification> => {
   const documentVerificationUrl = documentVerificationsUrls.routes.details;
   const url = getApiPath(documentVerificationsUrls.basePath, documentVerificationUrl.path.replace(":id", id));
   return httpMethods[documentVerificationUrl.httpMethod]({ url });
@@ -500,8 +501,14 @@ export const getMetabaseToken = (id: string) => get({ url: `/api/organisation/me
 
 export const getMetabaseTokenForRelayDashboard = () => get({ url: `/api/organisation/metabase-token-relay` });
 
-export const getClientIdObject = (id: string): Promise<ClientIdObject> =>
-  get({ url: `/api/organisation/client-id?organisation=${id}` });
+export const getClientIdObject = (id: string): Promise<ClientIdObject> => {
+  const url = new URL(
+    getApiPath(organisationUrls.basePath, organisationUrls.routes.getClientIdRoute.path),
+    window.location.origin
+  );
+  url.searchParams.append("organisation", id);
+  return httpMethods[organisationUrls.routes.getClientIdRoute.httpMethod]({ url: String(url) });
+};
 
 export const getClientIdResult = async (id: string): Promise<Result<string>> => {
   try {
@@ -628,7 +635,7 @@ export const getCustomerCardDetails = (customerId: string) => {
   url.searchParams.append("customerId", customerId);
   return httpMethods[getCardDetailsRoute.httpMethod]({ url: String(url) });
 };
-export const getCustomerCryptoDetails = (customerId: string) => {
+export const getCustomerCryptoDetails = (customerId: string): Promise<{ result: CryptoObject[] }> => {
   const url = new URL(getApiPath(customerUrls.basePath, getCryptoDetailsRoute.path), window.location.origin);
   url.searchParams.append("customerId", customerId);
   return httpMethods[getCryptoDetailsRoute.httpMethod]({ url: String(url) });

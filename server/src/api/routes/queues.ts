@@ -9,7 +9,7 @@ import { RequestWithUser } from "../request-interface";
 import { firebaseAdmin } from "../../commons/firebase";
 import { writeAuditLog } from "../utils/routes/audit";
 import { RuleService } from "../../commons/RuleService";
-import { CLIENT_ID_FIELD } from "../../utils/constants";
+import { CLIENT_ID_FIELD } from "../../constants";
 
 const { getListQueueRoute, addNewQueueRoute, deleteQueueRoute, getListSessionsInQueue, updateQueueRoute } = queueUrls.routes;
 

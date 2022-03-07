@@ -45,7 +45,7 @@ const Transaction = (props: TransactionProps): JSX.Element => {
         "Indicates the type of transaction: buy, sell, deposit, withdraw, refund, payment, and topup. If you need other action type to be supported, please reach out sardine team.",
     },
   ];
-  return <DataCard header={HEADER} attributes={attributes} icon={<img src={transactionIcon} />} />;
+  return <DataCard header={HEADER} attributes={attributes} icon={<img src={transactionIcon} alt="Transaction Icon" />} />;
 };
 
 export default Transaction;

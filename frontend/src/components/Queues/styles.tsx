@@ -341,14 +341,6 @@ export const DetailsCardView = styled(Card)`
       }
     }
   }
-  & .hide-border {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 20px;
-    background-color: white;
-    width: 100%;
-  }
 `;
 
 export const DetailsCardTitle = styled.div`

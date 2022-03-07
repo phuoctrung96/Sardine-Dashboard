@@ -36,7 +36,8 @@ const nodeTypes = {
   childNode: ChildNode,
 };
 
-const features = ["referrer_set", "device_id_set", "os_set", "ip_address_set"];
+const DEVICE_ID_SET = "device_id_set";
+const features = ["referrer_set", DEVICE_ID_SET, "os_set", "ip_address_set"];
 
 const UserNetwork = (p: IProps): JSX.Element => {
   const animationDuration = 1000;
@@ -199,7 +200,13 @@ const UserNetwork = (p: IProps): JSX.Element => {
         sourcePosition: Position.Left,
         targetPosition: Position.Right,
         type: "childNode",
-        data: { label: sr.title, parent: r.title, value: sr.value },
+        data: {
+          label: sr.title,
+          parent: r.title,
+          value: sr.value,
+          is_device_id: r.id.includes(DEVICE_ID_SET),
+          organization: p.organisation,
+        },
         position: { x: 800, y: ind * 80 },
         style: { ...defaultStyle, borderColor: "lightgrey" },
       },

@@ -96,6 +96,12 @@ export const paymentMethodFeatures = [
     ),
     intChild("Balance", "Balance of the account", false),
     stringChild("CurrencyCode", "currencyCode"),
+    floatChild("Last5BizDaysSpent", "Amount of money spent through bank in the last 5 business days", false),
+    floatChild(
+      "BestBalance",
+      "Get us the Best Balance to use for calculations follows this precedence AvailableBalance, Balance from customer api, CurrentBalance.",
+      false
+    ),
   ]),
   new FeatureItem("Card", [
     stringChild("First6", "first 6 digits of card. also known as BIN (Bank Identification Number)"),

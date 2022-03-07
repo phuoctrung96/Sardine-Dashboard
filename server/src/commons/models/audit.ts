@@ -9,7 +9,7 @@ const auditModel = (db: pgPromise.IDatabase<{}>) => {
       [clientId, startDate, endDate, offset, limit]
     );
 
-  const createLog = (clientId: string, type: string, targetId: number, actorId: number, metadata: JSON) =>
+  const createLog = (clientId: string, type: string, targetId: number, actorId: number, metadata: string) =>
     db.one(
       `
       INSERT INTO audit_log

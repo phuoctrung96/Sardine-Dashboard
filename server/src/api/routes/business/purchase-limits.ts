@@ -4,7 +4,7 @@ import { body, query } from "express-validator";
 import * as Sentry from "@sentry/node";
 import { business_db, db } from "../../../commons/db";
 import { mw } from "../../../commons/middleware";
-import { RequestWithUser } from "../../request-interface";
+import { RequestWithCurrentUser } from "../../request-interface";
 
 const { createPurchaseLimitRoute, deletePurchaseLimitsRoute, getPurchaseLimitsRoute, updatePurchaseLimitRoute } =
   purchaseLimitUrls.routes;
@@ -17,7 +17,7 @@ const purchaseLimitsRouter = () => {
     [query("organisation").exists().isString()],
     mw.validateRequest,
     mw.requireSuperAdmin,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<{}, { organisation: string }>, res: Response) => {
       const { organisation = "" } = req.query;
       try {
         const client_id = (await db.organisation.getClientId(organisation.toString())) || "";
@@ -35,7 +35,11 @@ const purchaseLimitsRouter = () => {
     [query("organisation").exists().isString()],
     mw.validateRequest,
     mw.requireSuperAdmin,
-    async (req: RequestWithUser<PurchaseLimitRequestBody>, res: Response, next: NextFunction) => {
+    async (
+      req: RequestWithCurrentUser<PurchaseLimitRequestBody, { organisation: string }>,
+      res: Response,
+      _next: NextFunction
+    ) => {
       const { organisation = "" } = req.query;
       try {
         const client_id = (await db.organisation.getClientId(organisation.toString())) || "";
@@ -54,7 +58,11 @@ const purchaseLimitsRouter = () => {
     [body("id").exists().isInt(), query("organisation").exists().isString()],
     mw.validateRequest,
     mw.requireSuperAdmin,
-    async (req: RequestWithUser<PurchaseLimitRequestBody>, res: Response, next: NextFunction) => {
+    async (
+      req: RequestWithCurrentUser<PurchaseLimitRequestBody, { organisation: string }>,
+      res: Response,
+      _next: NextFunction
+    ) => {
       const { organisation = "" } = req.query;
       try {
         const client_id = (await db.organisation.getClientId(organisation.toString())) || "";
@@ -73,7 +81,7 @@ const purchaseLimitsRouter = () => {
     [query("id").exists().isInt()],
     mw.validateRequest,
     mw.requireSuperAdmin,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<{}, { id: string | string[] | undefined }>, res: Response) => {
       const { id = -1 } = req.query;
       try {
         const result = await business_db.purchaseLimit.deletePurchaseLimit(parseInt(id.toString(), 10));

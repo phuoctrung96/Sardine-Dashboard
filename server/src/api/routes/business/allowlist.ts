@@ -8,7 +8,7 @@ import {
 import * as Sentry from "@sentry/node";
 import { business_db, db } from "../../../commons/db";
 import { mw } from "../../../commons/middleware";
-import { RequestWithUser } from "../../request-interface";
+import { RequestWithCurrentUser } from "../../request-interface";
 
 const router = express.Router();
 
@@ -22,7 +22,7 @@ const allowlistRouter = () => {
     [query("organisation").exists()],
     mw.validateRequest,
     mw.requireLoggedIn,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<{}, { organisation: string }>, res: Response) => {
       const { organisation = "" } = req.query;
       try {
         const client_id = (await db.organisation.getClientId(organisation.toString())) || "";
@@ -40,7 +40,7 @@ const allowlistRouter = () => {
     [body("organisation").exists().isString(), body("data").exists(), body("scope").exists().isString(), body("expiry").exists()],
     mw.validateRequest,
     mw.requireLoggedIn,
-    async (req: RequestWithUser<CreateBlockAllowlistRequestBody>, res: Response) => {
+    async (req: RequestWithCurrentUser<CreateBlockAllowlistRequestBody>, res: Response) => {
       const { organisation } = req.body;
       try {
         const clientId = (req.body.client_id || "").toString();
@@ -70,7 +70,7 @@ const allowlistRouter = () => {
     ],
     mw.validateRequest,
     mw.requireLoggedIn,
-    async (req: RequestWithUser<UpdateBlockAllowlistRequestBody>, res: Response) => {
+    async (req: RequestWithCurrentUser<UpdateBlockAllowlistRequestBody>, res: Response) => {
       const { id, organisation } = req.body;
       try {
         const client_id = await db.organisation.getClientId(organisation.toString());
@@ -92,7 +92,7 @@ const allowlistRouter = () => {
     [query("id").exists(), query("organisation").exists()],
     mw.validateRequest,
     mw.requireLoggedIn,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<{}, { id: string; organisation: string }>, res: Response) => {
       const { id = "", organisation = "" } = req.query;
       try {
         const client_id = (await db.organisation.getClientId(organisation.toString())) || "";

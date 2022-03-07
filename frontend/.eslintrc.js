@@ -18,6 +18,7 @@ module.exports = {
       jsx: true,
     },
     ecmaVersion: 12,
+    extraFileExtensions: [".mjs"],
     project: "./tsconfig.json",
     sourceType: "module",
   },

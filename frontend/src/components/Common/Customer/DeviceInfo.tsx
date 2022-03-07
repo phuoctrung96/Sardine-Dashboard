@@ -163,7 +163,11 @@ const DeviceInfo = (props: DeviceInfoProps): JSX.Element => {
   }
 
   return attributes.length > 0 ? (
-    <DataCard header={KEY_DEVICE_AND_BEHAVIOUR_DETAILS} attributes={attributes} icon={<img src={deviceIcon} />} />
+    <DataCard
+      header={KEY_DEVICE_AND_BEHAVIOUR_DETAILS}
+      attributes={attributes}
+      icon={<img src={deviceIcon} alt="Device Icon" />}
+    />
   ) : (
     <div />
   );

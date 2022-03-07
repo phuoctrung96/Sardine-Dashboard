@@ -17,7 +17,7 @@ import { UnleashService } from "src/commons/UnleashService";
 import { db } from "../../commons/db";
 import { mw } from "../../commons/middleware";
 import { sendMultipleInviteEmail, sendInviteEamil, sendAdminBroadcast } from "../../commons/email";
-import { RequestWithUser } from "../request-interface";
+import { RequestWithCurrentUser } from "../request-interface";
 import { groupBy } from "../../commons/helpers";
 import { getFeaturesMatchEnv, getOrganisationIdsFromFeature } from "../utils/getOrganisationIdsFromFeature";
 import { captureException } from "../../utils/error-utils";
@@ -32,7 +32,7 @@ const organisationRouter = (unleashSevice: UnleashService) => {
     [param("clientID").isUUID().exists()],
     mw.requireAdminAccess,
     mw.validateRequest,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<{}, {}, { clientID: string }>, res: Response) => {
       const enabledFeatureFlags: FeatureFlag[] = [];
       const disabledFeatureFlags: FeatureFlag[] = [];
       const filteredOrgId = req.params.clientID;
@@ -69,7 +69,7 @@ const organisationRouter = (unleashSevice: UnleashService) => {
     [query("organisation").exists()],
     mw.validateRequest,
     mw.requireAdminAccess,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<{}, { organisation: string }>, res: Response) => {
       try {
         const { organisation = "" } = req.query;
         const rows = await db.organisation.fetchInvitations(organisation.toString());
@@ -95,7 +95,7 @@ const organisationRouter = (unleashSevice: UnleashService) => {
     [body(["organisation", "emails", "link"]).exists()],
     mw.validateRequest,
     mw.requireAdminAccess,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<{ organisation: string; emails: string[]; link: string }>, res: Response) => {
       const { organisation = "", emails = [], link = "" } = req.body;
       try {
         const tokens: string[] = await db.organisation.generateInvitations(organisation.toString(), emails as string[]);
@@ -114,7 +114,7 @@ const organisationRouter = (unleashSevice: UnleashService) => {
     [body("email").exists(), body("link").exists()],
     mw.validateRequest,
     mw.requireAdminAccess,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<{ email: string; link: string }>, res: Response) => {
       const { email = "", link = "" } = req.body;
       try {
         await sendInviteEamil(email.toString(), link.toString());
@@ -126,35 +126,39 @@ const organisationRouter = (unleashSevice: UnleashService) => {
     }
   );
 
-  router.get("/metabase-token", mw.requireLoggedIn, (_req, res) => {
-    try {
-      const { organisation = "" } = _req.query;
-      const payload = {
-        resource: {
-          dashboard: config.get("METABASE_DASHBOARD_ID"),
-          merchname: organisation,
-        },
-        params: {
-          merchname: organisation,
-        },
-        exp: Math.round(Date.now() / 1000) + 20 * 60,
-      };
+  router.get(
+    "/metabase-token",
+    mw.requireLoggedIn,
+    (req: RequestWithCurrentUser<{}, { organisation: string }>, res: Response) => {
+      try {
+        const { organisation = "" } = req.query;
+        const payload = {
+          resource: {
+            dashboard: config.get("METABASE_DASHBOARD_ID"),
+            merchname: organisation,
+          },
+          params: {
+            merchname: organisation,
+          },
+          exp: Math.round(Date.now() / 1000) + 20 * 60,
+        };
 
-      if (!process.env.METABASE_SECRET_KEY) {
-        return res.status(400).json({ error: "INVALID_REQUEST" });
+        if (!process.env.METABASE_SECRET_KEY) {
+          return res.status(400).json({ error: "INVALID_REQUEST" });
+        }
+
+        const token = jwt.sign(payload, process.env.METABASE_SECRET_KEY);
+        const url = `${config.get("METABASE_SITE_URL")}/embed/dashboard/${token}`;
+        return res.json({ url });
+      } catch (e) {
+        Sentry.captureException(e);
+        return res.status(500).json({ error: "internal error" });
       }
-
-      const token = jwt.sign(payload, process.env.METABASE_SECRET_KEY);
-      const url = `${config.get("METABASE_SITE_URL")}/embed/dashboard/${token}`;
-      return res.json({ url });
-    } catch (e) {
-      Sentry.captureException(e);
-      return res.status(500).json({ error: "internal error" });
     }
-  });
+  );
 
   // this only works in prod
-  router.get("/metabase-token-relay", mw.requireLoggedIn, (req: RequestWithUser, res) => {
+  router.get("/metabase-token-relay", mw.requireLoggedIn, (req: RequestWithCurrentUser, res) => {
     try {
       if (req.currentUser?.organisation !== "relayfi") {
         return res.status(401).json({ error: "INVALID_REQUEST" });
@@ -185,7 +189,7 @@ const organisationRouter = (unleashSevice: UnleashService) => {
     [query(getClientIdRoute.params.organisation).exists()],
     mw.validateRequest,
     mw.requireLoggedIn,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<{}, { organisation: string }>, res: Response) => {
       try {
         const { organisation = "" } = req.query;
         // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -203,7 +207,7 @@ const organisationRouter = (unleashSevice: UnleashService) => {
     }
   );
 
-  router.get("/list", [], mw.requireLoggedIn, mw.requireAdminAccess, async (req: RequestWithUser, res: Response) => {
+  router.get("/list", [], mw.requireLoggedIn, mw.requireAdminAccess, async (req: RequestWithCurrentUser, res: Response) => {
     try {
       const organisationID = req.currentUser?.organisation_id || "";
       const organisations = await db.organisation.getOrganisations(organisationID);
@@ -214,7 +218,7 @@ const organisationRouter = (unleashSevice: UnleashService) => {
     }
   });
 
-  router.get("/admin-list", [], mw.requireLoggedIn, mw.requireAdminAccess, async (req: RequestWithUser, res: Response) => {
+  router.get("/admin-list", [], mw.requireLoggedIn, mw.requireAdminAccess, async (req: RequestWithCurrentUser, res: Response) => {
     try {
       const organisationID = req.currentUser?.organisation_id || "";
       const organisations = await db.organisation.getAdminOrganisations(organisationID);
@@ -265,7 +269,7 @@ const organisationRouter = (unleashSevice: UnleashService) => {
     [body("subject").exists(), body("users").exists(), body("message").exists()],
     mw.validateRequest,
     mw.requireSuperAdmin,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser, res: Response) => {
       const { subject = "", users = [], message = "" } = req.body as SendNotificationRequest;
       try {
         if (users.length > 0) {

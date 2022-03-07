@@ -2,10 +2,7 @@ import React from "react";
 import ReasonCodeList from "components/ReasonCodeList";
 import { AllReasonCodes } from "./reasoncodes";
 
-export const renderReasonCodesFromArray = (reasonCodeArray: Array<string>): JSX.Element | "-" => {
-  if (reasonCodeArray.length === 0) {
-    return "-";
-  }
+export const ReasonCodesFromArray = ({ reasonCodeArray }: { reasonCodeArray: Array<string> }): JSX.Element => {
   const reasonCodes = reasonCodeArray.map((code) => ({
     code,
     description: AllReasonCodes[code],
@@ -18,5 +15,5 @@ export const renderReasonCodes = (reasonCodesArg: string): JSX.Element | "-" => 
   if (reasonCodesStr.length === 0) {
     return "-";
   }
-  return renderReasonCodesFromArray(reasonCodesStr.split(",").map((v) => v.replace(/"/, "")));
+  return <ReasonCodesFromArray reasonCodeArray={reasonCodesStr.split(",").map((v) => v.replace(/"/, ""))} />;
 };

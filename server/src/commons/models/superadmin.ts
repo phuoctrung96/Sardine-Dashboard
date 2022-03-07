@@ -1,6 +1,7 @@
 import pgPromise from "pg-promise";
 
 const superadminModel = (db: pgPromise.IDatabase<{}>) => {
+  // TODO: organisation_credentials is not used anymore. Delete it.
   const getCredentialsById = (id: string) =>
     db.any(
       `
@@ -11,6 +12,7 @@ const superadminModel = (db: pgPromise.IDatabase<{}>) => {
     );
 
   const revokeCredentialsById = (id: string, userId: string) =>
+    // TODO: organisation_credentials is not used anymore. Delete it.
     db.none(
       `
       UPDATE organisation_credentials

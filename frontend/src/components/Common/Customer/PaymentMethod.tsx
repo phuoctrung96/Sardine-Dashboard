@@ -173,7 +173,7 @@ const PaymentMethod = (props: PaymentMethodProps): JSX.Element => {
   }
 
   return attributes.length > 0 ? (
-    <DataCard header={HEADER} attributes={attributes} icon={<img src={creditCardIcon} />} />
+    <DataCard header={HEADER} attributes={attributes} icon={<img src={creditCardIcon} alt="Card Icon" />} />
   ) : (
     <div />
   );

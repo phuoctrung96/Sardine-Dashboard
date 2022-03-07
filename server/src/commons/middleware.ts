@@ -4,9 +4,10 @@ import { v4 as uuidv4 } from "uuid";
 import bodyParser from "body-parser";
 import { MULTI_ORG_ADMIN, SARDINE_ADMIN, AnyTodo } from "sardine-dashboard-typescript-definitions";
 import { helpers } from "./helpers";
-import { RequestWithUser } from "../api/request-interface";
+import { RequestWithCurrentUser, RequestWithUser } from "../api/request-interface";
 import { db } from "./db";
 import { captureException } from "../utils/error-utils";
+import { logger } from "./logger";
 
 interface Error {
   status?: number;
@@ -33,7 +34,7 @@ const attachCurrentUserToRequest = (mydb: AnyTodo) => async (req: RequestWithUse
   return undefined;
 };
 
-const requireLoggedIn = (req: RequestWithUser, res: Response, next: NextFunction) => {
+const requireLoggedIn = (req: RequestWithCurrentUser, res: Response, next: NextFunction) => {
   if (!req.currentUser) {
     res.status(401).json({ error: "UNAUTHORIZED" });
     return;
@@ -41,7 +42,7 @@ const requireLoggedIn = (req: RequestWithUser, res: Response, next: NextFunction
   next();
 };
 
-const requireSuperAdmin = (req: RequestWithUser, res: Response, next: NextFunction) => {
+const requireSuperAdmin = (req: RequestWithCurrentUser, res: Response, next: NextFunction) => {
   if (!req.currentUser || !(req.currentUser.user_role === SARDINE_ADMIN)) {
     return res.status(400).json({ error: "ACTION_ALLOWED_FOR_SUPERADMINS_ONLY" });
   }
@@ -50,7 +51,7 @@ const requireSuperAdmin = (req: RequestWithUser, res: Response, next: NextFuncti
   return undefined;
 };
 
-const requireAdminAccess = (req: RequestWithUser, res: Response, next: NextFunction) => {
+const requireAdminAccess = (req: RequestWithCurrentUser, res: Response, next: NextFunction) => {
   if (req.currentUser) {
     if (req.currentUser.user_role === SARDINE_ADMIN || req.currentUser.user_role === MULTI_ORG_ADMIN) {
       return next();
@@ -59,7 +60,11 @@ const requireAdminAccess = (req: RequestWithUser, res: Response, next: NextFunct
   return res.status(400).json({ error: "ACTION_ALLOWED_FOR_ADMINS_ONLY" });
 };
 
-const requireUserAccess = (req: RequestWithUser, res: Response, next: NextFunction) => {
+const requireUserAccess = (
+  req: RequestWithCurrentUser<{}, { organization?: string; organisation?: string }>,
+  res: Response,
+  next: NextFunction
+) => {
   const orgId = req.query.organisation || req.query.organization;
   if (req.currentUser && orgId) {
     if (req.currentUser.user_role === SARDINE_ADMIN || req.currentUser.user_role === MULTI_ORG_ADMIN) {
@@ -75,7 +80,11 @@ const requireUserAccess = (req: RequestWithUser, res: Response, next: NextFuncti
   return res.status(400).json({ error: "UNAUTHORIZED" });
 };
 
-const requireOrganisationAccess = async (req: RequestWithUser, res: Response, next: NextFunction) => {
+const requireOrganisationAccess = async (
+  req: RequestWithCurrentUser<{ organisation: string }>,
+  res: Response,
+  next: NextFunction
+) => {
   const isSuperAdmin = req.currentUser && req.currentUser.user_role === SARDINE_ADMIN;
   if (isSuperAdmin) {
     return next();
@@ -92,48 +101,36 @@ const requireOrganisationAccess = async (req: RequestWithUser, res: Response, ne
   return res.status(409).json({ error: "ACCESS_DENIED" });
 };
 
-const expressErrorHandler = (prefix: string) => (error: Error, req: RequestWithUser, res: Response, next: NextFunction) => {
-  if (error.message === "INVALID_JSON_BODY_PARSER") {
-    return res.status(400).send("bad json");
-  }
+const expressErrorHandler =
+  (_prefix: string) => (error: Error, req: RequestWithCurrentUser, res: Response, next: NextFunction) => {
+    if (error.message === "INVALID_JSON_BODY_PARSER") {
+      return res.status(400).send("bad json");
+    }
 
-  if (error.name === "ValidationError" && !res.headersSent) {
-    return res.status(error.code).json(error.response);
-  }
+    if (error.name === "ValidationError" && !res.headersSent) {
+      return res.status(error.code).json(error.response);
+    }
 
-  const query = error.query ? error.query.toString() : null;
-  const code = error.code || null;
-  const source = error.DB_ERROR ? `${prefix}_DB_ERROR` : `${prefix}_API_ERROR`;
+    logger.error(error);
 
-  const message = JSON.stringify({
-    message: error.message,
-    url: req.url,
-    method: req.method,
-  });
+    if (!res.headersSent) {
+      res.status(500).send("An error occurred");
+    }
 
-  db.logs
-    .logError(message, error.stack, req.id || "", req.currentUser ? req.currentUser.id : null, source, query, code)
-    .then()
-    .catch((e) => {
-      captureException(e);
-    });
+    next(error);
+    return undefined; // To satisfy ESLint rules
+  };
 
-  console.log(source, error);
-
-  if (!res.headersSent) {
-    res.status(500).send("An error occurred");
-  }
-
-  next(error);
-  return undefined; // To satisfy ESLint rules
-};
-
-const assignId = function (req: RequestWithUser, _res: Response, next: NextFunction) {
+const assignId = function (req: Request, _res: Response, next: NextFunction) {
   req.id = uuidv4();
   next();
 };
 
-const assignOrganisationClientId = async (req: RequestWithUser, res: Response, next: NextFunction) => {
+const assignOrganisationClientId = async (
+  req: RequestWithCurrentUser<{}, { organisation: string }>,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     if (!req.currentUser) {
       return res.status(401).json({ error: "UNAUTHORIZED" });
@@ -141,11 +138,11 @@ const assignOrganisationClientId = async (req: RequestWithUser, res: Response, n
     let organisation = "";
     switch (req.currentUser.user_role) {
       case SARDINE_ADMIN:
-        organisation = req.query.organisation as string;
+        organisation = req.query.organisation;
         break;
       case MULTI_ORG_ADMIN:
-        if (!(await db.organisation.hasOrganisationAccess(req.query.organisation as string, req.currentUser.id))) {
-          organisation = req.query.organisation as string;
+        if (!(await db.organisation.hasOrganisationAccess(req.query.organisation, req.currentUser.id))) {
+          organisation = req.query.organisation;
         }
         break;
       case "user":

@@ -21,11 +21,11 @@ import { firebaseAdmin } from "../../commons/firebase";
 import { AuthService } from "../../commons/AuthService";
 import { captureException, getErrorMessage, isErrorWithSpecificCode } from "../../utils/error-utils";
 import {
-  RequestWithUser,
   RegistrationRequest,
   GoogleSigninRequest,
   LoginRequest,
   CreateOrganisation,
+  RequestWithCurrentUser,
 } from "../request-interface";
 import { resetPasswordRateLimitByEmailMw, resetPasswordRateLimitByIpMw } from "../middlewares/auth";
 import { writeAuditLog } from "../utils/routes/audit";
@@ -69,7 +69,7 @@ const authRouter = (authService: AuthService) => {
     registerRoute.path,
     [(body("invitationToken").exists().optional(), body("idToken").exists())],
     mw.validateRequest,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser, res: Response) => {
       const { name, email, idToken, invitationToken } = req.body as RegistrationRequest;
       let user;
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -144,7 +144,7 @@ const authRouter = (authService: AuthService) => {
     googleSignInRoute.path,
     [body("invitationToken").exists().optional(), body("idToken").exists()],
     mw.validateRequest,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser, res: Response) => {
       const { idToken, invitationToken } = req.body as GoogleSigninRequest;
       let user;
       const data = await firebaseAdmin.verifyIdToken(idToken);
@@ -206,7 +206,7 @@ const authRouter = (authService: AuthService) => {
     loginRoute.path,
     [body("idToken").exists()],
     mw.validateRequest,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser, res: Response) => {
       const { idToken } = req.body as LoginRequest;
       try {
         const decodedToken = await firebaseAdmin.verifyIdToken(idToken);
@@ -236,7 +236,7 @@ const authRouter = (authService: AuthService) => {
     "/get-email-from-token",
     [query(["token"]).exists()],
     mw.validateRequest,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<{}, { token: string }>, res: Response) => {
       const { token = "" } = req.query;
 
       try {
@@ -253,7 +253,7 @@ const authRouter = (authService: AuthService) => {
     createOrganisationRoute.path,
     mw.requireLoggedIn,
     mw.requireAdminAccess,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser, res: Response) => {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       const { organisation, user_type, parentOrg } = req.body as CreateOrganisation;
       try {
@@ -289,7 +289,7 @@ const authRouter = (authService: AuthService) => {
     fetchOrganisationRoute.path,
     mw.requireLoggedIn,
     mw.requireAdminAccess,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser, res: Response) => {
       try {
         const organisationID = req.currentUser?.organisation_id || "";
         const organisationsResult = await db.organisation.getOrganisationsResult(organisationID);
@@ -311,7 +311,7 @@ const authRouter = (authService: AuthService) => {
     fetchOrganisationDetailRoute.path,
     mw.requireLoggedIn,
     mw.requireAdminAccess,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser, res: Response) => {
       try {
         const organisationID = req.currentUser?.organisation_id || "";
         const organisationsResult = await db.organisation.getOrganisationsResult(organisationID);
@@ -328,7 +328,7 @@ const authRouter = (authService: AuthService) => {
     }
   );
 
-  router[getUserRoute.httpMethod](getUserRoute.path, mw.requireLoggedIn, (req: RequestWithUser, res: Response) => {
+  router[getUserRoute.httpMethod](getUserRoute.path, mw.requireLoggedIn, (req: RequestWithCurrentUser, res: Response) => {
     try {
       const userData = req.currentUser;
       return res.json({ userData });
@@ -342,7 +342,7 @@ const authRouter = (authService: AuthService) => {
     getUsersRoute.path,
     mw.requireLoggedIn,
     mw.requireSuperAdmin,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser, res: Response) => {
       try {
         const result = await db.auth.getAllUsers();
         return res.json({ result });
@@ -357,7 +357,7 @@ const authRouter = (authService: AuthService) => {
     getAdminUsersRoute.path,
     mw.requireLoggedIn,
     mw.requireSuperAdmin,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser, res: Response) => {
       try {
         const result = await db.auth.getAllAdminUsers();
         return res.json({ result });
@@ -373,7 +373,7 @@ const authRouter = (authService: AuthService) => {
     mw.requireLoggedIn,
     mw.requireAdminAccess,
     [query("id").exists()],
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<{}, { id: string; organisation: string }>, res: Response) => {
       try {
         const uID: string = req.query.id as string;
         const organisation: string = req.query.organisation as string;
@@ -396,7 +396,7 @@ const authRouter = (authService: AuthService) => {
     getOrganizeUsersRoute.path,
     [query(["organization"]).exists()],
     mw.requireLoggedIn,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<{}, { organization: string }>, res: Response) => {
       const organization: string = req.query.organization as string;
 
       try {
@@ -409,7 +409,7 @@ const authRouter = (authService: AuthService) => {
     }
   );
 
-  router[logoutRoute.httpMethod](logoutRoute.path, mw.requireLoggedIn, async (req: RequestWithUser, res: Response) => {
+  router[logoutRoute.httpMethod](logoutRoute.path, mw.requireLoggedIn, async (req: RequestWithCurrentUser, res: Response) => {
     try {
       const sessionId = req.cookies.sardine__sess;
       if (sessionId && helpers.isValidUuid(sessionId)) {
@@ -428,7 +428,7 @@ const authRouter = (authService: AuthService) => {
     mw.validateRequest,
     resetPasswordRateLimitByEmailMw,
     resetPasswordRateLimitByIpMw,
-    async (req: RequestWithUser<ResetPasswordLinkRequestBody>, res: Response) => {
+    async (req: RequestWithCurrentUser<ResetPasswordLinkRequestBody, {}>, res: Response) => {
       try {
         const { email } = req.body;
         const link = await firebaseAdmin.auth.generatePasswordResetLink(email);

@@ -1,8 +1,12 @@
 import React, { memo } from "react";
 import { Card, Badge, Tooltip, OverlayTrigger } from "react-bootstrap";
 import { Position, Handle, FlowElement } from "react-flow-renderer";
+import { DEVICE_INTELLIGENCE_PATH } from "modulePaths";
+import dayjs from "dayjs";
+import { CLIENT_QUERY_FIELD } from "utils/constructFiltersQueryParams";
 import { UserProfilePic, UserCard } from "../styles";
 import imgUser from "../../../utils/logo/user.png";
+import { DATE_FORMATS } from "../../../constants";
 
 export const UserNode = memo((node: FlowElement) => {
   const name = node.data.value;
@@ -58,15 +62,24 @@ export const ParentNode = memo((node: FlowElement) => {
   );
 });
 
+const filterStartDate = dayjs().subtract(6, "months").utc().format(DATE_FORMATS.DATETIME);
+const filterEndDate = dayjs().utc().format(DATE_FORMATS.DATETIME);
+
 export const ChildNode = memo((node: FlowElement) => {
   const name = node.data.label;
   const val = node.data.value;
+  const isDeviceId = node.data.is_device_id || false;
+  const organization = node.data.organization || "";
+
+  const diDefaultPath = `${DEVICE_INTELLIGENCE_PATH}?device_id=${encodeURIComponent(
+    val
+  )}&start_date=${filterStartDate}&end_date=${filterEndDate}&${CLIENT_QUERY_FIELD}=${organization}`;
 
   return (
     <>
       <Handle type="source" position={Position.Left} id="a" style={{ top: 20, background: "#555" }} />
       <OverlayTrigger key="top" placement="top" overlay={<Tooltip id="tooltip-top">Value: {val}</Tooltip>}>
-        <UserCard>
+        <UserCard onClick={() => isDeviceId && window.open(diDefaultPath, "_blank")}>
           <Card.Text style={{ margin: 10, textAlign: "center" }}>{name}</Card.Text>
         </UserCard>
       </OverlayTrigger>

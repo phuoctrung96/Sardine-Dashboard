@@ -1,6 +1,5 @@
 import "react-app-polyfill/stable"; // Support browsers in browserslist https://github.com/facebook/create-react-app/blob/main/packages/react-app-polyfill/README.md
 import "react-datepicker/dist/react-datepicker.css";
-import React from "react";
 import ReactDOM from "react-dom";
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
@@ -10,6 +9,8 @@ import App from "./App";
 import "./custom.scss";
 import { StateProvider } from "./utils/store";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { UnhandledRejectionBoundary } from "./components/UnhandledRejectionBoundary";
+import { GenericError } from "./components/Error/GenericError";
 
 const environment = import.meta.env.VITE_APP_SARDINE_ENV;
 Sentry.init({
@@ -19,12 +20,14 @@ Sentry.init({
 });
 
 const app = (
-  <ErrorBoundary>
-    <StateProvider>
-      <SourceJumpOverlayPortal />
-      <App />
-    </StateProvider>
-  </ErrorBoundary>
+  <UnhandledRejectionBoundary>
+    <ErrorBoundary fallback={<GenericError />}>
+      <StateProvider>
+        <SourceJumpOverlayPortal />
+        <App />
+      </StateProvider>
+    </ErrorBoundary>
+  </UnhandledRejectionBoundary>
 );
 
 ReactDOM.render(app, document.getElementById("root"));

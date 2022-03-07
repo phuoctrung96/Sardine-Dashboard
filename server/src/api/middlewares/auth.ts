@@ -1,6 +1,6 @@
 import mwRateLimit from "express-rate-limit";
 import { ResetPasswordLinkRequestBody } from "sardine-dashboard-typescript-definitions";
-import { RequestWithUser } from "../request-interface";
+import { RequestWithCurrentUser } from "../request-interface";
 
 // This rate limit uses node.js in memory store. It won't work if we use multiple servers
 const defaultResetPasswordRatelimitMw = {
@@ -12,10 +12,10 @@ const defaultResetPasswordRatelimitMw = {
 
 export const resetPasswordRateLimitByEmailMw = mwRateLimit({
   ...defaultResetPasswordRatelimitMw,
-  keyGenerator: (req: RequestWithUser<ResetPasswordLinkRequestBody>) => req.body.email,
+  keyGenerator: (req: RequestWithCurrentUser<ResetPasswordLinkRequestBody, {}>) => req.body.email,
 });
 
 export const resetPasswordRateLimitByIpMw = mwRateLimit({
   ...defaultResetPasswordRatelimitMw,
-  keyGenerator: (req: RequestWithUser) => req.ip,
+  keyGenerator: (req: RequestWithCurrentUser) => req.ip,
 });

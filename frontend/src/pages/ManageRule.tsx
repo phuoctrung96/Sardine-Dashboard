@@ -16,6 +16,7 @@ import {
   OrganizationUsersResponse,
   isErrorMessageResponse,
   UpdateRuleRequest,
+  OrgName,
 } from "sardine-dashboard-typescript-definitions";
 import { CLIENT_QUERY_FIELD } from "utils/constructFiltersQueryParams";
 import { captureException, captureFailure, isErrorWithResponseData } from "utils/errorUtils";
@@ -110,6 +111,7 @@ import BatchRuleView from "../components/RulesModule/Components/BatchRuleView";
 import { selectIsAdmin, selectIsSuperAdmin, useUserStore } from "../store/user";
 import { CACHE_KEYS, CHECKPOINT_QUERY_FIELD, RULE_ADMIN_CLIENT_ID } from "../constants";
 import OrganisationDropDown from "../components/Dropdown/OrganisationDropDown";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 
 type DropdownTypeRulesOrCheckpoint = typeof DROPDOWN_TYPES.Rules | typeof DROPDOWN_TYPES.Checkpoint;
 
@@ -324,7 +326,7 @@ const DropdownItem = ({
   };
 
   return (
-    <>
+    <ErrorBoundary>
       {items.map((item: AnyTodo) =>
         item.title === undefined ? (
           <SubA
@@ -415,7 +417,7 @@ const DropdownItem = ({
           </div>
         )
       )}
-    </>
+    </ErrorBoundary>
   );
 };
 
@@ -479,7 +481,7 @@ const DropdownContainer = ({
   jiraAPICall: (org: string) => Promise<void>;
   lastRuleIndex: () => number;
   parentIndex: AnyTodo;
-  organisation: Organisation;
+  organisation: Organisation | null;
   organisations: Organisation[];
   reasonCodes: string;
   reasonData: Reason[];
@@ -552,6 +554,10 @@ const DropdownContainer = ({
         }
       }
     } else if (dropdownType === DROPDOWN_TYPES.Checkpoint) {
+      // TODO: It must not happen. Use strategy pattern or state pattern to remove this.
+      if (organisation === null) {
+        return;
+      }
       if (rules.length > 0 && checkpoint !== value) {
         setRules([getEmptyRuleClone()]);
       }
@@ -673,73 +679,79 @@ const DropdownContainer = ({
       ));
     }
 
-    return <ul style={{ padding: 0 }}> {result} </ul>;
+    return (
+      <ErrorBoundary>
+        <ul style={{ padding: 0 }}> {result} </ul>
+      </ErrorBoundary>
+    );
   };
 
   const ButtonsForRule = memo((props: { parentIndex: number; index: number }) => {
     const { parentIndex: parentIdx, index: idx } = props;
     return (
-      <StyledUl style={{ margin: 0, height: 50, marginRight: 10 }}>
-        {parentIdx === -1 ? (
+      <ErrorBoundary>
+        <StyledUl style={{ margin: 0, height: 50, marginRight: 10 }}>
+          {parentIdx === -1 ? (
+            <Button
+              style={{ backgroundColor: "#2173FF", border: "none" }}
+              onClick={() => {
+                const newRules = [...rules];
+                if (parentIdx === -1) {
+                  const r = newRules[idx].rules;
+                  if (r.length > 0) {
+                    const lastIndex = r.length - 1;
+                    if (r[lastIndex].join.length === 0) {
+                      newRules[idx].rules[lastIndex].join = "&&";
+                    }
+                  }
+                  newRules[idx].rules = [...newRules[idx].rules, getEmptyRuleClone()];
+                } else {
+                  const r = newRules[parentIdx].rules[idx].rules;
+                  if (r.length > 0) {
+                    const lastIndex = r.length - 1;
+                    if (r[lastIndex].join.length === 0) {
+                      newRules[parentIdx].rules[idx].rules[lastIndex].join = "&&";
+                    }
+                  }
+                  newRules[parentIdx].rules[idx].rules = [newRules[parentIdx].rules[idx].rules, getEmptyRuleClone()];
+                }
+                setRules(newRules);
+              }}
+              data-tid={`rule_editor_add_button_${parentIdx + 1}_${idx}`}
+            >
+              <img alt="" src={addIcon} />
+            </Button>
+          ) : null}
           <Button
-            style={{ backgroundColor: "#2173FF", border: "none" }}
+            style={{
+              marginLeft: 10,
+              backgroundColor: "#F8FBFF",
+              border: "none",
+            }}
             onClick={() => {
               const newRules = [...rules];
               if (parentIdx === -1) {
-                const r = newRules[idx].rules;
-                if (r.length > 0) {
-                  const lastIndex = r.length - 1;
-                  if (r[lastIndex].join.length === 0) {
-                    newRules[idx].rules[lastIndex].join = "&&";
-                  }
+                if (newRules[idx].rules.length === 0) {
+                  newRules.splice(idx, 1);
+                } else {
+                  const parentRule = newRules[idx];
+                  const firstChild = parentRule.rules[0];
+                  newRules[idx] = firstChild;
+                  newRules[idx].rules = parentRule.rules;
+
+                  newRules[idx].rules.splice(0, 1);
                 }
-                newRules[idx].rules = [...newRules[idx].rules, getEmptyRuleClone()];
               } else {
-                const r = newRules[parentIdx].rules[idx].rules;
-                if (r.length > 0) {
-                  const lastIndex = r.length - 1;
-                  if (r[lastIndex].join.length === 0) {
-                    newRules[parentIdx].rules[idx].rules[lastIndex].join = "&&";
-                  }
-                }
-                newRules[parentIdx].rules[idx].rules = [newRules[parentIdx].rules[idx].rules, getEmptyRuleClone()];
+                newRules[parentIdx].rules.splice(idx, 1);
               }
               setRules(newRules);
             }}
-            data-tid={`rule_editor_add_button_${parentIdx + 1}_${idx}`}
+            data-tid={`rule_editor_remove_button_${parentIdx + 1}_${idx}`}
           >
-            <img alt="" src={addIcon} />
+            <img alt="" src={deleteIcon} />
           </Button>
-        ) : null}
-        <Button
-          style={{
-            marginLeft: 10,
-            backgroundColor: "#F8FBFF",
-            border: "none",
-          }}
-          onClick={() => {
-            const newRules = [...rules];
-            if (parentIdx === -1) {
-              if (newRules[idx].rules.length === 0) {
-                newRules.splice(idx, 1);
-              } else {
-                const parentRule = newRules[idx];
-                const firstChild = parentRule.rules[0];
-                newRules[idx] = firstChild;
-                newRules[idx].rules = parentRule.rules;
-
-                newRules[idx].rules.splice(0, 1);
-              }
-            } else {
-              newRules[parentIdx].rules.splice(idx, 1);
-            }
-            setRules(newRules);
-          }}
-          data-tid={`rule_editor_remove_button_${parentIdx + 1}_${idx}`}
-        >
-          <img alt="" src={deleteIcon} />
-        </Button>
-      </StyledUl>
+        </StyledUl>
+      </ErrorBoundary>
     );
   });
 
@@ -751,156 +763,158 @@ const DropdownContainer = ({
       : "Select Field";
 
   return (
-    <Container
-      className={`rule-editor-dropdown-${type}-container`}
-      id={`rule_editor_dropdown_${type}_container`}
-      key={index}
-      style={{
-        backgroundColor: "transparent",
-        width: "max-content",
-        display: type === DROPDOWN_TYPES.Rules ? "flex" : "unset",
-      }}
-    >
-      {type === DROPDOWN_TYPES.Rules ? (
-        index === lastRuleIndex() && parentIndex === -1 ? null : (
-          <ButtonsForRule parentIndex={parentIndex} index={index} key={index} />
-        )
-      ) : (
-        <StyledSubHeading style={{ textTransform: "capitalize", fontWeight: 600 }}>{type}</StyledSubHeading>
-      )}
-
-      <DropDownLi>
+    <ErrorBoundary>
+      <Container
+        className={`rule-editor-dropdown-${type}-container`}
+        id={`rule_editor_dropdown_${type}_container`}
+        key={index}
+        style={{
+          backgroundColor: "transparent",
+          width: "max-content",
+          display: type === DROPDOWN_TYPES.Rules ? "flex" : "unset",
+        }}
+      >
         {type === DROPDOWN_TYPES.Rules ? (
-          <OverlayTrigger
-            placement="top"
-            overlay={
-              index !== lastRuleIndex() &&
-              ((parentIndex === -1 && rules[index].rule.length > 0) ||
-                (parentIndex !== -1 && rules[parentIndex].rules[index].rule.length > 0)) ? (
-                <Tooltip>{getDescription(parentIndex, index)}</Tooltip>
-              ) : (
-                <Tooltip style={{ display: "none" }} />
-              )
-            }
-          >
+          index === lastRuleIndex() && parentIndex === -1 ? null : (
+            <ButtonsForRule parentIndex={parentIndex} index={index} key={index} />
+          )
+        ) : (
+          <StyledSubHeading style={{ textTransform: "capitalize", fontWeight: 600 }}>{type}</StyledSubHeading>
+        )}
+
+        <DropDownLi>
+          {type === DROPDOWN_TYPES.Rules ? (
+            <OverlayTrigger
+              placement="top"
+              overlay={
+                index !== lastRuleIndex() &&
+                ((parentIndex === -1 && rules[index].rule.length > 0) ||
+                  (parentIndex !== -1 && rules[parentIndex].rules[index].rule.length > 0)) ? (
+                  <Tooltip>{getDescription(parentIndex, index)}</Tooltip>
+                ) : (
+                  <Tooltip style={{ display: "none" }} />
+                )
+              }
+            >
+              <Dropbtn
+                id={`rule_editor_dropbtn_${type}`}
+                data-tid={`rule_editor_dropdown_${type}_${index}`}
+                style={{
+                  height: 40,
+                  alignItems: "center",
+                  backgroundColor: DROP_DOWN_BG,
+                  textTransform: "capitalize",
+                  width: type === DROPDOWN_TYPES.Rules ? "100%" : 270,
+                }}
+                onClick={() => handleDropdownClick(type === DROPDOWN_TYPES.Rules ? type + parentIndex + index : type)}
+                className="dropdown"
+              >
+                {getDropDownTitle(type, data, index)}
+              </Dropbtn>
+            </OverlayTrigger>
+          ) : (
             <Dropbtn
               id={`rule_editor_dropbtn_${type}`}
-              data-tid={`rule_editor_dropdown_${type}_${index}`}
               style={{
                 height: 40,
                 alignItems: "center",
                 backgroundColor: DROP_DOWN_BG,
                 textTransform: "capitalize",
-                width: type === DROPDOWN_TYPES.Rules ? "100%" : 270,
+                width: 270,
               }}
-              onClick={() => handleDropdownClick(type === DROPDOWN_TYPES.Rules ? type + parentIndex + index : type)}
+              onClick={() => handleDropdownClick(type)}
               className="dropdown"
             >
               {getDropDownTitle(type, data, index)}
             </Dropbtn>
-          </OverlayTrigger>
-        ) : (
-          <Dropbtn
-            id={`rule_editor_dropbtn_${type}`}
+          )}
+          <DropDownContent
+            className={`rule-editor-dropdown-content-${type}`}
+            id={`rule_editor_dropdown_content_${type}`}
+            data-tid={`rule_editor_dropdown_content_${type}_${index}`}
             style={{
-              height: 40,
-              alignItems: "center",
-              backgroundColor: DROP_DOWN_BG,
-              textTransform: "capitalize",
-              width: 270,
+              display:
+                (type === DROPDOWN_TYPES.Rules && visibleDropDown === type + parentIndex + index) || type === visibleDropDown
+                  ? "block"
+                  : "",
+              maxHeight: type === DROPDOWN_TYPES.Rules ? "none" : 300,
+              overflowY: type === DROPDOWN_TYPES.Rules ? undefined : "scroll",
             }}
-            onClick={() => handleDropdownClick(type)}
-            className="dropdown"
           >
-            {getDropDownTitle(type, data, index)}
-          </Dropbtn>
-        )}
-        <DropDownContent
-          className={`rule-editor-dropdown-content-${type}`}
-          id={`rule_editor_dropdown_content_${type}`}
-          data-tid={`rule_editor_dropdown_content_${type}_${index}`}
-          style={{
-            display:
-              (type === DROPDOWN_TYPES.Rules && visibleDropDown === type + parentIndex + index) || type === visibleDropDown
-                ? "block"
-                : "",
-            maxHeight: type === DROPDOWN_TYPES.Rules ? "none" : 300,
-            overflowY: type === DROPDOWN_TYPES.Rules ? undefined : "scroll",
-          }}
-        >
-          {renderDropDown(type, parentIndex, index)}
-        </DropDownContent>
-      </DropDownLi>
-      {subtype === DROPDOWN_TYPES.Operator ? (
-        !data[index].hasOperator ? null : (
-          <DropDownLi>
-            <Dropbtn
-              data-tid={`rule_helper_${index}_operator`}
-              style={{
-                width: 100,
-                marginLeft: 10,
-                height: 40,
-                alignItems: "center",
-                backgroundColor: DROP_DOWN_BG,
-              }}
-              onClick={() =>
-                handleDropdownClick(
-                  subtype === DROPDOWN_TYPES.Operator && type === DROPDOWN_TYPES.Rules
-                    ? `${type}sub${parentIndex}${index}`
-                    : subtype
-                )
-              }
-              className="dropdown"
-            >
-              {subtype === DROPDOWN_TYPES.Operator &&
-              type === DROPDOWN_TYPES.Rules &&
-              data.length > 0 &&
-              data[index].operator.length > 0
-                ? data[index].operator
-                : "Operator"}
-            </Dropbtn>
-            <DropDownContent
-              className={`rule-editor-dropdown-subcontent-${type}`}
-              id={`rule_editor_dropdown_subcontent_${type}`}
-              data-tid={`rule_helper_operator_${index}_options`}
-              style={{
-                width: 120,
-                marginLeft: 10,
-                display:
-                  (subtype === DROPDOWN_TYPES.Operator &&
-                    type === DROPDOWN_TYPES.Rules &&
-                    visibleDropDown === `${type}sub${parentIndex}${index}`) ||
-                  subtype === visibleDropDown
-                    ? "block"
-                    : "",
-              }}
-            >
-              <DropdownItem
-                items={OPERATORS}
-                type={subtype}
-                parentIndex={parentIndex}
-                index={index}
-                parentTitle=""
-                rules={rules}
-                rulesData={rulesData}
-                selectedSection={selectedSection}
-                selectedSubSections={selectedSubSections}
-                setSelectedSubSections={setSelectedSubSections}
-                setRiskLevel={setRiskLevel}
-                setRules={setRules}
-                setSelectedSection={setSelectedSection}
-                setSelectedReasonSection={setSelectedReasonSection}
-                setReasonCodes={setReasonCodes}
-                reasonCodes={reasonCodes}
-                selectedReasonSection={selectedReasonSection}
-                setRiskValue={setRiskValue}
-                setVisibleDropDown={setVisibleDropDown}
-              />
-            </DropDownContent>
-          </DropDownLi>
-        )
-      ) : null}
-    </Container>
+            {renderDropDown(type, parentIndex, index)}
+          </DropDownContent>
+        </DropDownLi>
+        {subtype === DROPDOWN_TYPES.Operator ? (
+          !data[index].hasOperator ? null : (
+            <DropDownLi>
+              <Dropbtn
+                data-tid={`rule_helper_${index}_operator`}
+                style={{
+                  width: 100,
+                  marginLeft: 10,
+                  height: 40,
+                  alignItems: "center",
+                  backgroundColor: DROP_DOWN_BG,
+                }}
+                onClick={() =>
+                  handleDropdownClick(
+                    subtype === DROPDOWN_TYPES.Operator && type === DROPDOWN_TYPES.Rules
+                      ? `${type}sub${parentIndex}${index}`
+                      : subtype
+                  )
+                }
+                className="dropdown"
+              >
+                {subtype === DROPDOWN_TYPES.Operator &&
+                type === DROPDOWN_TYPES.Rules &&
+                data.length > 0 &&
+                data[index].operator.length > 0
+                  ? data[index].operator
+                  : "Operator"}
+              </Dropbtn>
+              <DropDownContent
+                className={`rule-editor-dropdown-subcontent-${type}`}
+                id={`rule_editor_dropdown_subcontent_${type}`}
+                data-tid={`rule_helper_operator_${index}_options`}
+                style={{
+                  width: 120,
+                  marginLeft: 10,
+                  display:
+                    (subtype === DROPDOWN_TYPES.Operator &&
+                      type === DROPDOWN_TYPES.Rules &&
+                      visibleDropDown === `${type}sub${parentIndex}${index}`) ||
+                    subtype === visibleDropDown
+                      ? "block"
+                      : "",
+                }}
+              >
+                <DropdownItem
+                  items={OPERATORS}
+                  type={subtype}
+                  parentIndex={parentIndex}
+                  index={index}
+                  parentTitle=""
+                  rules={rules}
+                  rulesData={rulesData}
+                  selectedSection={selectedSection}
+                  selectedSubSections={selectedSubSections}
+                  setSelectedSubSections={setSelectedSubSections}
+                  setRiskLevel={setRiskLevel}
+                  setRules={setRules}
+                  setSelectedSection={setSelectedSection}
+                  setSelectedReasonSection={setSelectedReasonSection}
+                  setReasonCodes={setReasonCodes}
+                  reasonCodes={reasonCodes}
+                  selectedReasonSection={selectedReasonSection}
+                  setRiskValue={setRiskValue}
+                  setVisibleDropDown={setVisibleDropDown}
+                />
+              </DropDownContent>
+            </DropDownLi>
+          )
+        ) : null}
+      </Container>
+    </ErrorBoundary>
   );
 };
 
@@ -969,8 +983,8 @@ const ManageRule: React.FC = () => {
   const [isActive, setIsActive] = useState(true);
   const [actions, setActions] = useState<RuleActionTag[]>([]);
   const [dataLoaded, setdDataLoaded] = useState(false);
-  const [organisations, setOrganisations] = useState<AnyTodo[]>([]);
-  const [organisation, setOrganisation] = useState<AnyTodo>(null);
+  const [organisations, setOrganisations] = useState<OrgName[]>([]);
+  const [organisation, setOrganisation] = useState<OrgName | null>(null);
 
   const [queue, setQueue] = useState<AnyTodo>(undefined);
   const [users, setUsers] = useState<OrganizationUsersResponse>([]);
@@ -1308,7 +1322,7 @@ const ManageRule: React.FC = () => {
     }
   };
 
-  const isValidCondition = (r: AnyTodo) =>
+  const isValidCondition = (r: Rule) =>
     (r.rule.length > 0 && !r.hasOperator) || (r.rule.length > 0 && r.hasOperator && r.operator.length > 0 && r.value.length > 0);
 
   const isValidData = () => {
@@ -1328,6 +1342,13 @@ const ManageRule: React.FC = () => {
     return true;
   };
 
+  const isOrgOrgName = (org: OrgName | null): org is OrgName => org !== null;
+  function assertIsOrgOrgName(org: OrgName | null): asserts org is OrgName {
+    if (!isOrgOrgName(org)) {
+      throw Error("Organization is null");
+    }
+  }
+
   const onSubmitAction = async () => {
     setError("");
     const isShadow = environment === RULE_ENV_MODES.Shadow;
@@ -1336,6 +1357,7 @@ const ManageRule: React.FC = () => {
       return;
     }
     if (isValidData()) {
+      assertIsOrgOrgName(organisation);
       try {
         const actionTags = actions.map((a) => {
           const action = a;
@@ -1352,12 +1374,12 @@ const ManageRule: React.FC = () => {
         }
 
         setApiInvoking(true);
-        const clientID = clientId || (await getClientIdObject((organisation as AnyTodo).name)).client_id;
+        const clientID = clientId || (await getClientIdObject(organisation.name)).client_id;
         let queueID = queue && queue.id;
         if (queue && assignedTo) {
           if (queueID.length === 0) {
             const newQueue = await addNewQueue({
-              organisation: (organisation as AnyTodo).name,
+              organisation: organisation.name,
               name: queue.name,
               owner_id: assignedTo.id,
               checkpoint,
@@ -1526,86 +1548,32 @@ const ManageRule: React.FC = () => {
     const shouldDisable = riskLevel.length === 0 || riskValue.length === 0;
 
     return (
-      <Container className="rule-actions" id="rule_actions">
-        <StyledUl style={{ height: 70, justifyContent: "left" }}>
-          <DropDownLi>
-            <Dropbtn
-              data-tid="action_select_title"
-              style={{
-                backgroundColor: DROP_DOWN_BG,
-                height: 40,
-                alignItems: "center",
-              }}
-              onClick={() => handleDropdownClick(DROPDOWN_TYPES.RiskLevel)}
-              className="dropdown"
-            >
-              {riskLevel.length === 0 ? "Select Title" : riskLevel}
-            </Dropbtn>
-            <DropDownContent
-              data-tid="action_select_title_options"
-              style={{
-                display: DROPDOWN_TYPES.RiskLevel === visibleDropDown ? "block" : "",
-              }}
-              className="dropdown"
-            >
-              <DropdownItem
-                items={actionsData}
-                type={DROPDOWN_TYPES.RiskLevel}
-                parentIndex={NaN}
-                index={NaN}
-                parentTitle=""
-                rules={rules}
-                rulesData={rulesData}
-                selectedSection={selectedSection}
-                selectedSubSections={selectedSubSections}
-                setSelectedSubSections={setSelectedSubSections}
-                setRiskLevel={setRiskLevel}
-                setRules={setRules}
-                setSelectedSection={setSelectedSection}
-                setSelectedReasonSection={setSelectedReasonSection}
-                setReasonCodes={setReasonCodes}
-                reasonCodes={reasonCodes}
-                selectedReasonSection={selectedReasonSection}
-                setRiskValue={setRiskValue}
-                setVisibleDropDown={setVisibleDropDown}
-              />
-            </DropDownContent>
-          </DropDownLi>
-          {riskValue === ADD_CUSTOM ? (
-            <div style={{ margin: "0px 20px" }}>
-              <CustomInputWrapper
-                name="add_action_value"
-                actionsData={actionsData}
-                checkpoints={checkpoints}
-                setActionsData={setActionsData}
-                setCheckpoint={setCheckpoint}
-                setCheckpoints={setCheckpoints}
-                setIsCustomAction={setIsCustomAction}
-                setRiskLevel={setRiskLevel}
-                setRiskValue={setRiskValue}
-                type={DROPDOWN_TYPES.RiskValue}
-              />
-            </div>
-          ) : (
+      <ErrorBoundary>
+        <Container className="rule-actions" id="rule_actions">
+          <StyledUl style={{ height: 70, justifyContent: "left" }}>
             <DropDownLi>
               <Dropbtn
-                data-tid="action_value"
+                data-tid="action_select_title"
                 style={{
-                  ...additionalStyle,
                   backgroundColor: DROP_DOWN_BG,
                   height: 40,
                   alignItems: "center",
-                  display: "",
                 }}
-                onClick={() => handleDropdownClick(DROPDOWN_TYPES.RiskValue)}
+                onClick={() => handleDropdownClick(DROPDOWN_TYPES.RiskLevel)}
                 className="dropdown"
               >
-                {riskValue.length === 0 ? "Value" : riskValue}
+                {riskLevel.length === 0 ? "Select Title" : riskLevel}
               </Dropbtn>
-              <DropDownContent data-tid="action_value_options" style={additionalStyle} className="dropdown">
+              <DropDownContent
+                data-tid="action_select_title_options"
+                style={{
+                  display: DROPDOWN_TYPES.RiskLevel === visibleDropDown ? "block" : "",
+                }}
+                className="dropdown"
+              >
                 <DropdownItem
-                  items={getRiskValues()}
-                  type={DROPDOWN_TYPES.RiskValue}
+                  items={actionsData}
+                  type={DROPDOWN_TYPES.RiskLevel}
                   parentIndex={NaN}
                   index={NaN}
                   parentTitle=""
@@ -1626,63 +1594,119 @@ const ManageRule: React.FC = () => {
                 />
               </DropDownContent>
             </DropDownLi>
+            {riskValue === ADD_CUSTOM ? (
+              <div style={{ margin: "0px 20px" }}>
+                <CustomInputWrapper
+                  name="add_action_value"
+                  actionsData={actionsData}
+                  checkpoints={checkpoints}
+                  setActionsData={setActionsData}
+                  setCheckpoint={setCheckpoint}
+                  setCheckpoints={setCheckpoints}
+                  setIsCustomAction={setIsCustomAction}
+                  setRiskLevel={setRiskLevel}
+                  setRiskValue={setRiskValue}
+                  type={DROPDOWN_TYPES.RiskValue}
+                />
+              </div>
+            ) : (
+              <DropDownLi>
+                <Dropbtn
+                  data-tid="action_value"
+                  style={{
+                    ...additionalStyle,
+                    backgroundColor: DROP_DOWN_BG,
+                    height: 40,
+                    alignItems: "center",
+                    display: "",
+                  }}
+                  onClick={() => handleDropdownClick(DROPDOWN_TYPES.RiskValue)}
+                  className="dropdown"
+                >
+                  {riskValue.length === 0 ? "Value" : riskValue}
+                </Dropbtn>
+                <DropDownContent data-tid="action_value_options" style={additionalStyle} className="dropdown">
+                  <DropdownItem
+                    items={getRiskValues()}
+                    type={DROPDOWN_TYPES.RiskValue}
+                    parentIndex={NaN}
+                    index={NaN}
+                    parentTitle=""
+                    rules={rules}
+                    rulesData={rulesData}
+                    selectedSection={selectedSection}
+                    selectedSubSections={selectedSubSections}
+                    setSelectedSubSections={setSelectedSubSections}
+                    setRiskLevel={setRiskLevel}
+                    setRules={setRules}
+                    setSelectedSection={setSelectedSection}
+                    setSelectedReasonSection={setSelectedReasonSection}
+                    setReasonCodes={setReasonCodes}
+                    reasonCodes={reasonCodes}
+                    selectedReasonSection={selectedReasonSection}
+                    setRiskValue={setRiskValue}
+                    setVisibleDropDown={setVisibleDropDown}
+                  />
+                </DropDownContent>
+              </DropDownLi>
+            )}
+            <SubmitButton
+              className="button-add-action"
+              id="button_add_action"
+              type="submit"
+              style={{
+                marginLeft: 10,
+                width: 120,
+                height: 40,
+                backgroundColor: shouldDisable ? "lightgrey" : "#2173FF",
+              }}
+              disabled={shouldDisable}
+              onClick={() => {
+                const filteredActions = actions.filter((a) => a.key !== riskLevel);
+                const updatedActions = [
+                  ...filteredActions,
+                  { key: riskLevel, value: riskValue, actionType: RULE_ACTION_TYPES.UPDATE_TAG },
+                ];
+                setActions(updatedActions);
+                setRiskLevel("");
+                setRiskValue("");
+              }}
+            >
+              <span>+ Add Action</span>
+            </SubmitButton>
+          </StyledUl>
+          {isCustomAction ? (
+            <CustomInputWrapper
+              name="add_action"
+              actionsData={actionsData}
+              checkpoints={checkpoints}
+              setActionsData={setActionsData}
+              setCheckpoint={setCheckpoint}
+              setCheckpoints={setCheckpoints}
+              setIsCustomAction={setIsCustomAction}
+              setRiskLevel={setRiskLevel}
+              setRiskValue={setRiskValue}
+              type={DROPDOWN_TYPES.RiskLevel}
+            />
+          ) : (
+            <Button
+              className="button_add_custom_action"
+              id="button_add_custom_action"
+              data-tid="button_add_custom_action"
+              style={{
+                backgroundColor: "#F8FBFF",
+                border: "none",
+                height: 35,
+              }}
+              onClick={() => {
+                setIsCustomAction(true);
+              }}
+            >
+              <TextNormal style={{ color: "#2173FF", fontWeight: 500 }}>+ Add Custom Action</TextNormal>
+            </Button>
           )}
-          <SubmitButton
-            className="button-add-action"
-            id="button_add_action"
-            type="submit"
-            style={{
-              marginLeft: 10,
-              width: 120,
-              height: 40,
-              backgroundColor: shouldDisable ? "lightgrey" : "#2173FF",
-            }}
-            disabled={shouldDisable}
-            onClick={() => {
-              const filteredActions = actions.filter((a) => a.key !== riskLevel);
-              const updatedActions = [
-                ...filteredActions,
-                { key: riskLevel, value: riskValue, actionType: RULE_ACTION_TYPES.UPDATE_TAG },
-              ];
-              setActions(updatedActions);
-              setRiskLevel("");
-              setRiskValue("");
-            }}
-          >
-            <span>+ Add Action</span>
-          </SubmitButton>
-        </StyledUl>
-        {isCustomAction ? (
-          <CustomInputWrapper
-            name="add_action"
-            actionsData={actionsData}
-            checkpoints={checkpoints}
-            setActionsData={setActionsData}
-            setCheckpoint={setCheckpoint}
-            setCheckpoints={setCheckpoints}
-            setIsCustomAction={setIsCustomAction}
-            setRiskLevel={setRiskLevel}
-            setRiskValue={setRiskValue}
-            type={DROPDOWN_TYPES.RiskLevel}
-          />
-        ) : (
-          <Button
-            className="button_add_custom_action"
-            id="button_add_custom_action"
-            data-tid="button_add_custom_action"
-            style={{
-              backgroundColor: "#F8FBFF",
-              border: "none",
-              height: 35,
-            }}
-            onClick={() => {
-              setIsCustomAction(true);
-            }}
-          >
-            <TextNormal style={{ color: "#2173FF", fontWeight: 500 }}>+ Add Custom Action</TextNormal>
-          </Button>
-        )}
-      </Container>
+        </Container>
+      </ErrorBoundary>
     );
   };
 
@@ -1691,7 +1715,7 @@ const ManageRule: React.FC = () => {
   const getDescription = (parentIndex: number, index: number) => {
     let desc = "";
 
-    let ruleData: AnyTodo = {};
+    let ruleData: Rule;
     if (parentIndex === -1) {
       ruleData = rules[index];
     } else {
@@ -1718,9 +1742,7 @@ const ManageRule: React.FC = () => {
         const sectionFilter = rulesData.filter((r) => r.title === splitData[0]);
         const splitLastEle = splitData[1].split(FEATURE_SAPARATOR);
         if (sectionFilter.length > 0) {
-          const subSection = sectionFilter[0].items.filter(
-            (sub: AnyTodo) => splitLastEle[0].toLowerCase() === sub.title.toLowerCase()
-          );
+          const subSection = sectionFilter[0].items.filter((sub) => splitLastEle[0].toLowerCase() === sub.title.toLowerCase());
           if (subSection.length > 0) {
             desc = `${subSection[0].description}`;
           }
@@ -1778,7 +1800,7 @@ const ManageRule: React.FC = () => {
     );
   });
 
-  const renderRuleItem = (data: AnyTodo, parentIndex: number, index: number) => {
+  const renderRuleItem = (data: Rule[], parentIndex: number, index: number) => {
     const joinValue = parentIndex === -1 ? rules[index].join : rules[parentIndex].rules[index].join;
 
     return (
@@ -1995,7 +2017,7 @@ const ManageRule: React.FC = () => {
       </Container>
     ));
 
-    return result;
+    return <ErrorBoundary>{result}</ErrorBoundary>;
   };
 
   const customFunctionAction = (d: FunctionData | undefined) => {
@@ -2034,8 +2056,8 @@ const ManageRule: React.FC = () => {
     }
   };
 
-  const isValidValue = (parentIndex: AnyTodo, index: AnyTodo) => {
-    let ruleData: AnyTodo = {};
+  const isValidValue = (parentIndex: number, index: number) => {
+    let ruleData: Rule;
     if (parentIndex === -1) {
       ruleData = rules[index];
     } else {
@@ -2211,76 +2233,80 @@ const ManageRule: React.FC = () => {
                 </Button>
               </div>
             )}
-            <BackgroundBox
-              style={{
-                border: "1px solid rgba(0, 0, 0, 0.1)",
-                marginTop: 20,
-                marginBottom: 20,
-                maxWidth: isWideScreen() ? "80%" : "100%",
-                minWidth: "60%",
-                boxShadow: "none",
-              }}
-            >
-              <StyledUl
+            <ErrorBoundary>
+              <BackgroundBox
                 style={{
-                  justifyContent: "space-between",
-                  backgroundColor: "transparent",
-                  marginRight: 20,
+                  border: "1px solid rgba(0, 0, 0, 0.1)",
+                  marginTop: 20,
+                  marginBottom: 20,
+                  maxWidth: isWideScreen() ? "80%" : "100%",
+                  minWidth: "60%",
+                  boxShadow: "none",
                 }}
               >
-                <StyledSubHeading
-                  className="rule-editor-rule-helper-title"
-                  id="rule_editor_rule_helper_title"
-                  style={{ margin: 20, color: "#001932", fontWeight: 600 }}
+                <StyledUl
+                  style={{
+                    justifyContent: "space-between",
+                    backgroundColor: "transparent",
+                    marginRight: 20,
+                  }}
                 >
-                  Rule Helper
-                </StyledSubHeading>
-                <LinkToDictionary
-                  title="List of available fields"
-                  icon={infoIcon}
-                  style={{ backgroundColor: "#F8FBFF", width: 200 }}
-                  isDemoMode={isDemoMode}
-                />
-              </StyledUl>
-              <RuleOutputContainer>
-                <RuleOutputTitle>
-                  <span className="rule-editor-rule-output-label" id="rule_editor_rule_output_label" style={{ width: 80 }}>
-                    Output:
-                  </span>
-                  <StyledSubHeading className="rule-output" id="rule_output" style={{ fontWeight: 400, fontSize: 14 }}>
-                    {getFinalRule(false)}
+                  <StyledSubHeading
+                    className="rule-editor-rule-helper-title"
+                    id="rule_editor_rule_helper_title"
+                    style={{ margin: 20, color: "#001932", fontWeight: 600 }}
+                  >
+                    Rule Helper
                   </StyledSubHeading>
-                </RuleOutputTitle>
-              </RuleOutputContainer>
-
-              {isSuperAdmin && (
-                <>
-                  <Form.Check
-                    className="rule-editor-check-batch-mode"
-                    id="rule_editor_check_batch_mode"
-                    label={
-                      <StyledSubHeading style={{ fontWeight: 500, margin: 0 }}>Enable batch mode for this rule?</StyledSubHeading>
-                    }
-                    name="check-cm"
-                    checked={enableBatchMode}
-                    style={{ margin: 20 }}
-                    onChange={() => {
-                      setEnableBatchMode(!enableBatchMode);
-                      if (!enableBatchMode) {
-                        setBatchRuleData(undefined);
-                      }
-                    }}
+                  <LinkToDictionary
+                    title="List of available fields"
+                    icon={infoIcon}
+                    style={{ backgroundColor: "#F8FBFF", width: 200 }}
+                    isDemoMode={isDemoMode}
                   />
-                  {enableBatchMode && <BatchRuleView data={batchRuleData} onDataChanged={(val) => setBatchRuleData(val)} />}
-                </>
-              )}
+                </StyledUl>
+                <RuleOutputContainer>
+                  <RuleOutputTitle>
+                    <span className="rule-editor-rule-output-label" id="rule_editor_rule_output_label" style={{ width: 80 }}>
+                      Output:
+                    </span>
+                    <StyledSubHeading className="rule-output" id="rule_output" style={{ fontWeight: 400, fontSize: 14 }}>
+                      {getFinalRule(false)}
+                    </StyledSubHeading>
+                  </RuleOutputTitle>
+                </RuleOutputContainer>
 
-              {renderRules(rules, -1)}
-            </BackgroundBox>
+                {isSuperAdmin && (
+                  <>
+                    <Form.Check
+                      className="rule-editor-check-batch-mode"
+                      id="rule_editor_check_batch_mode"
+                      label={
+                        <StyledSubHeading style={{ fontWeight: 500, margin: 0 }}>
+                          Enable batch mode for this rule?
+                        </StyledSubHeading>
+                      }
+                      name="check-cm"
+                      checked={enableBatchMode}
+                      style={{ margin: 20 }}
+                      onChange={() => {
+                        setEnableBatchMode(!enableBatchMode);
+                        if (!enableBatchMode) {
+                          setBatchRuleData(undefined);
+                        }
+                      }}
+                    />
+                    {enableBatchMode && <BatchRuleView data={batchRuleData} onDataChanged={(val) => setBatchRuleData(val)} />}
+                  </>
+                )}
+
+                {renderRules(rules, -1)}
+              </BackgroundBox>
+            </ErrorBoundary>
 
             {customRuleOption === DROPDOWN_TYPES.Rules ? (
               <CustomRule
-                submitCallback={(data: AnyTodo) => handleCustomAmmedment(data)}
+                submitCallback={(data: { title: string; items: string[] }) => handleCustomAmmedment(data)}
                 cancelCallback={() => {
                   setCustomRuleOption("");
                 }}

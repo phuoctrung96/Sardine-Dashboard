@@ -100,7 +100,14 @@ const FeedbackPopUp: FC<IProps> = ({ handleClose, show, data, handleSuccess }) =
     register,
     handleSubmit,
     formState: { isSubmitting, isValid },
-  } = useForm<FormValues>({ mode: "onChange" });
+  } = useForm<FormValues>({
+    defaultValues: {
+      scope: "session",
+      status: "settled",
+      type: "settlement",
+    },
+    mode: "onChange",
+  });
   const type = watch("type");
   const onSubmit = handleSubmit(async ({ scope, status, type, reason, organisation }) => {
     try {

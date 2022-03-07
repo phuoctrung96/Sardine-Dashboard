@@ -25,5 +25,6 @@ export const DATA_SOURCE = {
   DATASTORE: "ds",
   ELASTIC_SEARCH: "es",
 };
+export type DataSource = typeof DATA_SOURCE[keyof typeof DATA_SOURCE];
 
 export const SOURCE_QUERY_FIELD = "source";

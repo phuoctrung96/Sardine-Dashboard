@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// We will get rid of AutidLog once we set up logging and BigQuery
+model AuditLog {
+  id        BigInt    @id @default(autoincrement())
+  clientId  String    @map("client_id")
+  type      String
+  targetId  BigInt?   @map("target_id")
+  actorId   BigInt    @map("actor_id")
+  metadata  Json?
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime? @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  @@map("audit_log")
+}
+
+// We will get rid of AutidLog once we set up logging and BigQuery
+model ErrorLog {
+  id        BigInt   @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  msg       String?
+  stack     String?
+  db_query  String?
+  db_code   String?
+  source    String
+  req_id    String?  @db.Uuid
+  user_id   BigInt?
+  mail_info String?
+  to_email  String?
+  currency  Int?
+  is_hidden Boolean?
+
+  @@map("error_logs")
+}
+
+model InvitationToken {
+  id        BigInt   @id @default(autoincrement())
+  orgId     BigInt?  @map("organisation_id")
+  token     String?  @db.Uuid
+  expiredAt DateTime @default(dbgenerated("(now() + '7 days'::interval)")) @map("expired_at") @db.Timestamptz(6)
+  email     String?  @db.VarChar(255)
+  org       Org?     @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("invitation_tokens")
+}
+
+model Migration {
+  id    Int      @id @default(autoincrement())
+  name  String   @db.VarChar(255)
+  runOn DateTime @map("run_on") @db.Timestamp(6)
+
+  @@map("migrations")
+}
+
+model Org {
+  id               BigInt            @id @default(autoincrement())
+  displayName      String            @map("display_name")
+  createdBy        BigInt?           @map("created_by")
+  createdAt        DateTime?         @default(now()) @map("created_at") @db.Timestamptz(6)
+  clientId         String            @map("client_id")
+  parentOrgUuid    String?           @map("parent_organization_uuid")
+  isAdmin          Boolean?          @map("is_admin")
+  invitationTokens InvitationToken[]
+
+  @@map("organisation")
+}
+
+model OrgJira {
+  id        BigInt    @id @default(autoincrement())
+  clientId  String    @map("client_id")
+  email     String?
+  token     String?
+  url       String?
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime? @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  @@map("organization_jira")
+}
+
+model Webhook {
+  id        BigInt       @id @default(autoincrement())
+  clientId  String       @map("client_id")
+  type      WebhookType? @default(CASE_STATUS)
+  url       String?
+  secret    String
+  createdAt DateTime?    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime?    @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime?    @map("deleted_at") @db.Timestamptz(6)
+
+  @@map("organization_webhooks")
+}
+
+model Session {
+  id          String    @id @db.Uuid
+  userId      BigInt?   @map("user_id")
+  ipAddress   String    @map("ip_address") @db.Inet
+  loggedOutAt DateTime? @map("logged_out_at") @db.Timestamptz(6)
+  expiredAt   DateTime  @default(dbgenerated("(now() + '00:15:00'::interval)")) @map("expired_at") @db.Timestamptz(6)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  user        User?     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("sessions")
+}
+
+model superadmin_emails {
+  id    BigInt @id @default(autoincrement())
+  email String
+}
+
+model User {
+  id              BigInt    @id @default(autoincrement())
+  name            String
+  email           String    @unique
+  firebaseUserId  String    @map("firebase_user_id")
+  orgId           BigInt?   @map("organisation_id")
+  userRole        UserRole? @default(USER) @map("user_role")
+  isEmailVerified Boolean?  @default(false) @map("is_email_verified")
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz(6)
+  sessions        Session[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  USER             @map("user")
+  SARDINE_ADMIN    @map("sardine_admin")
+  MULTI_ORG_ADMIN  @map("multi_org_admin")
+
+  @@map("user_roles")
+}
+
+enum WebhookType {
+  CASE_STATUS            @map("case-status")
+  DOCUMENT_VERIFICATION  @map("document_verification")
+
+  @@map("webhook_types")
+}

@@ -98,7 +98,6 @@ const DataCard: React.FC<Props> = (props) => {
           ))}
         </Card.Body>
       )}
-      <div className="hide-border" />
     </DetailsCardView>
   );
 };

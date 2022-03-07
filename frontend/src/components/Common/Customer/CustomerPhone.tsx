@@ -43,7 +43,7 @@ const CustomerPhone = (props: CustomerPhoneProps): JSX.Element => {
         "Match score of user's address, provided by you and address associated with phone number.Range: (0-100). 100 means exact match",
     },
   ];
-  return <DataCard header={HEADER} attributes={attributes} icon={<img src={phoneLogo} />} />;
+  return <DataCard header={HEADER} attributes={attributes} icon={<img src={phoneLogo} alt="Phone Logo" />} />;
 };
 
 export default CustomerPhone;

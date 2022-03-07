@@ -9,6 +9,8 @@ import { getErrorMessage, captureException } from "utils/errorUtils";
 import { selectIsSuperAdmin, useUserStore } from "store/user";
 import { useQueryClient } from "react-query";
 import { RulePerformanceSection } from "components/RulesModule/Components/RulePerformance";
+import { Link } from "@mui/material";
+import dayjs from "dayjs";
 import ChartAndTable from "../components/ChartAndTable";
 import Layout from "../components/Layout/Main";
 import PopUp from "../components/Common/PopUp";
@@ -30,8 +32,6 @@ import { ChartData } from "../interfaces/chartInterfaces";
 import useRulePerformanceFetch from "../hooks/useRulePerformanceFetch";
 import { CACHE_KEYS, DATE_FORMATS, RULE_ADMIN_CLIENT_ID } from "../constants";
 import { MANAGE_RULE, SEARCH_PARAM_KEYS, RULE_DETAILS_PATH, CUSTOMERS_PATH, SESSION_DETAILS_PATH } from "../modulePaths";
-import { Link } from "@mui/material";
-import dayjs from "dayjs";
 import {
   CLIENT_ID_QUERY_FIELD,
   CLIENT_QUERY_FIELD,

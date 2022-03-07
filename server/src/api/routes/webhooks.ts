@@ -1,10 +1,13 @@
 import express, { Response } from "express";
 import { query, body } from "express-validator";
 import { v4 as uuidV4 } from "uuid";
+import { Org } from "@prisma/client";
 import { CreateWebhookRequestBody, webhookUrls } from "sardine-dashboard-typescript-definitions";
 import { mw } from "../../commons/middleware";
 import { db } from "../../commons/db";
 import { RequestWithUser } from "../request-interface";
+import { listWebhooks } from "../../repository/webhookRepository";
+import { listOrgs } from "../../repository/orgRepository";
 
 const { createWebhookRoute, updateWebhookRoute, deleteWebhookRoute, getWebhookRoute } = webhookUrls.routes;
 
@@ -12,7 +15,24 @@ const router = express.Router();
 
 const webhooksRouter = () => {
   router[getWebhookRoute.httpMethod]("", [], mw.requireSuperAdmin, async (req: RequestWithUser, res: Response) => {
-    const result = await db.webhooks.getWebhooks();
+    const webhooks = await listWebhooks();
+    const clientIds = webhooks.map((webhook) => webhook.clientId);
+
+    // To avoid N+1 problem, use "in" query: https://www.prisma.io/docs/guides/performance-and-optimization/query-optimization-performance#solving-n1-with-include
+    const orgs = await listOrgs({ clientIds });
+    const clientIdOrgs: { [clientId: string]: Org } = {};
+    orgs.forEach((org) => {
+      clientIdOrgs[org.clientId] = org;
+    });
+
+    const result = webhooks.map((w) => ({
+      id: Number(w.id),
+      client_id: w.clientId,
+      type: w.type,
+      url: w.url,
+      secret: w.secret,
+      name: clientIdOrgs[w.clientId].displayName,
+    }));
     return res.json({ result });
   });
 

@@ -3,14 +3,17 @@ import { body } from "express-validator";
 import { auditUrls, LogsListRequestBody } from "sardine-dashboard-typescript-definitions";
 import { mw } from "../../commons/middleware";
 import { db } from "../../commons/db";
-import { RequestWithUser } from "../request-interface";
+import { RequestWithCurrentUser } from "../request-interface";
 
 const router = express.Router();
 
 const { listLogs } = auditUrls.routes;
 
 const auditRouter = () => {
-  const clientFromOrganization = async (req: RequestWithUser, res: Response): Promise<string> => {
+  const clientFromOrganization = async (
+    req: RequestWithCurrentUser<{}, { organisation: string }>,
+    res: Response
+  ): Promise<string> => {
     const { organisation = "" } = req.query;
     const clientId = await db.organisation.getClientId(organisation.toString());
 
@@ -27,7 +30,7 @@ const auditRouter = () => {
     listLogs.path,
     [body(["startDate", "endDate", "offset", "limit"]).exists()],
     mw.requireUserAccess,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<{}, { organisation: string; organization?: string }>, res: Response) => {
       const { startDate, endDate, offset, limit } = req.body as LogsListRequestBody;
 
       const clientId = await clientFromOrganization(req, res);

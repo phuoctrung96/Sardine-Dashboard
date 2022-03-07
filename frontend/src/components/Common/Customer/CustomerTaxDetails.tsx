@@ -119,7 +119,9 @@ const CustomerTaxDetails = (props: CustomerTaxDetailsProps): JSX.Element => {
     },
   ];
 
-  return <DataCard header={KEY_TAX_ID_DETAILS} attributes={attributes} icon={<img src={taxDetailIcon} />} />;
+  return (
+    <DataCard header={KEY_TAX_ID_DETAILS} attributes={attributes} icon={<img src={taxDetailIcon} alt="Tax Details Icon" />} />
+  );
 };
 
 export default CustomerTaxDetails;

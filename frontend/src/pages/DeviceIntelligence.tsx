@@ -360,7 +360,7 @@ const DeviceIntelligence = (): JSX.Element => {
           details: prepareMarkerInfo(data),
         }));
 
-  const pushToDetails = (event: AnyTodo, rowData: AnyTodo) => {
+  const pushToDetails = (event: React.KeyboardEvent, rowData: AnyTodo) => {
     const pathSearch = `session=${encodeURIComponent(
       rowData.session_key
     )}&${SOURCE_QUERY_FIELD}=${dbSource}&${CLIENT_QUERY_FIELD}=${organisation}`;
@@ -446,7 +446,7 @@ const DeviceIntelligence = (): JSX.Element => {
                 debounceInterval: 1500,
                 exportFileName: `devices_data_${startDate}_${endDate}`,
               }}
-              onRowClick={(event: AnyTodo, rowData: AnyTodo) => {
+              onRowClick={(event: React.KeyboardEvent, rowData: AnyTodo) => {
                 const selection = window.getSelection()?.toString() || "";
                 if (selection.length > 0) {
                   navigator.clipboard.writeText(selection).then(copiedToast, () => {

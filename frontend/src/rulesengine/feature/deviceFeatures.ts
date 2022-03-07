@@ -46,6 +46,7 @@ export const getDeviceFeatures = (checkpoint: string): FeatureItem[] =>
     newChild("Model", "SM-G960W", DATA_TYPES.string, "Model of the device", false),
     boolChild("IsEmulator", "If device is a mobile emulator like BlueStacks", false),
     boolChild("IsRooted", "If device is rooted", false),
+    newChild("IsTamperedApp", "true, false or unknown", DATA_TYPES.string, "If the app is tampered or not", false),
     newChild(
       "Reputation",
       "80",

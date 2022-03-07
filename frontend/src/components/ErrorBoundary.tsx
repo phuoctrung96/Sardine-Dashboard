@@ -1,25 +1,7 @@
-import { FC, useEffect, useState } from "react";
 import * as Sentry from "@sentry/react";
-import { GenericError } from "./Error/GenericError";
+import { SimpleError } from "./Error/SimpleError";
 
-export const fallbackComponent = <GenericError />;
-
-export const ErrorBoundary: FC = ({ children }) => {
-  const [renderGenericErr, setRenderGenericErr] = useState(false);
-  useEffect(() => {
-    window.addEventListener("error", (e) => {
-      Sentry.captureException(e);
-      setRenderGenericErr(true);
-    });
-
-    window.addEventListener("unhandledrejection", (e) => {
-      Sentry.captureException(e.reason);
-    });
-  }, []);
-
-  if (renderGenericErr) {
-    return fallbackComponent;
-  }
-
+export const ErrorBoundary = ({ children, fallback }: { children: React.ReactNode; fallback?: JSX.Element }): JSX.Element => {
+  const fallbackComponent = fallback || <SimpleError />;
   return <Sentry.ErrorBoundary fallback={fallbackComponent}>{children}</Sentry.ErrorBoundary>;
 };

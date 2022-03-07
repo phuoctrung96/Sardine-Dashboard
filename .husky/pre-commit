@@ -1,7 +1,9 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-npm run pre-commit
-cd frontend && npm run pre-commit
+npx lint-staged
+cd frontend
+npx lint-staged
 cd ..
-cd server && npm run pre-commit
+cd server
+npx lint-staged

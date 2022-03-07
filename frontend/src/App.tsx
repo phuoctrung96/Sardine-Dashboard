@@ -3,7 +3,7 @@ import { GTMProvider } from "@elgorditosalsero/react-gtm-hook";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import styled from "styled-components";
 import { ToastProvider } from "react-toast-notifications";
-import { DocumentVerificationsDetail } from "components/DocumentVerifications/DocumentVerificationsDetails/DocumentVerificationsDetails";
+import { DocumentVerificationsDetail } from "pages/DocumentVerificationsDetails";
 import { DocumentVerifications } from "components/DocumentVerifications/DocumentVerifications";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
@@ -16,6 +16,8 @@ import TransactionDetails from "components/Transactions/TransactionDetails";
 import { INTEGRATION_STATUS_PATH, IntegrationStatus } from "components/IntegrationStatus";
 import { CookiesProvider } from "react-cookie";
 import { useUserStore } from "store/user";
+import { Feedbacks } from "pages/Feedbacks";
+import { FeedbackDetails } from "pages/FeedbackDetails";
 import CustomerProfile from "./pages/CustomerProfile";
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
@@ -65,6 +67,8 @@ import {
   SETTINGS_PATH,
   ADMIN_PATH,
   DATA_DICTIONARY_PATH,
+  FEEDBACKS_PATH,
+  FEEDBACK_DETAILS_PATH,
 } from "./modulePaths";
 import Transactions from "./components/Transactions";
 import AdminNotificatons from "./components/Admin/AdminNotificatons";
@@ -146,6 +150,8 @@ const App = (): JSX.Element => {
                     <Route path={DATA_DICTIONARY_PATH} element={<AuthenticatedOnly element={<DataDictionary />} />} />
                     <Route path={DEVICE_INTELLIGENCE_PATH} element={<AuthenticatedOnly element={<DeviceIntelligence />} />} />
                     <Route path={CUSTOMERS_PATH} element={<AuthenticatedOnly element={<Customers />} />} />
+                    <Route path={FEEDBACKS_PATH} element={<SuperAdminOnly element={<Feedbacks />} />} />
+                    <Route path={FEEDBACK_DETAILS_PATH} element={<SuperAdminOnly element={<FeedbackDetails />} />} />
                     <Route path={DEVICE_VIEW_PATH} element={<AuthenticatedOnly element={<DeviceView />} />} />
                     <Route path={BLOCK_ALLOW_LIST_PATH} element={<AuthenticatedOnly element={<BlockAllowList />} />} />
                     <Route

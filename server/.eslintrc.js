@@ -7,6 +7,7 @@ module.exports = {
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: 12,
+    extraFileExtensions: [".mjs"],
     project: "./tsconfig.json",
     sourceType: "module",
   },
@@ -43,7 +44,7 @@ module.exports = {
     "@typescript-eslint/no-explicit-any": "error", // For old any type that is tough to convert, we temporarily use AnyTodo
     "@typescript-eslint/no-floating-promises": "error",
     "@typescript-eslint/no-use-before-define": "warn", // temporarily changed it warn it since there are too many errors and we don't want to fix them all
-    "@typescript-eslint/no-unused-vars": "warn", // Temporary
+    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }], // Allow variables begin with _
     "@typescript-eslint/no-shadow": "warn", // temporary
   },
 };

@@ -17,17 +17,21 @@ WORKDIR /usr/src/app/shared
 ADD shared ./
 RUN npm ci
 RUN npm run build
+
 WORKDIR /usr/src/app
 ADD server/package.json ./server/package.json
 ADD server/package-lock.json ./server/package-lock.json
 ADD frontend/package.json ./frontend/package.json
 ADD frontend/package-lock.json  ./frontend/package-lock.json
+
 WORKDIR /usr/src/app/server
 RUN npm ci
+
 WORKDIR /usr/src/app/frontend
 RUN npm ci
 
 ENV NODE_ENV=production
+
 WORKDIR /usr/src/app/server
 RUN npm link ../shared
 COPY server/src ./src
@@ -36,11 +40,15 @@ COPY server/migrations ./migrations
 COPY server/database.json ./database.json
 COPY server/start.sh ./start.sh
 COPY server/tsconfig.json ./tsconfig.json 
+COPY server/prisma ./prisma
+RUN npx prisma generate
 RUN npm run build
+
 WORKDIR /usr/src/app/frontend
 RUN npm link ../shared
 ADD frontend /usr/src/app/frontend
 RUN npm run build
 COPY server/config config
 WORKDIR /usr/src/app/server
+
 CMD ["./start.sh"]

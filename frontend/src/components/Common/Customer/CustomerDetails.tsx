@@ -1,5 +1,4 @@
 import React from "react";
-import { renderReasonCodesFromArray } from "utils/renderReasonCodes";
 import { BiUserCircle } from "react-icons/bi";
 import DataCard, { CardAttribute } from "../DataCard";
 import { Link } from "../Links";
@@ -22,7 +21,6 @@ interface CustomerDetailsProps {
   facebookLink: string;
   twitterLink: string;
   linkedInLink: string;
-  reasonCodes: string[];
 }
 
 const CustomerDetails = (props: CustomerDetailsProps): JSX.Element => {
@@ -42,7 +40,6 @@ const CustomerDetails = (props: CustomerDetailsProps): JSX.Element => {
     facebookLink,
     linkedInLink,
     twitterLink,
-    reasonCodes,
   } = props;
   const attributes: CardAttribute[] = [
     {
@@ -106,14 +103,6 @@ const CustomerDetails = (props: CustomerDetailsProps): JSX.Element => {
       toolTip: "Session flow, provided by you",
     },
   ];
-
-  if (reasonCodes.length > 0) {
-    attributes.push({
-      key: "Customer Risk ReasonCodes",
-      value: renderReasonCodesFromArray(reasonCodes),
-      toolTip: "Customer risk reasonCodes",
-    });
-  }
 
   if (facebookLink) {
     attributes.push({

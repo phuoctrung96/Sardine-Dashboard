@@ -7,7 +7,7 @@ import { Transaction, AnyTodo, CustomerProfileResponse, CustomersResponse } from
 import { captureException } from "utils/errorUtils";
 import { Grid } from "@mui/material";
 import Badge from "components/Common/Badge";
-import { renderReasonCodes, renderReasonCodesFromArray } from "utils/renderReasonCodes";
+import { renderReasonCodes, ReasonCodesFromArray } from "utils/renderReasonCodes";
 import { SESSION_DETAILS_PATH } from "modulePaths";
 import BulletView, { BulletContainer } from "components/Common/BulletView";
 import { useUserStore } from "store/user";
@@ -33,14 +33,11 @@ import {
   buildCardObject,
   buildCryptoObject,
   buildTransactionObject,
-  CardContentFilled,
-  CardNameWithHeaders,
   CardObject,
   CryptoObject,
   dedupeBankObjects,
   dedupeCardObjects,
   dedupeCryptoObjects,
-  DivNoDataAvailable,
   getCardType,
   getIssuerIcon,
   KEY_BANK_DETAILS,
@@ -57,6 +54,7 @@ import {
   TransactionObject,
 } from "../components/Customers/UserView";
 import SessionsList from "../components/Customers/UserView/SessionsList";
+import CardContentOrLoadingOrNoData from "../components/Customers/UserView/CardContent/CardContentOrLoadingOrNoData";
 import { TableCardSection } from "../components/Customers/UserView/TableCardSection";
 import LoadingText from "../components/Common/LoadingText";
 import { TableCardData } from "../components/Customers/UserView/TableCard";
@@ -75,25 +73,6 @@ export const renderCustomerNotFound = (customerId: string): JSX.Element => (
 );
 
 const SESSIONS_LIST = "Sessions by customer" as const;
-
-const CardContentOrLoadingOrNoData = ({
-  isLoading,
-  hasData,
-  name,
-  tableBodyElements,
-}: {
-  isLoading: boolean;
-  hasData: boolean;
-  name: CardNameWithHeaders;
-  tableBodyElements: JSX.Element[];
-}): JSX.Element =>
-  isLoading ? (
-    <LoadingText />
-  ) : !hasData ? (
-    <DivNoDataAvailable />
-  ) : (
-    <CardContentFilled name={name} tableBodyElements={tableBodyElements} />
-  );
 
 const AddressContainer = ({ addresses }: { addresses: string[] }): JSX.Element => (
   <>
@@ -558,7 +537,11 @@ const CustomerProfile: React.FC = () => {
               <DetailsHeaderTile id="customer_risk_reason_codes_title">Customer Risk ReasonCodes</DetailsHeaderTile>
               <DetailsHeaderValue id="customer_risk_reason_codes_value">
                 {" "}
-                {renderReasonCodesFromArray(customerData?.reason_codes || [])}{" "}
+                {customerData && customerData.reason_codes.length > 0 ? (
+                  <ReasonCodesFromArray reasonCodeArray={customerData.reason_codes} />
+                ) : (
+                  "-"
+                )}{" "}
               </DetailsHeaderValue>
             </DetailsHeaderChild>
           </DetailsHeaderParent>

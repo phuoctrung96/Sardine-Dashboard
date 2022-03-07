@@ -91,6 +91,7 @@ export type TimeUnit = typeof TIME_UNITS[keyof typeof TIME_UNITS];
 
 - Don't overuse `as`. You should use [type guards and type predicates](https://www.typescriptlang.org/docs/handbook/advanced-types.html#using-type-predicates). It is fine to use `as` in type guard functions.
 - Don't hard code svg in codebase, hard to maintain. Create as standalone file and import it.
+- Don't overuse if/else. You should use State pattern or Strategy pattern.
 
 ### CSS and styling
 
@@ -104,6 +105,13 @@ export type TimeUnit = typeof TIME_UNITS[keyof typeof TIME_UNITS];
 - Don't use IDs in CSS. Please use class instead. Using IDs is similar to using `!important`. https://dev.to/clairecodes/reasons-not-to-use-ids-in-css-4ni4
 - Don't overuse inline styles, aka `style` attributes for performance reasons. https://reactjs.org/docs/dom-elements.html#style . Please use styled-components, TailwindCSS, or [sx props in MUI](https://mui.com/system/the-sx-prop/).
 - Don't write global-scope CSS.
+- Don't use `react-bootstrap` components because we will drop `react-bootstrap` in the near future.
+
+### React
+
+#### DON'T
+
+- Don't overuse `setSomeState` inside `useEffect`. It makes the lifecycle complicated. You should use React Hooks for managing states. `react-query`'s `useQuery` is a great example of React Hooks that makes the code simple.
 
 ### Global state management
 
@@ -138,3 +146,13 @@ export type TimeUnit = typeof TIME_UNITS[keyof typeof TIME_UNITS];
 
 - Don't use global state management (like Redux and Zustand) for simple fetched resources. Please use a fetch caching tool like `react-query`
 - Don't directly use `react-query` inside a React Element, not in a React Hook. It makes it difficult to track the cache keys.
+
+### Other libraries
+
+#### DO
+
+- Use [Day.js](https://day.js.org/) over Moment.js
+
+#### DON'T
+
+- Don't use Moment.js. It is deprecated. https://momentjs.com/docs/#/-project-status/ . Please use [Day.js](https://day.js.org/) instead.

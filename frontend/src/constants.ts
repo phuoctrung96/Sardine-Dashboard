@@ -28,10 +28,12 @@ export type TimeUnit = typeof TIME_UNITS[keyof typeof TIME_UNITS];
 export const CACHE_KEYS = {
   DASHBOARD_INVITATIONS: "dashboardInvitations",
   DEVICE_PROFILE: "deviceProfile",
+  DOCUMENT_VERIFICATION: "documentVerification",
   ORGANIZATION_NAMES: "organizationNames",
   RULES: "rules",
   CLIENT_ID: "clientId",
   LAT_LNG: "latLng",
+  CUSTOMER_CRYPTO_DETAILS: "customerCryptoDetails",
 } as const;
 
 export const QUERY_STATUS = {

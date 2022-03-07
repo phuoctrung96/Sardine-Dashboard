@@ -34,6 +34,7 @@ import PaymentMethod from "components/Common/Customer/PaymentMethod";
 import CircularRiskLevel from "components/Common/CircularRiskLevel";
 import { useUserStore } from "store/user";
 import { CLIENT_ID_QUERY_FIELD } from "utils/constructFiltersQueryParams";
+import { ReasonCodesFromArray } from "utils/renderReasonCodes";
 import Layout from "../components/Layout/Main";
 import { StyledStickyNav, StyledTitleName } from "../components/Dashboard/styles";
 import { captureException, captureFailure } from "../utils/errorUtils";
@@ -316,7 +317,13 @@ const SessionsDetails = (): JSX.Element => {
     orgName: org || "all",
   }));
 
-  const deviceProfileFetchResult = useDeviceProfileFetchResult({ sessionKey, orgName, enabled: sessionKey !== "", clientId });
+  const deviceProfileFetchResult = useDeviceProfileFetchResult({
+    sessionKey,
+    orgName,
+    enabled: sessionKey !== "",
+    clientId,
+    source: DATA_SOURCE.DATASTORE,
+  });
 
   useEffect(() => {
     if (deviceProfileFetchResult.data !== undefined) {
@@ -523,6 +530,17 @@ const SessionsDetails = (): JSX.Element => {
               childElement={<Badge title={customerData.customer_risk_level || UNKNOWN_LABEL} />}
             />,
             <DetailsHeader
+              name="Reason Code"
+              key="reason_codes"
+              childElement={
+                customerData.reason_codes.length > 0 ? (
+                  <ReasonCodesFromArray reasonCodeArray={customerData.reason_codes} />
+                ) : (
+                  <span />
+                )
+              }
+            />,
+            <DetailsHeader
               name="Device Risk Level"
               key="device_risk_level"
               childElement={<Badge title={deviceData?.session_risk || UNKNOWN_LABEL} />}
@@ -588,6 +606,9 @@ const SessionsDetails = (): JSX.Element => {
                   cursor: "pointer",
                 }}
                 onClick={() => navigate(-1)}
+                onKeyPress={() => navigate(-1)}
+                role="button"
+                tabIndex={0}
               >
                 {"< Customer intelligence"}
               </span>{" "}
@@ -705,13 +726,12 @@ const SessionsDetails = (): JSX.Element => {
                     facebookLink={customerData?.facebook_Link || ""}
                     twitterLink={customerData?.Twitter_Link || ""}
                     linkedInLink={customerData?.LinkedIn_Link || ""}
-                    reasonCodes={customerData?.reason_codes || []}
                   />
                   <DataCard
                     header={KEY_EXECUTED_RULES}
                     attributes={[]}
                     bodyStyle={{ display: "block" }}
-                    icon={<img src={executedRulesIcon} />}
+                    icon={<img src={executedRulesIcon} alt="Executed rules" />}
                   >
                     <ExecutedRulesList
                       executedRules={customerData?.rules_executed || []}
@@ -732,7 +752,7 @@ const SessionsDetails = (): JSX.Element => {
                       header={KEY_AML_ANTI_MONEY_LAUNDERING}
                       attributes={[]}
                       bodyStyle={{ display: "block" }}
-                      icon={<img src={amlIcon} />}
+                      icon={<img src={amlIcon} alt="Anti money laundering" />}
                     >
                       <AmlSection customerData={customerData} isLoading={isLoadingAmlData} amlData={amlData} />
                     </DataCard>

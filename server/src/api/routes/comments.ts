@@ -5,7 +5,7 @@ import { AddNewCommentRequestBody, AnyTodo, commentUrls } from "sardine-dashboar
 import { captureException } from "../../utils/error-utils";
 import { mw } from "../../commons/middleware";
 import { db } from "../../commons/db";
-import { RequestWithUser } from "../request-interface";
+import { RequestWithCurrentUser } from "../request-interface";
 import { firebaseAdmin } from "../../commons/firebase";
 
 const { addNewCommentRoute, getListCommentRoute } = commentUrls.routes;
@@ -20,7 +20,7 @@ const commentsRouter = () => {
     getListCommentRoute.path,
     [query("clientId").exists(), query("sessionKey").exists()],
     [mw.validateRequest, mw.requireLoggedIn],
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<{}, { clientId: string; sessionKey: string }>, res: Response) => {
       const { clientId = "", sessionKey = "" } = req.query;
       try {
         const users =
@@ -55,7 +55,7 @@ const commentsRouter = () => {
     addNewCommentRoute.path,
     [body("sessionKey").exists(), body("comment").exists(), body("owner_id").exists()],
     [mw.validateRequest, mw.requireLoggedIn],
-    async (req: RequestWithUser<AddNewCommentRequestBody>, res: Response) => {
+    async (req: RequestWithCurrentUser<AddNewCommentRequestBody>, res: Response) => {
       const { sessionKey, owner_id, comment, clientId } = req.body;
 
       try {

@@ -131,7 +131,7 @@ const organisationModel = (db: pgPromise.IDatabase<{}>) => {
   };
 
   const getOrganisations = async (organisationID: string) => {
-    const baseQuery = "SELECT client_id, display_name FROM organisation";
+    const baseQuery = "SELECT client_id, display_name FROM organisation WHERE display_name NOT ILIKE '%donotuse%'";
     if (organisationID.length === 0) {
       const result = await db.many(baseQuery, []);
       return result;
@@ -141,7 +141,7 @@ const organisationModel = (db: pgPromise.IDatabase<{}>) => {
 
     const result = await db.manyOrNone(
       `
-        ${baseQuery} where parent_organization_uuid = $1 or organisation.id = $2
+        ${baseQuery} AND (parent_organization_uuid = $1 or id = $2)
       `,
       [clientID, organisationID]
     );

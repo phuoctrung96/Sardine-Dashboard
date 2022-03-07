@@ -2,6 +2,7 @@ import express, { Response } from "express";
 import { query, body } from "express-validator";
 import { BigQuery } from "@google-cloud/bigquery";
 import moment from "moment";
+import dayjs from "dayjs";
 import * as Sentry from "@sentry/node";
 import {
   MULTI_ORG_ADMIN,
@@ -10,18 +11,19 @@ import {
   SARDINE_ADMIN,
   AUDIT_LOG_TYPES,
   AnyTodo,
+  RulePayload,
   GetRuleStatsResponse,
   RuleStatsSession,
 } from "sardine-dashboard-typescript-definitions";
 import { db } from "../../commons/db";
 import { mw } from "../../commons/middleware";
-import { RequestWithUser } from "../request-interface";
+import { logger } from "../../commons/logger";
+import { RequestWithCurrentUser } from "../request-interface";
 import { RuleService } from "../../commons/RuleService";
 import { getErrorMessage, isErrorWithResponse } from "../../utils/error-utils";
 import { RulePerformance } from "../../commons/models/datastore/rule-performance";
 import { writeAuditLog } from "../utils/routes/audit";
 import { Session } from "../../commons/models/datastore/sessions";
-import dayjs from "dayjs";
 
 const {
   listRuleRoute,
@@ -71,7 +73,7 @@ const rulesRouter = (ruleService: RuleService) => {
     [query("clientId", "checkpoint").exists()],
     mw.validateRequest,
     mw.requireLoggedIn,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<{}, { clientId: string; checkpoint: string }>, res: Response) => {
       const clientId: string = req.query.clientId as string;
       const checkpoint: string = req.query.checkpoint as string;
       const payload = {
@@ -95,7 +97,7 @@ const rulesRouter = (ruleService: RuleService) => {
     [query("ruleID").exists()],
     mw.validateRequest,
     mw.requireLoggedIn,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<{}, { ruleID: string }>, res: Response) => {
       const ruleID: string = req.query.ruleID as string;
 
       const payload = {
@@ -119,7 +121,7 @@ const rulesRouter = (ruleService: RuleService) => {
     [body(["rule", "clientID", "checkpoint"]).exists()],
     mw.validateRequest,
     mw.requireUserAccess,
-    (_: RequestWithUser, res: Response) => {
+    (_: RequestWithCurrentUser, res: Response) => {
       // TBC: sardine.atlassian.net/browse/ENG-1184
       res.send(200).end();
     }
@@ -130,14 +132,11 @@ const rulesRouter = (ruleService: RuleService) => {
     [body(["rule", "clientID", "checkpoint"]).exists()],
     mw.validateRequest,
     mw.requireUserAccess,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<{ clientID: string }, {}>, res: Response) => {
       const data = req.body;
       try {
         const { rule } = await ruleService.createNewRule(data);
-
-        const { clientID } = data;
-        const { id } = rule;
-        writeAuditLog(req, clientID, parseInt(id, 10), AUDIT_LOG_TYPES.CREATE_RULE, data);
+        logger.info(rule, "rule created");
 
         return res.json(rule);
       } catch (e) {
@@ -166,7 +165,7 @@ const rulesRouter = (ruleService: RuleService) => {
     [body(["ruleID", "clientId"]).exists()],
     mw.validateRequest,
     mw.requireLoggedIn, // Logged-in client can disable global rules applied to them.
-    async (req: RequestWithUser<{ ruleId: number; clientId: string }>, res: Response) => {
+    async (req: RequestWithCurrentUser<{ ruleId: number; clientId: string }, {}>, res: Response) => {
       if (!req.currentUser) {
         throw new Error("Current user is not defined");
       }
@@ -195,13 +194,13 @@ const rulesRouter = (ruleService: RuleService) => {
     [body(["order", "checkpoint"]).exists()],
     mw.validateRequest,
     mw.requireUserAccess,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser, res: Response) => {
       const data = req.body;
       try {
         const { rule } = await ruleService.orderRule(data);
 
         const clientID = await db.superadmin.getClientId(req.currentUser?.organisation || "");
-        writeAuditLog(req, clientID, 0, AUDIT_LOG_TYPES.SORT_RULE, data);
+        logger.info({ rule, clientID }, "rule ordered");
 
         return res.json(rule);
       } catch (e) {
@@ -230,7 +229,7 @@ const rulesRouter = (ruleService: RuleService) => {
     [body(["rule", "clientID", "checkpoint"]).exists()],
     mw.validateRequest,
     mw.requireUserAccess,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<RulePayload, {}>, res: Response) => {
       const data = req.body;
       try {
         const { rule } = await ruleService.updateRule(data);
@@ -255,7 +254,13 @@ const rulesRouter = (ruleService: RuleService) => {
     [query(["ruleId", "days", "clientId"]).exists()],
     mw.validateRequest,
     mw.requireUserAccess,
-    async (req: RequestWithUser, res: Response) => {
+    async (
+      req: RequestWithCurrentUser<
+        {},
+        { organisation?: string; organization?: string; ruleId: string; days: string; clientId: string }
+      >,
+      res: Response
+    ) => {
       const ruleId: string = req.query.ruleId as string;
       const days: string = req.query.days as string;
       const clientID: string = req.query.clientId as string;
@@ -268,7 +273,7 @@ const rulesRouter = (ruleService: RuleService) => {
       try {
         const { stats } = await ruleService.getRuleStats(payload);
 
-        let response: GetRuleStatsResponse[] = stats;
+        const response: GetRuleStatsResponse[] = stats;
 
         const startDate = dayjs()
           .subtract(Number(days) || 1, "day")
@@ -314,7 +319,7 @@ const rulesRouter = (ruleService: RuleService) => {
     getRulePerformance.path,
     mw.validateRequest,
     mw.requireLoggedIn,
-    async (_: RequestWithUser, res: Response) => {
+    async (_: RequestWithCurrentUser, res: Response) => {
       try {
         const rulesPerformance = await RulePerformance.getLatest();
         return res.json({ rules_performance: rulesPerformance });
@@ -333,7 +338,7 @@ const rulesRouter = (ruleService: RuleService) => {
     [query(["date", "sessionKey", "clientId"]).exists()],
     mw.validateRequest,
     mw.requireLoggedIn,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<{}, { date: string; sessionKey: string; clientId: string }>, res: Response) => {
       const date: string = req.query.date as string;
       const sessionKey: string = req.query.sessionKey as string;
       const clientId: string = req.query.clientId as string;
@@ -357,7 +362,10 @@ const rulesRouter = (ruleService: RuleService) => {
     [body(["feature", "datatype"]).exists(), query("organisation").exists()],
     mw.validateRequest,
     mw.requireUserAccess,
-    async (req: RequestWithUser<RuleFeatureStatsRequestBody>, res: Response) => {
+    async (
+      req: RequestWithCurrentUser<RuleFeatureStatsRequestBody, { organisation: string; organization?: string }>,
+      res: Response
+    ) => {
       const data = req.body;
       const organisation: string = req.query.organisation as string;
       const { feature, datatype } = data;

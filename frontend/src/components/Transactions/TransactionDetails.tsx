@@ -11,6 +11,8 @@ import {
   KEY_TRANSACTION_DATA,
   Transaction as TransactionResponse,
 } from "sardine-dashboard-typescript-definitions";
+import { KEY_CRYPTO_ADDRESSES, TableBodyCrypto, CryptoObject, dedupeCryptoObjects } from "components/Customers/UserView";
+import CardContentOrLoadingOrNoData from "components/Customers/UserView/CardContent/CardContentOrLoadingOrNoData";
 import Loader from "components/Common/Loader";
 import DataCard, { CardAttribute } from "components/Common/DataCard";
 import ExecutedRulesList from "components/Common/ExecutedRulesList";
@@ -25,13 +27,14 @@ import {
   TableCardData,
 } from "components/Customers/UserView/TableCard";
 import { DetailsHeaderChild, DetailsHeaderParent, DetailsHeaderTile, DetailsHeaderValue } from "components/Customers/styles";
-import { CustomerProfileLink } from "components/Common/Links";
+import { CustomerProfileLink, SessionDetailsLink } from "components/Common/Links";
 import mccArray from "./mcc_codes.json";
 import { StyledMainDiv, StyledContainer, HorizontalContainer, StyledChildren, PinContainer, InputGroupWrapper } from "./styles";
 import { StyledNavTitle, StyledStickyNav, StyledTitleName } from "../Dashboard/styles";
 import Layout from "../Layout/Main";
-import { DATE_FORMATS, TIME_UNITS } from "../../constants";
+import { DATE_FORMATS, TIME_UNITS, QUERY_STATUS } from "../../constants";
 import { formatTimestampInUtc } from "../../utils/timeUtils";
+import { useCustomerCryptoDetailsFetchResult } from "../../hooks/fetchHooks";
 
 const PARAM_KEYS = SEARCH_PARAM_KEYS[RULE_DETAILS_PATH];
 interface StateData {
@@ -92,6 +95,7 @@ const TransactionDetails = (): JSX.Element => {
   const [transactionData, setTransactionData] = useState<TransactionResponse>();
   const [isTransactionDataLoaded, setIsTransactionDataLoaded] = useState(false);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+  let cryptoData: CryptoObject[] = [];
 
   const { addToast } = useToasts();
 
@@ -100,6 +104,26 @@ const TransactionDetails = (): JSX.Element => {
 
   const transactionId = params.get("transactionId") || "";
   const clientId = params.get("clientId") || "";
+
+  const customerCryptoDetailsFetchResult = useCustomerCryptoDetailsFetchResult({
+    customerId: transactionData?.customer_id || "",
+    enabled: transactionData !== undefined,
+  });
+
+  if (customerCryptoDetailsFetchResult.data) {
+    const { result } = customerCryptoDetailsFetchResult.data;
+    if (Array(result).length > 0) {
+      const resCards = result.map((r) => ({
+        currency_code: r.currency_code || "-",
+        address: r.address || "-",
+        userRiskScore: r.addressRiskScore || "-",
+        addressRiskScore: r.addressRiskScore || "-",
+        categories: r.categories || "-",
+      }));
+
+      cryptoData = dedupeCryptoObjects(resCards);
+    }
+  }
 
   const cardsData: TableCardData[] = [
     {
@@ -152,6 +176,20 @@ const TransactionDetails = (): JSX.Element => {
         ["crypto_currency_code", "currency code or symbol such as BTC or ETH"],
         ["recipient_payment_method", "Recipient payment method"],
       ],
+    },
+    {
+      key: KEY_CRYPTO_ADDRESSES,
+      type: "list",
+      component: (
+        <CardContentOrLoadingOrNoData
+          isLoading={customerCryptoDetailsFetchResult.status === QUERY_STATUS.LOADING}
+          hasData={cryptoData.length > 0}
+          name={KEY_CRYPTO_ADDRESSES}
+          tableBodyElements={cryptoData.map((c) => (
+            <TableBodyCrypto c={c} key={`${c.address}_${c.addressRiskScore}`} />
+          ))}
+        />
+      ),
     },
     {
       key: KEY_IDENTITY,
@@ -276,7 +314,18 @@ const TransactionDetails = (): JSX.Element => {
                       </DetailsHeaderChild>
                       <DetailsHeaderChild>
                         <DetailsHeaderTile id="session_key_title">Session Key</DetailsHeaderTile>
-                        <DetailsHeaderValue id="session_key_value"> {transactionData?.session_key || "-"} </DetailsHeaderValue>
+                        <DetailsHeaderValue id="session_key_value">
+                          {transactionData?.session_key ? (
+                            <SessionDetailsLink
+                              clientId={transactionData?.client_id || ""}
+                              customerId={transactionData?.customer_id || ""}
+                              sessionKey={transactionData?.session_key || ""}
+                              text={transactionData?.session_key || ""}
+                            />
+                          ) : (
+                            "-"
+                          )}
+                        </DetailsHeaderValue>
                       </DetailsHeaderChild>
                       <DetailsHeaderChild>
                         <DetailsHeaderTile id="user_id_title">Customer Id</DetailsHeaderTile>

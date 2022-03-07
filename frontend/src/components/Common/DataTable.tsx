@@ -9,6 +9,7 @@ import { useToasts } from "react-toast-notifications";
 import { CSVDownloader } from "react-papaparse";
 import { AnyTodo, DocumentVerification } from "sardine-dashboard-typescript-definitions";
 import { StyledTitleName } from "../Dashboard/styles";
+import { ErrorBoundary } from "../ErrorBoundary";
 
 const EmptyTextContainer = styled.div`
   text-align: left;
@@ -181,27 +182,29 @@ export const DataTable = (props: DataTableProps): JSX.Element => {
     title,
   } = props;
   return (
-    <ThemeProvider theme={tableTheme}>
-      <TableWrapper>
-        <MaterialTable
-          components={components}
-          data={data}
-          detailPanel={detailPanel}
-          options={{ ...defaultOptions, ...options }}
-          localization={{
-            body: { ...defaultLocalization.body, ...localization?.body },
-            ...localization,
-          }}
-          columns={columns}
-          isLoading={isLoading}
-          onPageChange={onChangePage}
-          onFilterChange={onFilterChange}
-          onRowClick={onRowClick}
-          editable={editable}
-          title={title}
-        />
-      </TableWrapper>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider theme={tableTheme}>
+        <TableWrapper>
+          <MaterialTable
+            components={components}
+            data={data}
+            detailPanel={detailPanel}
+            options={{ ...defaultOptions, ...options }}
+            localization={{
+              body: { ...defaultLocalization.body, ...localization?.body },
+              ...localization,
+            }}
+            columns={columns}
+            isLoading={isLoading}
+            onPageChange={onChangePage}
+            onFilterChange={onFilterChange}
+            onRowClick={onRowClick}
+            editable={editable}
+            title={title}
+          />
+        </TableWrapper>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 };
 
@@ -244,41 +247,45 @@ export const ToolBarWrapper = (props: { title: string; data: AnyTodo[] }): JSX.E
   const filename = title ? title.toLowerCase().replaceAll(" ", "_") : "table";
 
   return (
-    <Toolbar>
-      <div
-        style={{
-          flex: "1 1 10%",
-        }}
-      />
+    <ErrorBoundary>
+      <Toolbar>
+        <div
+          style={{
+            flex: "1 1 10%",
+          }}
+        />
 
-      <CSVDownloader
-        data={data}
-        type="button"
-        filename={filename}
-        style={{
-          border: "none",
-          background: "white",
-        }}
-        bom
-      >
-        <VerticalAlignBottomIcon />
-      </CSVDownloader>
-    </Toolbar>
+        <CSVDownloader
+          data={data}
+          type="button"
+          filename={filename}
+          style={{
+            border: "none",
+            background: "white",
+          }}
+          bom
+        >
+          <VerticalAlignBottomIcon />
+        </CSVDownloader>
+      </Toolbar>
+    </ErrorBoundary>
   );
 };
 
 export const ToolBarWithTitle = (props: { title: string; data: AnyTodo[] }): JSX.Element => {
   const { data, title } = props;
   return (
-    <div
-      style={{
-        justifyContent: "space-between",
-        display: "flex",
-        padding: "20px 20px",
-      }}
-    >
-      <StyledTitleName>{title}</StyledTitleName>
-      <ToolBarWrapper data={data} title={title} />
-    </div>
+    <ErrorBoundary>
+      <div
+        style={{
+          justifyContent: "space-between",
+          display: "flex",
+          padding: "20px 20px",
+        }}
+      >
+        <StyledTitleName>{title}</StyledTitleName>
+        <ToolBarWrapper data={data} title={title} />
+      </div>
+    </ErrorBoundary>
   );
 };

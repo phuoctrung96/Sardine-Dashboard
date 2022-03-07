@@ -67,8 +67,34 @@ INSERT INTO "public"."organisation" ("display_name",  "created_at", "client_id")
 To start the development server using concurrently
 
 ```bash
-  node start-services.js
+  npm run start-services
 ```
+
+### Prisma setup
+
+To use Prisma(ORM) locally you need to set `DATABASE_URL`. please put `.env` file in `/server`.
+
+```server/.env
+# Environment variables declared in this file are automatically made available to Prisma.
+# See the documentation for more detail: https://pris.ly/d/prisma-schema#accessing-environment-variables-from-the-schema
+# Prisma supports the native connection string format for PostgreSQL, MySQL, SQLite, SQL Server, MongoDB (Preview) and CockroachDB (Preview).
+# See the documentation for all the connection string options: https://pris.ly/d/connection-strings
+DATABASE_URL="postgresql://postgres:@localhost:5432/sardinedb?schema=public&connection_limit=1"
+```
+
+Prisma automatically detects `.env` file in `/server` and set `DATABASE_URL`.
+server/.env should be ignored by git. Please check .gitignore.
+
+Also, to use Prisma you need to generate the Prisma client. Please run the following command after running `npm install` in `server`
+
+```
+cd server
+npm run generate-prisma-client
+```
+
+This command creates `@prisma/client` in `server/node_modules/.prisma/client`.
+
+[Prisma: Generating the client](https://www.prisma.io/docs/concepts/components/prisma-client/working-with-prismaclient/generating-prisma-client)
 
 ### Connect to proxy servers for local development
 
@@ -113,12 +139,12 @@ mitmdump -p 9100 --set block_global=false --mode reverse:http://re.rules-engine-
 # Now ctrl+a&d to detach, ctrl+d to close SSH
 ```
 
-## With docker (deprecated)
+## Filtering log
 
-You need to have docker and docker-compose installed on your system.
+You can filter the stdout and stderr using `pino-filter` by the following command.
 
-To build and run inside docker-container run the following command
-
-```bash
-docker-compose up --build
 ```
+npm run dev-filter-log
+```
+
+You can change the pino-filter configuration by editing `pino-filter-log.json`: https://github.com/pinojs/pino-filter

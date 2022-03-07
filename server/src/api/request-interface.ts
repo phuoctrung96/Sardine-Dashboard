@@ -15,15 +15,11 @@ export interface CurrentUser {
 /**
  * @deprecated  Please use RequestWithCurrentUser for safer typing
  */
-export interface RequestWithUser<T = AnyTodo> extends Request {
-  body: T;
-  currentUser?: CurrentUser;
-  id?: string;
-}
+export interface RequestWithUser<T = AnyTodo> extends RequestWithCurrentUser<T, AnyTodo, AnyTodo> {}
 
-export interface RequestWithCurrentUser<ReqBody = {}, ReqQuery = {}> extends Request<{}, unknown, ReqBody, ReqQuery, {}> {
+export interface RequestWithCurrentUser<ReqBody = {}, ReqQuery = {}, Param = {}>
+  extends Request<Param, unknown, ReqBody, ReqQuery, {}> {
   currentUser?: CurrentUser;
-  id?: string;
 }
 export interface RegistrationRequest {
   name: string;
