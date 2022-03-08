@@ -1,6 +1,7 @@
 import { renderReasonCodes } from "utils/renderReasonCodes";
 import DataCard, { CardAttribute } from "../DataCard";
 import phoneLogo from "../../../utils/logo/phone.svg";
+import Badge from "../Badge";
 
 const HEADER = "Phone Signals";
 
@@ -17,7 +18,7 @@ const CustomerPhone = (props: CustomerPhoneProps): JSX.Element => {
   const attributes: CardAttribute[] = [
     {
       key: "Phone Level",
-      value: phoneLevel,
+      value: <Badge title={phoneLevel} />,
       toolTip: "Phone risk level",
     },
     {

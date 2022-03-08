@@ -41,6 +41,7 @@ const StyledMainDiv = styled.div`
 const InputGroupWrapper = styled.div`
   display: flex;
   justify-content: space-between;
+  background-color: #fff;
   .search-btn {
     width: 300px;
     cursor: pointer;

@@ -1,6 +1,7 @@
 import { renderReasonCodes } from "utils/renderReasonCodes";
 import { AiOutlineMail } from "react-icons/ai";
 import DataCard, { CardAttribute } from "../DataCard";
+import Badge from "../Badge";
 
 const HEADER = "Email Signals";
 
@@ -32,12 +33,12 @@ const CustomerEmail = (props: CustomerEmailProps): JSX.Element => {
   const attributes: CardAttribute[] = [
     {
       key: "Email Level",
-      value: emailLevel,
+      value: <Badge title={emailLevel} />,
       toolTip: "Email risk level",
     },
     {
       key: "Email Domain Level",
-      value: emailDomainLevel,
+      value: <Badge title={emailDomainLevel} />,
       toolTip: "Email domain risk level",
     },
     {
