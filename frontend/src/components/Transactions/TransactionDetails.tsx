@@ -6,7 +6,6 @@ import { fetchTransactionDetails } from "utils/api";
 import {
   indemnificationDecisionFromValue,
   KEY_EXECUTED_RULES,
-  KEY_IDENTITY,
   KEY_PAYMENT_METHOD,
   KEY_TRANSACTION_DATA,
   Transaction as TransactionResponse,
@@ -16,6 +15,7 @@ import CardContentOrLoadingOrNoData from "components/Customers/UserView/CardCont
 import Loader from "components/Common/Loader";
 import DataCard, { CardAttribute } from "components/Common/DataCard";
 import ExecutedRulesList from "components/Common/ExecutedRulesList";
+import CircularRiskLevel from "components/Common/CircularRiskLevel";
 import moment from "moment";
 import { RULE_DETAILS_PATH, SEARCH_PARAM_KEYS, TRANSACTIONS_PATH } from "modulePaths";
 import { replaceAll } from "utils/stringUtils";
@@ -191,14 +191,6 @@ const TransactionDetails = (): JSX.Element => {
         />
       ),
     },
-    {
-      key: KEY_IDENTITY,
-      type: "card",
-      value: [
-        ["risk_level", "Risk at overall level: very_high, high, medium, low"],
-        ["aml_level", "aml risk level"],
-      ],
-    },
   ];
 
   const fetchTransactionData = useCallback(async () => {
@@ -273,7 +265,6 @@ const TransactionDetails = (): JSX.Element => {
         {isDataLoaded && isTransactionDataLoaded ? (
           <StyledMainDiv
             style={{
-              backgroundColor: "#FFF",
               width: "100%",
               height: "90vh",
               margin: 0,
@@ -308,6 +299,16 @@ const TransactionDetails = (): JSX.Element => {
                 <InputGroupWrapper>
                   <div style={{ width: "100%", margin: "10px 10px" }}>
                     <DetailsHeaderParent>
+                      <DetailsHeaderChild>
+                        <DetailsHeaderValue id="aml_level_value">
+                          <CircularRiskLevel risk_level={transactionData ? transactionData.aml_level : ""} label="Aml Level" />
+                        </DetailsHeaderValue>
+                      </DetailsHeaderChild>
+                      <DetailsHeaderChild>
+                        <DetailsHeaderValue id="risk_level_value">
+                          <CircularRiskLevel risk_level={transactionData ? transactionData.risk_level : ""} label="Risk Level" />
+                        </DetailsHeaderValue>
+                      </DetailsHeaderChild>
                       <DetailsHeaderChild>
                         <DetailsHeaderTile id="transaction_id_title">Transaction Id</DetailsHeaderTile>
                         <DetailsHeaderValue id="transaction_id_value">{transactionData?.id || "-"}</DetailsHeaderValue>

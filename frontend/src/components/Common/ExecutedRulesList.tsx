@@ -5,6 +5,8 @@ import { captureException } from "utils/errorUtils";
 import { orderRulesByRiskLevel } from "utils/orderRulesByRiskLevel";
 import { getExecutedRules } from "../../utils/api";
 import { StyledRulesWrapper } from "../Customers/styles";
+import Badge from "./Badge";
+import { RISK_LEVELS } from "../../constants";
 
 const StyledTable = styled.table`
   border-collapse: collapse;
@@ -147,7 +149,17 @@ const ExecutedRulesList: React.FC<IProps> = (props) => {
               <Cell style={{ lineBreak: "auto" }}>
                 {d.action?.tags
                   ? d.action.tags!.length > 0
-                    ? d.action.tags.map((a) => `${a.key}: ${a.value}`).join(", ")
+                    ? d.action.tags.map((a) => {
+                        if ((RISK_LEVELS as ReadonlyArray<string>).includes(a.value)) {
+                          return (
+                            <div className="d-flex align-items-center mb-1" key={`${d.id}_${a.key}_${a.value}_${a.actionType}`}>
+                              <span className="me-2">{a.key}:</span>
+                              <Badge title={a.value || "unknown"} />
+                            </div>
+                          );
+                        }
+                        return `${a.key}: ${a.value}`;
+                      })
                     : "-"
                   : "-"}
               </Cell>

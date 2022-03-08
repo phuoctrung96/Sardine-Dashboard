@@ -14,6 +14,7 @@ import dayjs from "dayjs";
 import ChartAndTable from "../components/ChartAndTable";
 import Layout from "../components/Layout/Main";
 import PopUp from "../components/Common/PopUp";
+import Badge from "../components/Common/Badge";
 import imgStats from "../utils/logo/stats.svg";
 import { getRuleStats, sendUpdateRuleRequest, getClientIdObject, getRuleDetails, disableRule } from "../utils/api";
 import {
@@ -209,15 +210,6 @@ const RuleDetails = (): JSX.Element => {
         });
     }
   }, [loadChartData, clientId, ruleID, org]);
-
-  const getActionsValue = () => {
-    let data: string[] = [];
-    if (ruleDetails && ruleDetails.action && ruleDetails.action.tags) {
-      data = ruleDetails.action.tags.map((element) => `${element.key}:${element.value}`);
-    }
-
-    return data.length === 0 ? "-" : data.join(", ");
-  };
 
   const deprecateRule = async () => {
     const msgFailed = "Failed to update rule";
@@ -428,7 +420,20 @@ const RuleDetails = (): JSX.Element => {
                   />
                 ) : null}
                 <RuleSection title="Description:" data={ruleDetails.description} />
-                <RuleSection title="Action Tags:" data={getActionsValue()} />
+                <div className="mt-5">
+                  <Title>Action Tags:</Title>
+                  <div className="d-flex align-items-center mt-3">
+                    {ruleDetails &&
+                      ruleDetails.action &&
+                      ruleDetails.action.tags &&
+                      ruleDetails.action.tags.map((tag) => (
+                        <div className="d-flex align-items-center me-2" key={`${ruleDetails.id}_${tag.key}_${tag.value}`}>
+                          <span className="me-2">{tag.key}:</span>
+                          <Badge title={tag.value || "unknown"} />
+                        </div>
+                      ))}
+                  </div>
+                </div>
                 <RuleSection title="Rule Performance:" data={renderRulePerformanceMetrics(rulePerformance)} />
                 <HorizontalContainer
                   style={{

@@ -2,6 +2,7 @@ import { KEY_TAX_ID_DETAILS } from "components/Customers/UserView";
 import React from "react";
 import DataCard, { CardAttribute } from "../DataCard";
 import taxDetailIcon from "../../../utils/logo/tax_detail.svg";
+import Badge from "../Badge";
 
 interface CustomerTaxDetailsProps {
   abuseScore: number;
@@ -94,7 +95,7 @@ const CustomerTaxDetails = (props: CustomerTaxDetailsProps): JSX.Element => {
     },
     {
       key: "Tax Id Level",
-      value: taxIdLevel,
+      value: <Badge title={taxIdLevel} />,
       toolTip: "Overall riskiness level of taxID",
     },
     {

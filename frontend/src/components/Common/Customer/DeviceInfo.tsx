@@ -2,6 +2,7 @@ import { KEY_DEVICE_AND_BEHAVIOUR_DETAILS } from "components/Customers/UserView"
 import DataCard, { CardAttribute } from "../DataCard";
 import { Link } from "../Links";
 import deviceIcon from "../../../utils/logo/device.svg";
+import Badge from "../Badge";
 
 interface DeviceInfoProps {
   deviceId?: string;
@@ -128,7 +129,7 @@ const DeviceInfo = (props: DeviceInfoProps): JSX.Element => {
   if (proxy) {
     attributes.push({
       key: "Proxy",
-      value: proxy,
+      value: <Badge title={proxy} />,
       toolTip: "Likelihood of network being a Proxy",
     });
   }
@@ -144,7 +145,7 @@ const DeviceInfo = (props: DeviceInfoProps): JSX.Element => {
   if (vpn) {
     attributes.push({
       key: "VPN",
-      value: vpn,
+      value: <Badge title={vpn} />,
       toolTip: "Likelihood of network connection being VPN",
     });
   }

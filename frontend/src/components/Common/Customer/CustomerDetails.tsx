@@ -10,6 +10,7 @@ interface CustomerDetailsProps {
   lastName: string;
   customerScore: string;
   emailAddress: string;
+  city: string;
   phone: string;
   carrier: string;
   phoneCountry: string;
@@ -29,6 +30,7 @@ const CustomerDetails = (props: CustomerDetailsProps): JSX.Element => {
     lastName,
     customerScore,
     emailAddress,
+    city,
     phone,
     carrier,
     phoneCountry,
@@ -43,14 +45,18 @@ const CustomerDetails = (props: CustomerDetailsProps): JSX.Element => {
   } = props;
   const attributes: CardAttribute[] = [
     {
-      key: "First Name",
-      value: firstName,
-      toolTip: "Customer's first name, provided by you",
-    },
-    {
-      key: "Last Name",
-      value: lastName,
-      toolTip: "Customer's last name, provided by you",
+      key: "Full Name",
+      value: (
+        <Link
+          id="nameSearhLink"
+          href={`https://www.google.com/search?q=%22${firstName}+${lastName}%22+${city}`}
+          rel="noreferrer"
+          target="_blank"
+        >
+          {firstName} {lastName}
+        </Link>
+      ),
+      toolTip: "Customer's full name, provided by you",
     },
     {
       key: "Customer Score",
@@ -59,7 +65,11 @@ const CustomerDetails = (props: CustomerDetailsProps): JSX.Element => {
     },
     {
       key: "Email Address",
-      value: emailAddress,
+      value: (
+        <Link id="emailSearhLink" href={`https://www.google.com/search?q=${emailAddress}`} rel="noreferrer" target="_blank">
+          {emailAddress}
+        </Link>
+      ),
       toolTip: "Email Address of customer, provided by you",
     },
     {
@@ -69,7 +79,11 @@ const CustomerDetails = (props: CustomerDetailsProps): JSX.Element => {
     },
     {
       key: "Phone",
-      value: phone,
+      value: (
+        <Link id="phoneSearhLink" href={`https://www.google.com/search?q=${phone}`} rel="noreferrer" target="_blank">
+          {phone}
+        </Link>
+      ),
       toolTip: "Phone of customer, provided by you",
     },
     {

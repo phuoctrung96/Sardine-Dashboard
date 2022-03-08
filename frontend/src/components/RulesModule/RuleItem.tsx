@@ -2,6 +2,8 @@ import { RuleExpression } from "sardine-dashboard-typescript-definitions";
 import { SortableElement, SortableHandle } from "react-sortable-hoc";
 import styled from "styled-components";
 import { StyledTr, Title } from "./styles";
+import Badge from "../Common/Badge";
+import { RISK_LEVELS } from "../../constants";
 
 const DragHandle = SortableHandle(() => (
   <Title className="rule-drag-handle" id="rule_drag_handle" style={{ marginTop: 10, textAlign: "center" }}>
@@ -45,6 +47,7 @@ const Row = ({
   const ruleConditionId = `rule_condition_${nameLoDashSpace}`;
   const ruleActionId = `rule_action_${nameLoDashSpace}`;
   const ruleEnvId = `rule_env_${nameLoDashSpace}`;
+
   return (
     <StyledTr>
       <RuleName className="rule-id" id={ruleIdId} data-tid={ruleIdId} key={ruleIdId} onClick={onClick}>
@@ -63,11 +66,21 @@ const Row = ({
         {condition}
       </Cell>
       <Cell className="rule-action" id={ruleActionId} key={ruleActionId} data-tid={ruleActionId}>
-        {actions.map((a) => (
-          <div key={`${ruleActionId}_${a.key}_${a.value}_${a.actionType}`}>
-            {a.key}={a.value}
-          </div>
-        ))}
+        {actions.map((a) => {
+          if ((RISK_LEVELS as ReadonlyArray<string>).includes(a.value)) {
+            return (
+              <div className="d-flex align-items-center mb-1" key={`${ruleActionId}_${a.key}_${a.value}_${a.actionType}`}>
+                <span className="me-2">{a.key}=</span>
+                <Badge title={a.value || "unknown"} />
+              </div>
+            );
+          }
+          return (
+            <div key={`${ruleActionId}_${a.key}_${a.value}_${a.actionType}`}>
+              {a.key}={a.value}
+            </div>
+          );
+        })}
       </Cell>
       <Cell className="rule-env" id={ruleEnvId} data-tid={ruleEnvId}>
         {env}

@@ -107,7 +107,14 @@ const DEFINITIONS: DefinitionObject[] = [
   },
 ];
 
-const FEATURES_WITH_LEVEL = ["device_reputation", "proxy", "vpn", "os_anomaly", "session_risk"];
+const FEATURES_WITH_LEVEL = [
+  "device_reputation",
+  "proxy",
+  "vpn",
+  "os_anomaly",
+  "session_risk",
+  "behavior_biometric_level",
+] as const;
 
 const generateDeviceProps = (d: DeviceProfile): DeviceObject[] =>
   DEFINITIONS.map((def) => {
@@ -249,7 +256,7 @@ const DeviceView: React.FC = () => {
             <DetailsHeaderParent>
               <DetailsHeaderChild>
                 <DetailsHeaderValue id="risk_level_value">
-                  <CircularRiskLevel risk_level={sessionRisk} />
+                  <CircularRiskLevel risk_level={sessionRisk} label="Risk Level" />
                 </DetailsHeaderValue>
               </DetailsHeaderChild>
               <DetailsHeaderParent>
@@ -325,7 +332,7 @@ const DeviceView: React.FC = () => {
                           <Link id={`link_${d.name}`} href={d.value}>
                             {d.value}
                           </Link>
-                        ) : FEATURES_WITH_LEVEL.includes(d.name) ? (
+                        ) : (FEATURES_WITH_LEVEL as ReadonlyArray<string>).includes(d.name) ? (
                           <Badge title={d.value.toString()} style={{ marginLeft: -10, marginTop: 5 }} />
                         ) : (
                           d.value.toString() || "-"

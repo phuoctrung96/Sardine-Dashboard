@@ -3,9 +3,10 @@ import { StyleCircularBadge } from "../Customers/styles";
 
 interface CircularRiskLevelProps {
   risk_level: string;
+  label: string;
 }
 
-const CircularRiskLevel: React.FC<CircularRiskLevelProps> = ({ risk_level }) => (
+const CircularRiskLevel: React.FC<CircularRiskLevelProps> = ({ risk_level, label }) => (
   <StyleCircularBadge>
     <div>
       <div
@@ -18,7 +19,7 @@ const CircularRiskLevel: React.FC<CircularRiskLevelProps> = ({ risk_level }) => 
       >
         {risk_level}
       </div>
-      <div className="session-level-label">Risk Level</div>
+      <div className="session-level-label">{label}</div>
     </div>
   </StyleCircularBadge>
 );
