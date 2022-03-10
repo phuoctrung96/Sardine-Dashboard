@@ -37,12 +37,6 @@ export interface LoginRequest {
   idToken: string;
 }
 
-export interface CreateOrganisation {
-  organisation: string;
-  user_type: string;
-  parentOrg: string;
-}
-
 export interface SearchRequest {
   startDate: string;
   endDate: string;

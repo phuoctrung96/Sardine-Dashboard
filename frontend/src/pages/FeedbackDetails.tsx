@@ -106,7 +106,7 @@ export const FeedbackDetails = () => {
       <StyledMenuDiv>
         <StyledMainDiv style={{ display: "flex", alignItems: "center", backgroundColor: "white", padding: "32px 64px" }}>
           <DetailsHeaderValue id="feedback_risk_level_value">
-            <CircularRiskLevel risk_level="high" />
+            <CircularRiskLevel risk_level="high" label="Risk Level" />
           </DetailsHeaderValue>
           <div style={{ width: "100%", marginLeft: 88, display: "flex", flexDirection: "column" }}>
             <div>

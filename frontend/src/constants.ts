@@ -60,4 +60,18 @@ const RULE_ADMIN_CLIENT_ID = "da9e843a-f2c5-4de2-bf63-a31a45c2eac6";
 
 export const KEY_EXECUTED_RULES = "Executed Rules" as const;
 
+export const RISK_LEVELS = [
+  "low",
+  "low_risk",
+  "medium",
+  "medium_risk",
+  "medium_low",
+  "low_medium_risk",
+  "high",
+  "high_risk",
+  "very_high",
+  "very_high_risk",
+  "very high",
+] as const;
+
 export { ADMIN_ROLES, DATASTORE_START_DATE, RULE_ADMIN_CLIENT_ID };

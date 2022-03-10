@@ -242,10 +242,6 @@ export const getRulesData = (
       boolChild("IsRoleAccount", "Is the email address a role-based account. For example - admin, info, sales.", false),
       boolChild("IsSyntaxValid", "Is this a valid email address.", false),
       boolChild("IsDomainValid", "Is the email domain valid.", false),
-      boolChild("IsSSNCompleted", "Has the SSN been completed as part of the identity completion.", false),
-      boolChild("IsDOBCompleted", "Has the Date of Birth been completed as part of the identity completion", false),
-      stringChild("SSNCompletedConfidenceLevel", "the level of confidence in the SSN that was found"),
-
       // Live features
       boolChild("HasData", "true if we found email intelligence about given email address", false),
       stringChild("Error", "error string about email intelligence. possible value is ERROR_FROM_PROVIDER"),
@@ -259,6 +255,22 @@ export const getRulesData = (
       stringChild("ReasonCode", "Reason codes related to this email"),
       boolChild("IsBlocklisted", "email address is blocklisted by you", false),
       boolChild("IsBlocklistedByNetwork", "email address is blocklisted by any merchant in sardine network", false),
+      new FeatureItem(
+        "TransactionCount",
+        [new FeatureItem("15MIN"), new FeatureItem("1HR"), new FeatureItem("3HR"), new FeatureItem("24HR")],
+        "1",
+        DATA_TYPES.int,
+        false,
+        "Total transaction count associated with the email in the given time window"
+      ),
+      new FeatureItem(
+        "TransactionAmount",
+        [new FeatureItem("15MIN"), new FeatureItem("1HR"), new FeatureItem("3HR"), new FeatureItem("24HR")],
+        "100.0",
+        DATA_TYPES.float,
+        false,
+        "Total transaction amount associated with the email in the given time window"
+      ),
     ]),
     new FeatureItem("Phone", [
       stringChild("PhoneNumber", "PhoneNumber"),
@@ -300,6 +312,22 @@ export const getRulesData = (
       boolChild("SSNMatch", "SSN matched with SSN returned by phone intelligence provider", false),
       boolChild("IsBlocklisted", "phone is blocklisted by you", false),
       boolChild("IsBlocklistedByNetwork", "phone is blocklisted by any merchant in sardine network", false),
+      new FeatureItem(
+        "TransactionCount",
+        [new FeatureItem("15MIN"), new FeatureItem("1HR"), new FeatureItem("3HR"), new FeatureItem("24HR")],
+        "1",
+        DATA_TYPES.int,
+        false,
+        "Total transaction count associated with the phone in the given time window"
+      ),
+      new FeatureItem(
+        "TransactionAmount",
+        [new FeatureItem("15MIN"), new FeatureItem("1HR"), new FeatureItem("3HR"), new FeatureItem("24HR")],
+        "100.0",
+        DATA_TYPES.float,
+        false,
+        "Total transaction amount associated with the phone in the given time window"
+      ),
     ]),
 
     new FeatureItem("Sanction", [

@@ -675,7 +675,7 @@ const SessionsDetails = (): JSX.Element => {
           <DetailsHeaderParent>
             <DetailsHeaderChild>
               <DetailsHeaderValue id="risk_level_value">
-                <CircularRiskLevel risk_level={customerData ? customerData.risk_level : ""} />
+                <CircularRiskLevel risk_level={customerData ? customerData.risk_level : ""} label="Risk Level" />
               </DetailsHeaderValue>
             </DetailsHeaderChild>
             <div>
@@ -715,6 +715,11 @@ const SessionsDetails = (): JSX.Element => {
                     lastName={customerData?.last_name || ""}
                     customerScore={customerData?.customer_score || ""}
                     emailAddress={customerData?.email_address || ""}
+                    city={
+                      customerData === undefined || customerData.address_fields_list.length === 0
+                        ? ""
+                        : customerData.address_fields_list[0].city
+                    }
                     phone={customerData?.phone || ""}
                     carrier={customerData?.carrier || ""}
                     phoneCountry={customerData?.phone_country || ""}

@@ -8,7 +8,7 @@ const authModel = (db: pgPromise.IDatabase<{}>) => {
 
   const getOrganisations = () => db.any(`SELECT * FROM organisation`);
 
-  const createOrganisaion = (display_name: string, userId: string) =>
+  const createOrganization = (display_name: string, userId: string) =>
     db.one(
       `
       INSERT INTO organisation ( display_name, created_by)
@@ -35,7 +35,7 @@ const authModel = (db: pgPromise.IDatabase<{}>) => {
     return result.is_superadmin;
   };
 
-  const createSuperadmin = async (name: string = "", email: string, email_verified: boolean, uid: string) => {
+  const createSuperadmin = async (name: string, email: string, email_verified: boolean, uid: string) => {
     const user = await db.oneOrNone(
       `
       SELECT * FROM users WHERE email = $1
@@ -66,7 +66,7 @@ const authModel = (db: pgPromise.IDatabase<{}>) => {
   };
 
   const createUser = async (
-    name: string = "",
+    name: string,
     email: string,
     email_verified: boolean,
     organisation: string,
@@ -202,7 +202,7 @@ const authModel = (db: pgPromise.IDatabase<{}>) => {
   return {
     getSuperadminEmails,
     getOrganisations,
-    createOrganisaion,
+    createOrganization,
     checkSuperAdmin,
     createSuperadmin,
     createUser,

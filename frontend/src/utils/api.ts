@@ -75,6 +75,8 @@ import {
   GetFeedbacksResponse,
   FetchInvitationsResponse,
   FeedbacksRequestBody,
+  CreateOrganisation,
+  CreateOrganisationResponse,
 } from "sardine-dashboard-typescript-definitions";
 import { CryptoObject } from "components/Customers/UserView";
 
@@ -192,7 +194,8 @@ interface Request {
     | SortRulesRequestBody
     | FeedbackRequest
     | UpdateRuleRequest
-    | UpdateRuleRequest2;
+    | UpdateRuleRequest2
+    | CreateOrganisation;
 }
 
 export interface ClientIdData {
@@ -318,13 +321,13 @@ export const googleSignInResult = async (data: SignInData) => {
   }
 };
 
-export const createOrganisaion = (data: AnyTodo) =>
+export const createOrganization = (data: CreateOrganisation): Promise<CreateOrganisationResponse> =>
   httpMethods[createOrganisationRoute.httpMethod]({ url: getApiPath(authUrls.basePath, createOrganisationRoute.path), data });
 
 export const fetchOrganisationNames = (): Promise<OrgName[]> =>
   httpMethods[fetchOrganisationRoute.httpMethod]({ url: getApiPath(authUrls.basePath, fetchOrganisationRoute.path) });
 
-export const fetchOrganisationDetail = async (): Promise<Result<Organisation[]>> => {
+export const fetchOrganisationDetail = async (): Promise<Result<Organisation[], Error>> => {
   try {
     const response = await httpMethods[fetchOrganisationDetailRoute.httpMethod]({
       url: getApiPath(authUrls.basePath, fetchOrganisationDetailRoute.path),
@@ -346,7 +349,7 @@ export const getUser = () => httpMethods[getUserRoute.httpMethod]({ url: getApiP
 export const getAllUsers = () =>
   httpMethods[getUsersRoute.httpMethod]({ url: getApiPath(authUrls.basePath, getUsersRoute.path) });
 
-export const getOrganizationUsers = async (organization: string): Promise<Result<OrganizationUsersResponse>> => {
+export const getOrganizationUsers = async (organization: string): Promise<Result<OrganizationUsersResponse, Error>> => {
   try {
     const url = new URL(getApiPath(authUrls.basePath, getOrganizeUsersRoute.path), window.location.origin);
     url.searchParams.append("organization", organization);
@@ -511,7 +514,7 @@ export const getClientIdObject = (id: string): Promise<ClientIdObject> => {
   return httpMethods[organisationUrls.routes.getClientIdRoute.httpMethod]({ url: String(url) });
 };
 
-export const getClientIdResult = async (id: string): Promise<Result<string>> => {
+export const getClientIdResult = async (id: string): Promise<Result<string, Error>> => {
   try {
     const response = await getClientIdObject(id);
     if (isClientIdObject(response)) {
@@ -552,7 +555,7 @@ export const getRules = (clientId: string, checkpoint: string): Promise<Array<Ru
   return httpMethods[listRuleRoute.httpMethod]({ url: String(url) });
 };
 
-export const getRulesResult = async (clientId: string, checkpoint: string): Promise<Result<Array<Rule>>> => {
+export const getRulesResult = async (clientId: string, checkpoint: string): Promise<Result<Array<Rule>, Error>> => {
   try {
     const rules = await getRules(clientId, checkpoint);
     return createSuccess(rules);
@@ -818,7 +821,7 @@ export const fetchDataDistributionChartValues = async <ResultType>({
   organisation: string;
   chartName: ChartName;
   typeGuard: (data: unknown) => data is ResultType;
-}): Promise<Result<ResultType>> => {
+}): Promise<Result<ResultType, Error>> => {
   try {
     const response = await httpMethods[getChartValues.httpMethod]({
       url: `/api${dataDistributionUrls.basePath}${getChartValues.path}?organisation=${organisation}&chart=${chartName}`,
@@ -960,7 +963,7 @@ export const submitFeedback = (body: FeedbackRequest, organisation?: string) => 
   return httpMethods.post({ url: String(url), data: body });
 };
 
-export const getFeedbacks = async (sessionKey: string): Promise<Result<GetFeedbacksResponse>> => {
+export const getFeedbacks = async (sessionKey: string): Promise<Result<GetFeedbacksResponse, Error>> => {
   try {
     const url = new URL(getApiPath(feedbackUrls.basePath, getFeedbacksRoute.path), window.location.origin);
     url.searchParams.append("sessionKey", sessionKey);

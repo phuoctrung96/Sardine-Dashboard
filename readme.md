@@ -49,6 +49,12 @@ with root user postgres and db postgres. Run following command for one time setu
   sh scripts/setup-db.sh
 ```
 
+Please take a look at Your machine's `pg_hba.conf`. If you are using Mac, it should be in `/usr/local/var/postgres/pg_hba.conf`.
+
+METHODs should be `trust` in your local `pg_hba.conf`. If `scram-sha-256` or other setting is used, please change it to `trust`.
+
+Trouble shooting FAQ: https://www.notion.so/sardine/FAQ-on-DB-9513ccff0423462eaac7ee887fa89f38
+
 Running migrations
 
 ```bash
@@ -60,8 +66,6 @@ Manually insert seed data
 ```
 INSERT INTO "public"."superadmin_emails" ("id", "email") VALUES
 (1, '<your email>');
-INSERT INTO "public"."organisation" ("display_name",  "created_at", "client_id") VALUES
-('demo.dev.sardine.ai', now(), 'e149f2c5-4fce-4aef-98fd-90967c6aef5d');
 ```
 
 To start the development server using concurrently
