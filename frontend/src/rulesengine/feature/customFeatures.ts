@@ -92,6 +92,18 @@ export const getCustomFeatures = (organization?: string): FeatureItem[] => {
       feature: stringChild("Trulioo_postalCode", ""),
       organization: vault,
     },
+    {
+      feature: stringChild("Trulioo_GOVERNMENT_REGISTRY_BusinessRegistrationNumber", ""),
+      organization: vault,
+    },
+    {
+      feature: stringChild("Trulioo_INTERNATIONAL_WATCHLIST_BusinessName", ""),
+      organization: vault,
+    },
+    {
+      feature: stringChild("Trulioo_DOCUMENT_VERIFICATION_Result", ""),
+      organization: vault,
+    },
   ];
   const org = (organization || "").toLowerCase();
   const features: FeatureItem[] = featureLists

@@ -3,6 +3,9 @@ node_modules
 # server's build folder
 dist 
 
+# server's auto-generated migration folder
+migrations
+
 # frontend's build folderr
 build
 

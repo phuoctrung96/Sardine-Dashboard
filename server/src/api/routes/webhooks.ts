@@ -31,7 +31,7 @@ const webhooksRouter = () => {
       type: w.type,
       url: w.url,
       secret: w.secret,
-      name: clientIdOrgs[w.clientId].displayName,
+      name: clientIdOrgs[w.clientId].name,
     }));
     return res.json({ result });
   });

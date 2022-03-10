@@ -262,16 +262,14 @@ const DeviceIntelligence = (): JSX.Element => {
     const startTimestampSeconds = datetimeToTimestamp(startDate, {
       unit: TIME_UNITS.SECOND,
       format: DATE_FORMATS.DATETIME,
-      parseTimezone: TIMEZONE_TYPES.LOCAL,
+      parseTimezone: TIMEZONE_TYPES.UTC,
     });
 
-    const endTimestampSeconds =
-      datetimeToTimestamp(endDate, {
-        unit: TIME_UNITS.SECOND,
-        format: DATE_FORMATS.DATETIME,
-        parseTimezone: TIMEZONE_TYPES.LOCAL,
-      }) +
-      8 * 60 * 60;
+    const endTimestampSeconds = datetimeToTimestamp(endDate, {
+      unit: TIME_UNITS.SECOND,
+      format: DATE_FORMATS.DATETIME,
+      parseTimezone: TIMEZONE_TYPES.UTC,
+    });
 
     try {
       const { result } = await fetchDeviceDetails({

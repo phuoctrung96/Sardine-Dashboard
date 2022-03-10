@@ -85,6 +85,20 @@ export interface OrgName {
   name: string;
 }
 
+export interface CreateOrganisation {
+  organisation: string;
+  user_type: string;
+  parentOrg: string;
+}
+
+export interface CreateOrganisationResponse {
+  name: string;
+  clientID: string;
+  uuid: string;
+  secretKey: string;
+  status: string;
+}
+
 export interface OrganizationUsersResponse extends Array<OrganizationUser> {}
 
 const isOrganisation = (o: unknown): o is Organisation =>

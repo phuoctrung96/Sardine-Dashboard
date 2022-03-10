@@ -322,15 +322,16 @@ const Sidebar = (): JSX.Element => {
       tid: "sidebar_link_customer_intelligence",
       badge: null,
     },
-    {
-      title: "Feedback",
-      path: FEEDBACKS_PATH,
-      activePath: FEEDBACKS_PATH,
-      normalIcon: feedbacks,
-      activeIcon: feedbacksActive,
-      tid: "sidebar_link_feedbacks",
-      badge: null,
-    },
+    // TODO: uncomment the code disclose feedbacks to client, once ready to use with backend as well.
+    // {
+    //   title: "Feedback",
+    //   path: FEEDBACKS_PATH,
+    //   activePath: FEEDBACKS_PATH,
+    //   normalIcon: feedbacks,
+    //   activeIcon: feedbacksActive,
+    //   tid: "sidebar_link_feedbacks",
+    //   badge: null,
+    // },
     {
       title: "Document Verifications",
       path: `${DOCUMENT_VERIFICATIONS_PATH}${cookies.organization ? `?${CLIENT_QUERY_FIELD}=${cookies.organization}` : ""}`,
@@ -452,6 +453,19 @@ const Sidebar = (): JSX.Element => {
             normalIcon={docsIcon}
             title="File A SAR"
             tid="sidebar_link_file_a_sar"
+            badge={null}
+          />
+        </SuperAdminVisible>
+
+        {/* TODO: Remove following once disclosed feedbacks to clients */}
+        <SuperAdminVisible>
+          <HoverToggleMenuLink
+            path={FEEDBACKS_PATH}
+            activePath={FEEDBACKS_PATH}
+            activeIcon={docsIconActive}
+            normalIcon={feedbacks}
+            title="Feedback"
+            tid="sidebar_link_feedbacks"
             badge={null}
           />
         </SuperAdminVisible>

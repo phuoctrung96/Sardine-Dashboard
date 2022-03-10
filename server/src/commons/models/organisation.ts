@@ -84,7 +84,7 @@ const organisationModel = (db: pgPromise.IDatabase<{}>) => {
     return result ? result.client_id : null;
   };
 
-  const getClientIdResult = async (organisation: string): Promise<Result<string>> => {
+  const getClientIdResult = async (organisation: string): Promise<Result<string, Error>> => {
     try {
       const clientId = await getClientId(organisation);
       if (clientId && typeof clientId === "string") {
@@ -148,7 +148,7 @@ const organisationModel = (db: pgPromise.IDatabase<{}>) => {
     return result;
   };
 
-  const getOrganisationsResult = async (organisationID: string): Promise<Result<Organisation[]>> => {
+  const getOrganisationsResult = async (organisationID: string): Promise<Result<Organisation[], Error>> => {
     try {
       const organisations = await getOrganisations(organisationID);
       if (isOrganisationList(organisations)) {
