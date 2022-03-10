@@ -59,6 +59,6 @@ export const captureException = (err: unknown): void => {
   Sentry.captureException(err);
 };
 
-export const captureFailure = (failure: Failure): void => {
+export const captureFailure = (failure: Failure<unknown>): void => {
   captureException(getFailureResult(failure));
 };

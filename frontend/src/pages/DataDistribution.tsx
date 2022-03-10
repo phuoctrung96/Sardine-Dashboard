@@ -150,7 +150,7 @@ const DataDistribution = (): JSX.Element => {
       setChartValues,
     }: {
       setLoadingState: (value: React.SetStateAction<LoadingState>) => void;
-      load: (orgName: string) => Promise<Result<DateRiskExpression[]>>;
+      load: (orgName: string) => Promise<Result<DateRiskExpression[], Error>>;
       setChartValues: (value: React.SetStateAction<DateRiskExpression[]>) => void;
     }) => {
       setLoadingState(LOADING_STATES.LOADING);

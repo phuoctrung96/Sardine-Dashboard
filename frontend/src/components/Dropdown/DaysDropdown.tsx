@@ -7,6 +7,7 @@ import DropdownButton from "./DropdownButton";
 import DateRange from "./DateRange";
 import { DatesProps } from "../../utils/store/interface";
 import { DATE_FORMATS } from "../../constants";
+import dayjs, { Dayjs } from "dayjs";
 
 interface ChartDropdownElement {
   icon: string;
@@ -85,13 +86,14 @@ const INDEX_CUSTOM_DATES = 7;
 
 // Calculate dateIndex based on the startDate and endDate.
 function getDateIndex(startDate?: Date, endDate?: Date) {
-  const startDateMoment = moment.utc(startDate, DATE_FORMATS.DATETIME);
-  const endDateMoment = moment.utc(endDate, DATE_FORMATS.DATETIME);
-  const currentDate = moment.utc();
-  const duration = moment.duration(currentDate.diff(endDateMoment));
-  if (Math.round(duration.asHours()) === 0) {
-    const startEndDuration = moment.duration(endDateMoment.diff(startDateMoment));
-    const difference = Math.round(startEndDuration.asDays());
+  const startDateDayjs = dayjs(startDate).format(DATE_FORMATS.DATETIME);
+  const endDateDayjs = dayjs(endDate).format(DATE_FORMATS.DATETIME);
+  const currentDate = dayjs().toDate();
+  const duration = dayjs(currentDate).diff(endDateDayjs, "day");
+
+  if (Math.round(duration) === 0) {
+    const startEndDuration = dayjs(endDateDayjs).diff(startDateDayjs, "days");
+    const difference = Math.round(startEndDuration);
 
     switch (difference) {
       case 1:
@@ -126,14 +128,14 @@ const DaysDropdown = (props: {
   let startDate: Date | null;
   let endDate: Date | null;
   if (startDateString === undefined) {
-    startDate = moment().utc().subtract({ hours: 24 }).toDate();
+    startDate = dayjs().subtract(24, "hours").toDate();
   } else {
-    startDate = moment.utc(startDateString).toDate();
+    startDate = dayjs(startDateString).toDate();
   }
   if (endDateString === undefined) {
-    endDate = moment().utc().toDate();
+    endDate = dayjs().toDate();
   } else {
-    endDate = moment.utc(endDateString).toDate();
+    endDate = dayjs(endDateString).toDate();
   }
 
   const [open, setOpen] = useState(false);
@@ -153,27 +155,31 @@ const DaysDropdown = (props: {
     };
   }, []);
 
-  const updateDate = (index: number, startMoment: Moment, endMoment: Moment) => {
+  const updateDate = (index: number, start: Dayjs, end: Dayjs | null) => {
     handleUpdateDate(index, {
-      startDate: startMoment.utc().format(DATE_FORMATS.DATETIME),
-      endDate: endMoment.utc().format(DATE_FORMATS.DATETIME),
-      selectedDateIndex: getDateIndex(startMoment.toDate(), endMoment.toDate()),
+      startDate: start.format(DATE_FORMATS.DATETIME),
+      endDate: end?.format(DATE_FORMATS.DATETIME) || "",
+      selectedDateIndex: getDateIndex(start.toDate(), end?.toDate()),
     });
   };
 
-  const handleChangeCustomRange = (arg: { startDate: Date | null; endDate: Date | null }) => {
+  const handleChangeCustomRange = (arg: { startDate: Dayjs | null; endDate: Dayjs | null }) => {
     const { startDate: start, endDate: end } = arg;
-    setDate({
-      startDate: start,
-      endDate: end,
-    });
-    updateDate(INDEX_CUSTOM_DATES, moment(start), moment(end || start).endOf("day"));
+
+    if (start !== null) {
+      setDate({
+        startDate: start?.toDate(),
+        endDate: end ? end?.toDate() : null,
+      });
+
+      updateDate(INDEX_CUSTOM_DATES, start, end);
+    }
   };
 
   const clickedItem = (days: number, index: number) => {
     setSelectedIndex(index);
     if (index !== INDEX_CUSTOM_DATES) {
-      updateDate(index, moment().subtract({ days }), moment());
+      updateDate(index, dayjs().subtract(days, "days"), dayjs());
       setOpen(false);
     }
   };
@@ -206,7 +212,10 @@ const DaysDropdown = (props: {
               field: 0,
               option:
                 date && date.startDate
-                  ? `${date.startDate} - ${date.endDate || moment(date.startDate).endOf("day").toDate()}`
+                  ? `${dayjs(date.startDate).format(DATE_FORMATS.DATE)} - ${
+                      dayjs(date.endDate).format(DATE_FORMATS.DATE) ||
+                      dayjs(date.startDate).endOf("day").format(DATE_FORMATS.DATE)
+                    }`
                   : "Custom Date",
             }
           : CHARTS_DROPDOWN[selectedIndex]

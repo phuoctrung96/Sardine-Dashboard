@@ -1,23 +1,17 @@
-export interface Failure {
-  error: Error;
+export interface Failure<FailureValueType> {
+  failureValue: FailureValueType;
 }
 
-interface Success<ValueType> {
-  value: ValueType;
+interface Success<SuccessValueType> {
+  successValue: SuccessValueType;
 }
 
-export type Result<ValueType> = Failure | Success<ValueType>;
-export const isFailure = (result: Result<unknown>): result is Failure => "error" in result;
+export type Result<SuccessValueType, FailureValueType> = Failure<FailureValueType> | Success<SuccessValueType>;
+export const isFailure = (result: Result<unknown, unknown>): result is Failure<unknown> => "failureValue" in result;
 
-export const getSuccessResult = <ReturnValueType>(result: Success<ReturnValueType>): ReturnValueType => result.value;
-export const getFailureResult = (result: Failure): Error => result.error;
+export const getSuccessResult = <ReturnValueType>(result: Success<ReturnValueType>): ReturnValueType => result.successValue;
+export const getFailureResult = <T = Error>(result: Failure<T>): T => result.failureValue;
 
-// eslint-disable-next-line arrow-body-style
-export const createSuccess = <ValueType>(value: ValueType): Success<ValueType> => {
-  return { value };
-};
+export const createSuccess = <ValueType>(successValue: ValueType): Success<ValueType> => ({ successValue });
 
-// eslint-disable-next-line arrow-body-style
-export const createFailure = (error: Error): Failure => {
-  return { error };
-};
+export const createFailure = <T = Error>(failureValue: T): Failure<T> => ({ failureValue });

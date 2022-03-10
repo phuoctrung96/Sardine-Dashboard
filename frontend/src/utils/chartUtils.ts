@@ -78,7 +78,7 @@ const transformBQToRiskExpressions = (
   return dateRiskList;
 };
 
-export const loadDeviceSessionRiskLevelBreakdown = async (orgName: string): Promise<Result<DateRiskExpression[]>> => {
+export const loadDeviceSessionRiskLevelBreakdown = async (orgName: string): Promise<Result<DateRiskExpression[], Error>> => {
   try {
     const result = await fetchDataDistributionChartValues({
       chartName: CHART_NAMES.DEVICE_SESSION_RISK_LEVEL_BREAKDOWN,
@@ -99,13 +99,11 @@ export const loadDeviceSessionRiskLevelBreakdown = async (orgName: string): Prom
   }
 };
 
-const loadCustomerRiskLevel = async (func: () => Promise<Result<CustomerRiskLevelSessionDistributionRowsList>>) => {
+const loadCustomerRiskLevel = async (func: () => Promise<Result<CustomerRiskLevelSessionDistributionRowsList, Error>>) => {
   try {
     const result = await func();
     if (isFailure(result)) {
-      return {
-        error: getFailureResult(result),
-      };
+      return createFailure(getFailureResult(result));
     }
     const bigQueryResult = getSuccessResult(result);
     const value = transformBQToRiskExpressions(bigQueryResult);
@@ -118,7 +116,7 @@ const loadCustomerRiskLevel = async (func: () => Promise<Result<CustomerRiskLeve
   }
 };
 
-export const loadCustomerRiskLevelSessionDistribution = async (orgName: string): Promise<Result<DateRiskExpression[]>> => {
+export const loadCustomerRiskLevelSessionDistribution = async (orgName: string): Promise<Result<DateRiskExpression[], Error>> => {
   const result = await loadCustomerRiskLevel(async () => {
     const res = await fetchDataDistributionChartValues({
       organisation: orgName,
@@ -130,7 +128,7 @@ export const loadCustomerRiskLevelSessionDistribution = async (orgName: string):
   return result;
 };
 
-export const loadCustomerEmailRiskLevelDistribution = async (orgName: string): Promise<Result<DateRiskExpression[]>> => {
+export const loadCustomerEmailRiskLevelDistribution = async (orgName: string): Promise<Result<DateRiskExpression[], Error>> => {
   const result = await loadCustomerRiskLevel(async () => {
     const res = await fetchDataDistributionChartValues({
       organisation: orgName,

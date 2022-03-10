@@ -452,16 +452,14 @@ const Customers = (): JSX.Element => {
         const startDateTimestamp = datetimeToTimestamp(startDate, {
           unit: TIME_UNITS.SECOND,
           format: DATE_FORMATS.DATETIME,
-          parseTimezone: TIMEZONE_TYPES.LOCAL,
+          parseTimezone: TIMEZONE_TYPES.UTC,
         });
 
-        const endDateTimestamp =
-          datetimeToTimestamp(endDate, {
-            unit: TIME_UNITS.SECOND,
-            format: DATE_FORMATS.DATETIME,
-            parseTimezone: TIMEZONE_TYPES.LOCAL,
-          }) +
-          8 * 60 * 60; // adding 8 hrs on end date to handle date conversion issue
+        const endDateTimestamp = datetimeToTimestamp(endDate, {
+          unit: TIME_UNITS.SECOND,
+          format: DATE_FORMATS.DATETIME,
+          parseTimezone: TIMEZONE_TYPES.UTC,
+        });
 
         const { sessions, pageCursor } = await getSessions(
           clientId,

@@ -30,6 +30,8 @@ import search_icon from "../utils/logo/search_light.svg";
 import ActionPopup from "../components/Queues/Components/ActionPopup";
 import { getSessionslist } from "../utils/api";
 import { convertToCustomerResponse } from "./Customers";
+import { datetimeToTimestamp } from "../utils/timeUtils";
+import { TIME_UNITS, DATE_FORMATS, TIMEZONE_TYPES } from "../constants";
 
 const searchFields = ["session_key", "customer_id", "status"];
 
@@ -228,8 +230,18 @@ const Sessions: React.FC = () => {
       try {
         setIsLoading(true);
 
-        const startDateTimestamp: number = moment(startDate, "YYYY-MM-DD HH:mm:ss").unix();
-        const endDateTimestamp: number = moment(endDate, "YYYY-MM-DD HH:mm:ss").unix() + 8 * 60 * 60;
+        const startDateTimestamp = datetimeToTimestamp(startDate, {
+          unit: TIME_UNITS.SECOND,
+          format: DATE_FORMATS.DATETIME,
+          parseTimezone: TIMEZONE_TYPES.UTC,
+        });
+
+        const endDateTimestamp = datetimeToTimestamp(endDate, {
+          unit: TIME_UNITS.SECOND,
+          format: DATE_FORMATS.DATETIME,
+          parseTimezone: TIMEZONE_TYPES.UTC,
+        });
+
         // TODO: Use react-query for caching.
         const { list, isLast, newPageCursor } = await getSessionslist(
           queueID,

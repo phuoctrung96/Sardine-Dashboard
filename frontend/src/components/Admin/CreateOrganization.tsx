@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useUserStore } from "store/user";
 import { Modal, Button, FormControl, Spinner, Form, Row } from "react-bootstrap";
 import { useToasts } from "react-toast-notifications";
-import { MULTI_ORG_ADMIN, AnyTodo } from "sardine-dashboard-typescript-definitions";
+import { MULTI_ORG_ADMIN, Organization } from "sardine-dashboard-typescript-definitions";
 import { captureException, getErrorMessage } from "utils/errorUtils";
-import { createOrganisaion, getAllAdminUsers } from "../../utils/api";
+import { createOrganization, getAllAdminUsers } from "../../utils/api";
 import { ErrorText } from "../RulesModule/styles";
 import { Title } from "./styles";
 import RecursiveDropdown from "../Common/RecursiveDropdown";
@@ -14,7 +14,7 @@ interface IProps {
   show: boolean;
   isSuperAdmin: boolean;
   handleClose: () => void;
-  handleSuccess: (data: AnyTodo) => void;
+  handleSuccess: (data: Organization) => void;
 }
 
 interface IAdminUsers {
@@ -70,7 +70,7 @@ const CreateOrganization = (p: IProps) => {
       setIsLoading(true);
       const parent = isSuperAdmin ? (isAdmin || selectedOrg.toLowerCase() === "none" ? "" : selectedOrg) : organisation;
 
-      const data = await createOrganisaion({
+      const data = await createOrganization({
         organisation: newOrganisation,
         user_type: isAdmin ? MULTI_ORG_ADMIN : "user",
         parentOrg: parent,
@@ -84,7 +84,13 @@ const CreateOrganization = (p: IProps) => {
         autoDismiss: true,
       });
 
-      handleSuccess(data);
+      const sucessResponse: Organization = {
+        clientID: data.clientID,
+        name: data.name,
+        users: [],
+      };
+
+      handleSuccess(sucessResponse);
     } catch (e) {
       setIsLoading(false);
       setError(`${e}`);

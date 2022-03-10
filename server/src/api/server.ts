@@ -42,7 +42,11 @@ logger.info(`SARDINE_ENV is set to ${process.env.SARDINE_ENV}`);
 const startHttpServer = async () => {
   await loadSecrets();
   const app = express();
-  app.use(pinoHttp());
+  app.use(
+    pinoHttp({
+      useLevel: "silent", // Make the HTTP log silent until we enable the log collection in BigQuery/Datadog.
+    })
+  );
   app.use(Sentry.Handlers.requestHandler());
   app.use(mw.assignId);
   app.enable("trust proxy");
@@ -128,4 +132,4 @@ const startHttpServer = async () => {
   return server;
 };
 
-startHttpServer();
+startHttpServer().then().catch(captureException);

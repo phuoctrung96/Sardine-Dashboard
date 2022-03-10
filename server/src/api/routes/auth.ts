@@ -13,6 +13,7 @@ import {
   MULTI_ORG_ADMIN,
   SARDINE_ADMIN,
   AUDIT_LOG_TYPES,
+  CreateOrganisation,
 } from "sardine-dashboard-typescript-definitions";
 import { helpers } from "../../commons/helpers";
 import { db } from "../../commons/db";
@@ -20,13 +21,7 @@ import { mw } from "../../commons/middleware";
 import { firebaseAdmin } from "../../commons/firebase";
 import { AuthService } from "../../commons/AuthService";
 import { captureException, getErrorMessage, isErrorWithSpecificCode } from "../../utils/error-utils";
-import {
-  RegistrationRequest,
-  GoogleSigninRequest,
-  LoginRequest,
-  CreateOrganisation,
-  RequestWithCurrentUser,
-} from "../request-interface";
+import { RegistrationRequest, GoogleSigninRequest, LoginRequest, RequestWithCurrentUser } from "../request-interface";
 import { resetPasswordRateLimitByEmailMw, resetPasswordRateLimitByIpMw } from "../middlewares/auth";
 import { writeAuditLog } from "../utils/routes/audit";
 

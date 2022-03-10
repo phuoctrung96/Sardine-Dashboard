@@ -43,11 +43,11 @@ model ErrorLog {
 
 model InvitationToken {
   id        BigInt   @id @default(autoincrement())
-  orgId     BigInt?  @map("organisation_id")
-  token     String?  @db.Uuid
+  orgId     BigInt   @map("organisation_id")
+  token     String   @db.Uuid
   expiredAt DateTime @default(dbgenerated("(now() + '7 days'::interval)")) @map("expired_at") @db.Timestamptz(6)
-  email     String?  @db.VarChar(255)
-  org       Org?     @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  email     String   @db.VarChar(255)
+  org       Org      @relation(fields: [orgId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("invitation_tokens")
 }
@@ -61,14 +61,14 @@ model Migration {
 }
 
 model Org {
-  id               BigInt            @id @default(autoincrement())
-  displayName      String            @map("display_name")
-  createdBy        BigInt?           @map("created_by")
-  createdAt        DateTime?         @default(now()) @map("created_at") @db.Timestamptz(6)
-  clientId         String            @map("client_id")
-  parentOrgUuid    String?           @map("parent_organization_uuid")
-  isAdmin          Boolean?          @map("is_admin")
-  invitationTokens InvitationToken[]
+  id                BigInt            @id @default(autoincrement())
+  name              String            @map("display_name")
+  createdBy         BigInt?           @map("created_by")
+  createdAt         DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  clientId          String            @map("client_id")
+  parentOrgClientId String?           @map("parent_organization_uuid")
+  isAdmin           Boolean           @map("is_admin")
+  invitationTokens  InvitationToken[]
 
   @@map("organisation")
 }
@@ -76,10 +76,10 @@ model Org {
 model OrgJira {
   id        BigInt    @id @default(autoincrement())
   clientId  String    @map("client_id")
-  email     String?
-  token     String?
-  url       String?
-  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  email     String
+  token     String
+  url       String
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime? @map("updated_at") @db.Timestamptz(6)
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
 
@@ -87,26 +87,26 @@ model OrgJira {
 }
 
 model Webhook {
-  id        BigInt       @id @default(autoincrement())
-  clientId  String       @map("client_id")
-  type      WebhookType? @default(CASE_STATUS)
-  url       String?
+  id        BigInt      @id @default(autoincrement())
+  clientId  String      @map("client_id")
+  type      WebhookType @default(CASE_STATUS)
+  url       String
   secret    String
-  createdAt DateTime?    @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime?    @map("updated_at") @db.Timestamptz(6)
-  deletedAt DateTime?    @map("deleted_at") @db.Timestamptz(6)
+  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime?   @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime?   @map("deleted_at") @db.Timestamptz(6)
 
   @@map("organization_webhooks")
 }
 
 model Session {
   id          String    @id @db.Uuid
-  userId      BigInt?   @map("user_id")
+  userId      BigInt    @map("user_id")
   ipAddress   String    @map("ip_address") @db.Inet
   loggedOutAt DateTime? @map("logged_out_at") @db.Timestamptz(6)
   expiredAt   DateTime  @default(dbgenerated("(now() + '00:15:00'::interval)")) @map("expired_at") @db.Timestamptz(6)
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  user        User?     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user        User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("sessions")
 }
@@ -122,8 +122,8 @@ model User {
   email           String    @unique
   firebaseUserId  String    @map("firebase_user_id")
   orgId           BigInt?   @map("organisation_id")
-  userRole        UserRole? @default(USER) @map("user_role")
-  isEmailVerified Boolean?  @default(false) @map("is_email_verified")
+  userRole        UserRole  @default(USER) @map("user_role")
+  isEmailVerified Boolean   @default(false) @map("is_email_verified")
   deletedAt       DateTime? @map("deleted_at") @db.Timestamptz(6)
   sessions        Session[]
 
