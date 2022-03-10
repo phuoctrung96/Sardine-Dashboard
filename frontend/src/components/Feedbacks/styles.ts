@@ -108,7 +108,6 @@ export const AddFilterBadge = styled(Badge)`
   font-weight: normal;
   margin-left: 6px;
   border-radius: 50%;
-  padding: 0 7px;
   font-size: 11px;
 `;
 
