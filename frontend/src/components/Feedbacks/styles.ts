@@ -1,6 +1,15 @@
-import { Table, TableCell, TableContainer, TableHead, Pagination } from "@mui/material";
+import {
+  Table,
+  TableCell,
+  TableContainer,
+  TableHead,
+  Pagination,
+  Badge,
+  Button,
+  ToggleButtonGroup,
+  ToggleButton,
+} from "@mui/material";
 import DaysDropdown from "components/Dropdown/DaysDropdown";
-import { Badge, Button, Dropdown, ToggleButtonGroup } from "react-bootstrap";
 import styled from "styled-components";
 
 export const SpaceBetweenContainer = styled.div`
@@ -36,79 +45,49 @@ export const StyledButton = styled(Button)`
   box-shadow: none;
   outline: none;
   background-color: white;
+  text-transform: none;
 `;
 
 export const FeedbackChartSwitch = styled(ToggleButtonGroup)`
-  border-radius: 4;
+  border-radius: 4px;
   margin-right: 30px;
   margin-bottom: -34px;
   z-index: 5;
-  & label {
-    width: 90px;
-    font-style: normal;
-    font-weight: 500;
-    font-size: 13px;
-    line-height: 16px;
-    color: #141a39;
-    background-color: #e6ecfa;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    padding: 8px 16px;
-    box-shadow: none;
-    &:hover,
-    &:active,
-    &:focus {
-      color: #141a39;
-      background-color: #e6ecfa;
-    }
-  }
-  & input[type="radio"]:checked + label {
-    background-color: white;
-    color: #141a39;
-  }
-  & .btn {
-    border: 1px solid #e6ecfa;
-  }
-  & .btn-check:checked + .btn-primary {
-    border-color: #e6ecfa;
+  background-color: #e6ecfa;
+  height: 32px;
+
+  .Mui-selected {
+    background-color: white !important;
   }
 `;
 
-export const AddFeedbackDropdown = styled(Dropdown)`
-  & .dropdown-toggle {
-    padding: 10px 12px 10px 16px;
-    border-radius: 8px;
-    background-color: #3147ff;
-    border: none;
-    color: white;
-    font-size: 14;
-    margin-right: 72;
-    box-shadow: none;
-  }
-  & .dropdown-toggle::after {
-    display: none;
-  }
+export const ChartTypeButton = styled(ToggleButton)`
+  width: 50%;
+  text-transform: unset !important;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 16px;
+`;
 
-  & .dropdown-menu {
-    padding: 12px 8px;
-    min-width: 180px;
-    & .dropdown-item {
-      color: #141a39;
-      &:hover {
-        background-color: #f2f6ff;
-      }
-    }
-  }
+export const AddFeedbackDropdown = styled(Button)`
+  padding: 10px 12px 10px 16px;
+  border-radius: 8px;
+  background-color: #3147ff;
+  border: none;
+  color: white;
+  font-size: 14;
+  margin-right: 72;
 `;
 
 export const AddFilterBadge = styled(Badge)`
-  background-color: #808dff !important;
-  color: white;
-  font-weight: normal;
-  margin-left: 6px;
-  border-radius: 50%;
-  font-size: 11px;
+  & .MuiBadge-badge {
+    background-color: #808dff;
+    color: white;
+    font-weight: normal;
+    font-size: 11px;
+  }
+  margin: 0 4px 1px 16px;
 `;
 
 export const StyledTableContainer = styled(TableContainer)`
