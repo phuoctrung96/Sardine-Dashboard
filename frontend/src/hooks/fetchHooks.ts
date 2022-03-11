@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient, UseMutationResult } from "react-query";
 import {
   getClientIdObject,
   getRules,
@@ -7,6 +7,8 @@ import {
   fetchInvitations,
   fetchDocumentVerification,
   getCustomerCryptoDetails,
+  fetchSuperAdminEmailObjects,
+  addSuperAdminEmail,
 } from "utils/api";
 import {
   ClientIdObject,
@@ -15,12 +17,14 @@ import {
   DataSource,
   DashboardInvitation,
   DocumentVerification,
+  EmailObject,
 } from "sardine-dashboard-typescript-definitions";
 import { CryptoObject } from "../components/Customers/UserView";
 import { CACHE_KEYS } from "../constants";
 import { QueryResult } from "../interfaces/queryInterfaces";
 import { fetchLatLng, LatLng } from "../components/GoogleMaps";
 import { DeviceProfileResponse } from "../utils/api_response/deviceResponse";
+import { captureException, ErrorWithResponseDataErrorObject } from "../utils/errorUtils";
 
 export const useDeviceProfileFetchResult = ({
   clientId,
@@ -152,6 +156,38 @@ export const useDocumentVerificationFetchResult = ({
 export const useLatLngFetchResult = ({ enabled, address }: { enabled: boolean; address: string }): QueryResult<LatLng> => {
   const { data, error, status } = useQuery<LatLng, Error>([CACHE_KEYS.LAT_LNG, address], () => fetchLatLng(address), { enabled });
   return { status, data, error };
+};
+
+export const useSuperAdminEmailObjectsFetchResult = ({ enabled }: { enabled: boolean }): QueryResult<EmailObject[]> => {
+  const { data, error, status } = useQuery<EmailObject[], Error>(
+    [CACHE_KEYS.SUPER_ADMIN_EMAILS],
+    () => fetchSuperAdminEmailObjects(),
+    {
+      enabled,
+    }
+  );
+
+  return {
+    status,
+    data,
+    error,
+  };
+};
+
+export const useAddSuperAdminEmailMutation = (): UseMutationResult<
+  EmailObject,
+  ErrorWithResponseDataErrorObject | unknown,
+  string,
+  unknown
+> => {
+  const queryclient = useQueryClient();
+
+  const mutation = useMutation((email: string) => addSuperAdminEmail(email), {
+    onSuccess: (_data, _variables, _context) => {
+      queryclient.invalidateQueries(CACHE_KEYS.SUPER_ADMIN_EMAILS).then().catch(captureException);
+    },
+  });
+  return mutation;
 };
 
 export const useCustomerCryptoDetailsFetchResult = ({

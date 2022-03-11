@@ -10,6 +10,9 @@ export const AUDIT_LOG_TYPES = {
   UPDATE_USER: "user-updated",
   DELETE_USER: "user-deleted",
 
+  //---- SUPER ADMIN -----
+  ADD_SUPER_ADMIN: "super-admin-added",
+
   //---- ORGANIZATION -----
   CREATE_ORGANIZATION: "organization-created",
 

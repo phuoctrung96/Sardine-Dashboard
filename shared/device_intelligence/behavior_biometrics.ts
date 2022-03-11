@@ -5,10 +5,19 @@ export interface BehaviorBiometricsPerFlow {
   fields: Array<BiometricField>;
   created_at: number;
   updated_at: number;
-  hesitations_percentage: {
-    amount: number;
-    ltm: number;
-  };
+  num_context_switches: number;
+  hesitation_percentile: HesitationPercentile;
+  hesitations_percentage: HesitationsPercentage
+}
+
+interface HesitationPercentile {
+  ltm: number;
+  non_ltm: number;
+}
+
+interface HesitationsPercentage {
+  amount: number;
+  ltm: number;
 }
 
 export interface BiometricField {

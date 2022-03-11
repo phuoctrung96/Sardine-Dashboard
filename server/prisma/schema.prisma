@@ -111,9 +111,11 @@ model Session {
   @@map("sessions")
 }
 
-model superadmin_emails {
+model SuperAdmin {
   id    BigInt @id @default(autoincrement())
   email String
+
+  @@map("superadmin_emails")
 }
 
 model User {

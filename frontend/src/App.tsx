@@ -36,6 +36,7 @@ import BlockAllowList from "./components/BlockAllowList";
 import AddNewBlockAllowListItem from "./components/BlockAllowList/AddNew";
 import Queues from "./pages/Queues";
 import Sessions from "./pages/Sessions";
+import SuperAdminMembers from "./pages/SuperAdminMembers";
 import SessionsDetails from "./pages/SessionsDetails";
 import PurchaseLimitList from "./components/PurchaseLimits";
 import Webhooks, { WEBHOOK_PATH } from "./components/Webhooks";
@@ -69,6 +70,7 @@ import {
   DATA_DICTIONARY_PATH,
   FEEDBACKS_PATH,
   FEEDBACK_DETAILS_PATH,
+  SUPER_ADMIN_MEMBERS_PATH,
 } from "./modulePaths";
 import Transactions from "./components/Transactions";
 import AdminNotificatons from "./components/Admin/AdminNotificatons";
@@ -160,6 +162,7 @@ const App = (): JSX.Element => {
                     />
                     <Route path={PURCHASE_LIMIT_PATH} element={<SuperAdminOnly element={<PurchaseLimitList />} />} />
                     <Route path={FEATURE_FLAGS_PATH} element={<SuperAdminOnly element={<FeatureFlags />} />} />
+                    <Route path={SUPER_ADMIN_MEMBERS_PATH} element={<SuperAdminOnly element={<SuperAdminMembers />} />} />
                     <Route path={QUEUES_PATH} element={<AuthenticatedOnly element={<Queues />} />} />
                     <Route path={SESSIONS_PATH} element={<AuthenticatedOnly element={<Sessions />} />} />
                     <Route path={SESSION_DETAILS_PATH} element={<AuthenticatedOnly element={<SessionsDetails />} />} />

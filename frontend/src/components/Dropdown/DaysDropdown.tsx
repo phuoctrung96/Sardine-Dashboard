@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef, CSSProperties } from "react";
 import styled from "styled-components";
-import moment, { Moment } from "moment";
 import { replaceAllSpacesWithUnderscores } from "utils/stringUtils";
+import dayjs, { Dayjs } from "dayjs";
 import DropwdownItem from "./DropdownItem";
 import DropdownButton from "./DropdownButton";
 import DateRange from "./DateRange";
 import { DatesProps } from "../../utils/store/interface";
 import { DATE_FORMATS } from "../../constants";
-import dayjs, { Dayjs } from "dayjs";
 
 interface ChartDropdownElement {
   icon: string;

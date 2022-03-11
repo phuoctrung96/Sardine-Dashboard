@@ -182,6 +182,7 @@ export const TableBodyCrypto = ({ c }: { c: CryptoObject }): JSX.Element => {
       <Link
         id="coinbase_address_link"
         target="_blank"
+        rel="noreferrer"
         href={`https://app.analytics.coinbase.com/${c.currency_code.toLowerCase()}/addresses/${c.address}`}
       >
         LINK
@@ -192,6 +193,7 @@ export const TableBodyCrypto = ({ c }: { c: CryptoObject }): JSX.Element => {
       <Link
         id="provider_link"
         target="_blank"
+        rel="noreferrer"
         href={`https://www.blockchain.com/${c.currency_code.toLowerCase()}/address/${c.address}`}
       >
         LINK

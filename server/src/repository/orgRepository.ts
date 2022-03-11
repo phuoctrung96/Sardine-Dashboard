@@ -15,6 +15,19 @@ export const findOrg = async ({ clientId }: { clientId: string }): Promise<Org |
   return undefined;
 };
 
+export const findOrgById = async (id: bigint): Promise<Org | undefined> => {
+  try {
+    const org = await prisma.org.findFirst({ where: { id } });
+    if (org === null) {
+      return undefined;
+    }
+    return org;
+  } catch (e) {
+    captureException(e);
+  }
+  return undefined;
+};
+
 export const listOrgs = async ({ clientIds }: { clientIds: string[] }): Promise<Org[]> => {
   try {
     const orgs = await prisma.org.findMany({ where: { clientId: { in: clientIds } } });

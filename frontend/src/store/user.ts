@@ -6,7 +6,7 @@ import { SARDINE_ADMIN, AnyTodo } from "sardine-dashboard-typescript-definitions
 import { createSetWithReplaceParamLast, immer } from "./utils";
 import { ADMIN_ROLES } from "../constants";
 
-interface UseUserStore {
+export interface UseUserStore {
   isAuthenticated: boolean;
   role?: string;
   organisation: string;

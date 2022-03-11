@@ -29,6 +29,7 @@ export const CACHE_KEYS = {
   DASHBOARD_INVITATIONS: "dashboardInvitations",
   DEVICE_PROFILE: "deviceProfile",
   DOCUMENT_VERIFICATION: "documentVerification",
+  SUPER_ADMIN_EMAILS: "superAdminEmails",
   ORGANIZATION_NAMES: "organizationNames",
   RULES: "rules",
   CLIENT_ID: "clientId",

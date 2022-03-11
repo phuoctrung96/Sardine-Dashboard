@@ -1,7 +1,8 @@
 import DataCard, { CardAttribute } from "../DataCard";
 import creditCardIcon from "../../../utils/logo/credit_card.svg";
+import { Link } from "../Links";
 
-const HEADER = "Payment Method";
+const HEADER = "BIN";
 
 interface PaymentMethodProps {
   paymentMethod: string;
@@ -71,7 +72,11 @@ const PaymentMethod = (props: PaymentMethodProps): JSX.Element => {
   if (first6) {
     attributes.push({
       key: "First 6",
-      value: first6,
+      value: (
+        <Link id="binSearchLink" href="https://binlist.net/" rel="noreferrer" target="_blank">
+          {first6}
+        </Link>
+      ),
       toolTip: "First 6 digit of card number",
     });
   }

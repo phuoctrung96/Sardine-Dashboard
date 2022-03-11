@@ -1442,7 +1442,7 @@ const ManageRule: React.FC = () => {
           }
         }
 
-        if (ruleDetails === null || ruleDetails === undefined) {
+        if (!ruleDetails || !ruleDetails.id) {
           setApiInvoking(true);
 
           const res = await createRule(payload, organisation.name);

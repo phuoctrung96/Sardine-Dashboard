@@ -1,6 +1,7 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+npm run format
 npx lint-staged
 cd frontend
 npx lint-staged

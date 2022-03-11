@@ -57,12 +57,15 @@ export const FeedbackDetails = () => {
             }}
           >
             <span
+              role="button"
+              tabIndex={0}
               style={{
                 color: "#636D9C",
                 cursor: "pointer",
                 marginLeft: 44,
               }}
               onClick={() => navigate(-1)}
+              onKeyPress={() => navigate(-1)}
             >
               {"< Feedback"}
             </span>{" "}

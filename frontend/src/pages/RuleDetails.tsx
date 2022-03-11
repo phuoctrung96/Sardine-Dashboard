@@ -40,6 +40,7 @@ import {
   START_DATE_QUERY_FIELD,
 } from "../utils/constructFiltersQueryParams";
 import { RuleStatsTable } from "../components/RulesModule/RuleStatsTable";
+import DuplicateRule from "../components/RulesModule/DuplicateRule";
 
 const PARAM_KEYS = SEARCH_PARAM_KEYS[RULE_DETAILS_PATH];
 
@@ -303,6 +304,16 @@ const RuleDetails = (): JSX.Element => {
     return "-";
   };
 
+  const duplicateRuleAction = () => {
+    const data = { ...ruleDetails, id: undefined, queueID: undefined };
+    navigate(
+      { pathname: MANAGE_RULE },
+      {
+        state: { ruleDetails: data },
+      }
+    );
+  };
+
   const filterStartDate = dayjs().subtract(7, "day").utc().format(DATE_FORMATS.DATETIME);
   const filterEndDate = dayjs().utc().format(DATE_FORMATS.DATETIME);
   const ciPath = `${CUSTOMERS_PATH}?rule_id=${ruleID}&${START_DATE_QUERY_FIELD}=${filterStartDate}&${END_DATE_QUERY_FIELD}=${filterEndDate}&${CLIENT_QUERY_FIELD}=${org}`;
@@ -372,6 +383,7 @@ const RuleDetails = (): JSX.Element => {
                   >
                     Deprecate
                   </PrimaryButton>
+                  <DuplicateRule onClick={() => duplicateRuleAction()} />
                 </HorizontalContainer>
               ) : (
                 <HorizontalContainer>
@@ -384,6 +396,7 @@ const RuleDetails = (): JSX.Element => {
                   >
                     Disable
                   </PrimaryButton>
+                  <DuplicateRule onClick={() => duplicateRuleAction()} />
                 </HorizontalContainer>
               )}
             </HorizontalContainer>

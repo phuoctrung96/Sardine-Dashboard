@@ -14,6 +14,7 @@ export const FEATURE_FLAGS_PATH = "/flags";
 export const QUEUES_PATH = "/queues";
 export const ROOT_PATH = "/";
 export const SESSIONS_PATH = "/sessions";
+export const SUPER_ADMIN_MEMBERS_PATH = "/super-admin-members";
 export const DOCUMENT_VERIFICATIONS_PATH = "/document-verifications";
 export const DOCUMENT_VERIFICATION_DETAIL_PATH = `${DOCUMENT_VERIFICATIONS_PATH}/:id`;
 export const PURCHASE_LIMIT_PATH = "/purchase-limit";
