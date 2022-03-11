@@ -3,7 +3,7 @@ import { Query } from "@google-cloud/datastore";
 import { firebaseAdmin } from "../../firebase";
 import { DOCUMENT_VERIFICATION_KIND } from "./common";
 
-export const WHITELISTED_FILTERS = [
+export const ALLOWLISTED_FILTERS = [
   "session_key",
   "customer_id",
   "verification_id",
@@ -13,7 +13,7 @@ export const WHITELISTED_FILTERS = [
   "image_quality_level",
   "face_match_level",
   "document_match_level",
-];
+] as const;
 
 const ds = firebaseAdmin.datastore;
 
@@ -36,7 +36,7 @@ export class DocumentVerficationDS {
   ) {
     let query: Query = ds.createQuery(DOCUMENT_VERIFICATION_KIND);
 
-    for (const p of WHITELISTED_FILTERS) {
+    for (const p of ALLOWLISTED_FILTERS) {
       if (filters[p]) {
         query = query.filter(p, filters[p]);
       }

@@ -13,6 +13,14 @@ interface ErrorWithResponseData {
   };
 }
 
+export interface ErrorWithResponseDataErrorObject {
+  response: {
+    data: {
+      error: string;
+    };
+  };
+}
+
 interface ErrorWithMessage {
   message: string;
 }
@@ -23,6 +31,15 @@ export const isErrorWithResponseData = (error: unknown): error is ErrorWithRespo
   (error as ErrorWithResponseData).response !== undefined &&
   (error as ErrorWithResponseData).response.data !== undefined &&
   typeof (error as ErrorWithResponseData).response.data === "string";
+
+export const isErrorWithResponseDataObject = (error: unknown): error is ErrorWithResponseDataErrorObject =>
+  error !== undefined &&
+  error !== null &&
+  (error as ErrorWithResponseDataErrorObject).response !== undefined &&
+  (error as ErrorWithResponseDataErrorObject).response.data !== undefined &&
+  typeof (error as ErrorWithResponseDataErrorObject).response.data === "object" &&
+  "error" in (error as ErrorWithResponseDataErrorObject).response.data &&
+  typeof (error as ErrorWithResponseDataErrorObject).response.data.error === "string";
 
 export const isErrorWithMessage = (error: unknown): error is ErrorWithMessage =>
   error !== undefined &&

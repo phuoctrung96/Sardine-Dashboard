@@ -6,7 +6,6 @@ import { ErrorText } from "components/RulesModule/styles";
 import LoadingText from "components/Common/LoadingText";
 import { captureException } from "utils/errorUtils";
 import FilterField, { FilterData, getFilters } from "components/Common/FilterField";
-import moment from "moment";
 import { END_DATE_QUERY_FIELD, getDatesFromQueryParams, START_DATE_QUERY_FIELD } from "components/Transactions";
 import { DatesProps } from "utils/store/interface";
 import { SESSIONS_PATH, SESSION_DETAILS_PATH } from "modulePaths";
@@ -141,9 +140,9 @@ const DataList = ({
           {isLoading ? (
             <LoadingText style={loadingStyle} />
           ) : (
-            queuesData.slice(offset, offset + LIMIT).map((d, index) => (
+            queuesData.slice(offset, offset + LIMIT).map((d) => (
               <Queue
-                key={index.toString()}
+                key={d.session_key}
                 sessionData={d}
                 isSelection={selectedSessions.includes(d.session_key)}
                 isCheckActive={selectedSessions.length < MAX_SELECTION_COUNT || selectedSessions.includes(d.session_key)}

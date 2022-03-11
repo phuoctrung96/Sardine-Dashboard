@@ -9,6 +9,7 @@ import * as Sentry from "@sentry/node";
 import { business_db, db } from "../../../commons/db";
 import { mw } from "../../../commons/middleware";
 import { RequestWithCurrentUser } from "../../request-interface";
+import { captureException } from "../../../utils/error-utils";
 
 const {
   routes: { addNewBlockListRoute, deleteNewBlockListRoute, getBlockListRoute, updateNewBlockListRoute },
@@ -29,8 +30,7 @@ const blocklistRouter = () => {
         const result = await business_db.blocklist.getBlocklist(client_id);
         return res.json({ result });
       } catch (e) {
-        Sentry.captureException(e);
-        console.error(e);
+        captureException(e);
         return res.status(500).json({ error: "internal error" });
       }
     }

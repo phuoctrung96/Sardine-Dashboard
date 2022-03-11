@@ -8,6 +8,7 @@ import { RequestWithCurrentUser, RequestWithUser } from "../api/request-interfac
 import { db } from "./db";
 import { captureException } from "../utils/error-utils";
 import { logger } from "./logger";
+import { COOKIE_SESSION } from "../constants";
 
 interface Error {
   status?: number;
@@ -21,7 +22,7 @@ interface Error {
 }
 
 const attachCurrentUserToRequest = (mydb: AnyTodo) => async (req: RequestWithUser, _res: Response, next: NextFunction) => {
-  const sessionId = req.cookies.sardine__sess;
+  const sessionId = req.cookies[COOKIE_SESSION];
 
   if (sessionId && helpers.isValidUuid(sessionId)) {
     const user = await mydb.session.getUserBySessionId(sessionId);

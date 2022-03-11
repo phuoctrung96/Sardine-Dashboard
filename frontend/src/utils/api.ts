@@ -76,6 +76,7 @@ import {
   FetchInvitationsResponse,
   CreateOrganisation,
   CreateOrganisationResponse,
+  EmailObject,
 } from "sardine-dashboard-typescript-definitions";
 import { CryptoObject } from "components/Customers/UserView";
 
@@ -90,7 +91,13 @@ const { addNewCommentRoute, getListCommentRoute } = commentUrls.routes;
 const { addNewQueueRoute, deleteQueueRoute, getListQueueRoute, getListSessionsInQueue, updateQueueRoute } = queueUrls.routes;
 const { getFeatureFlagsOfOrgRoute } = organisationUrls.routes;
 const { getAllFeatureFlagsRoute } = featureFlagUrls.routes;
-const { generateCredentialsRoute, getCredentialsRoute, revokeCredentialsRoute } = superAdminUrls.routes;
+const {
+  generateCredentialsRoute,
+  getCredentialsRoute,
+  revokeCredentialsRoute,
+  listSuperAdminEmailsRoute,
+  addSuperAdminEmailRoute,
+} = superAdminUrls.routes;
 const { updateWebhookRoute, getWebhookRoute, deleteWebhookRoute, createWebhookRoute } = webhookUrls.routes;
 
 const { getTransactionsRoute, getTransactionDetailsRoute } = transactionUrls.routes;
@@ -409,6 +416,16 @@ export const getHealthCheckInboundRequest = (filters: FilterData[], clientId?: s
   return httpMethods[queryInboundRequestUrl.httpMethod]({ url: String(url) }) as Promise<GetHealthCheckInboundRequests>;
 };
 
+export const fetchSuperAdminEmailObjects = (): Promise<EmailObject[]> => {
+  const url = new URL(getApiPath(superAdminUrls.basePath, listSuperAdminEmailsRoute.path), window.location.origin);
+  return httpMethods[listSuperAdminEmailsRoute.httpMethod]({ url: String(url) });
+};
+
+export const addSuperAdminEmail = (email: string): Promise<EmailObject> => {
+  const url = new URL(getApiPath(superAdminUrls.basePath, addSuperAdminEmailRoute.path), window.location.origin);
+  return httpMethods[addSuperAdminEmailRoute.httpMethod]({ url: String(url), data: { email } });
+};
+
 export const getCredentialsByName = (name: string) => {
   const url = new URL(getApiPath(superAdminUrls.basePath, getCredentialsRoute.path), window.location.origin);
   url.searchParams.append("organisation", name);
@@ -469,6 +486,8 @@ export const sendAdminNotification = (subject: string, users: EmailConfig[], mes
       message,
     },
   });
+
+export const fetchSuperAdmins = () => {};
 
 export const getEmailFromToken = (token: string) => get({ url: `/api/auth/get-email-from-token?token=${token}` });
 
@@ -613,7 +632,7 @@ export const disableRule = (data: DisableRuleRequestBody) =>
   httpMethods[disableRuleRoute.httpMethod]({ url: getApiPath(ruleUrls.basePath, disableRuleRoute.path), data });
 
 // Device Intelligence
-export const fetchDeviceDetails = (data: SearchDetailsRequestBody) =>
+export const fetchDeviceDetails = (data: SearchDetailsRequestBody): Promise<{ result: DeviceProfileResponse }> =>
   httpMethods[getDeviceDetailsRoute.httpMethod]({ url: getApiPath(searchUrls.basePath, getDeviceDetailsRoute.path), data });
 
 export const fetchDeviceProfile = (data: FetchDeviceProfileRequestBody): Promise<{ result: DeviceProfileResponse }> =>

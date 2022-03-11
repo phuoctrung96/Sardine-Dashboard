@@ -30,10 +30,7 @@ export interface DeviceProfile {
   fingerprint_id: string;
   confidence_score: number;
   vpn_heuristic: boolean;
-  location: {
-    lon: number;
-    lat: number;
-  };
+  location: Location
   region: string;
   device_age_hours: number;
   referrer: string;
@@ -43,4 +40,19 @@ export interface DeviceProfile {
   updated_at?: string;
   datetime?: string;
   remote_session_level?: string;
+  timestamp: number;
+  ip_location: IPLocation;
+}
+
+interface Location {
+  lat: number;
+  lon: number;
+}
+
+interface IPLocation {
+  longitude: number;
+  region: string;
+  latitude: number;
+  city: string;
+  country: string;
 }

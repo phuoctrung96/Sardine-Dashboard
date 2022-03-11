@@ -322,6 +322,7 @@ const DeviceView: React.FC = () => {
                           <Link
                             id={`link_${d.name}`}
                             href={`https://www.google.com/maps/search/?api=1&query=${d.value.lat},${d.value.lon}`}
+                            rel="noreferrer"
                           >
                             <StyledTableCell>
                               <GrLocation />

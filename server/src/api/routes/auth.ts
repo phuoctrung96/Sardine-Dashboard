@@ -24,6 +24,7 @@ import { captureException, getErrorMessage, isErrorWithSpecificCode } from "../.
 import { RegistrationRequest, GoogleSigninRequest, LoginRequest, RequestWithCurrentUser } from "../request-interface";
 import { resetPasswordRateLimitByEmailMw, resetPasswordRateLimitByIpMw } from "../middlewares/auth";
 import { writeAuditLog } from "../utils/routes/audit";
+import { COOKIE_SESSION } from "../../constants";
 
 const milliSecondsInTwoWeeks = 1209600000;
 const router = express.Router();
@@ -56,7 +57,7 @@ const createSession = async (res: Response, userId: string, ip: string | string[
     sameSite: sessionCookieSameSite,
   };
 
-  res.cookie("sardine__sess", session.id, cookieOptions);
+  res.cookie(COOKIE_SESSION, session.id, cookieOptions);
 };
 
 const authRouter = (authService: AuthService) => {
@@ -406,7 +407,7 @@ const authRouter = (authService: AuthService) => {
 
   router[logoutRoute.httpMethod](logoutRoute.path, mw.requireLoggedIn, async (req: RequestWithCurrentUser, res: Response) => {
     try {
-      const sessionId = req.cookies.sardine__sess;
+      const sessionId = req.cookies[COOKIE_SESSION];
       if (sessionId && helpers.isValidUuid(sessionId)) {
         await db.session.logoutSession((req.currentUser && req.currentUser.id) || "", sessionId);
       }

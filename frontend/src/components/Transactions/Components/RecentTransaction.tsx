@@ -44,10 +44,10 @@ const RecentTransaction: React.FC<Props> = (props) => {
                 </StyledTr>
               </thead>
               <tbody>
-                {transactions.map((d, index) => {
+                {transactions.map((d) => {
                   const { id, amount, action_type, risk_level, aml_level, item_category, created_milli } = d;
                   return (
-                    <StyledTr key={index.toString()}>
+                    <StyledTr key={id}>
                       <Cell>{moment(created_milli).format("LLL")}</Cell>
                       <Cell>{id || "-"}</Cell>
                       <Cell>{amount.toFixed(2) || "-"}</Cell>

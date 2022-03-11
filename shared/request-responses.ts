@@ -132,6 +132,11 @@ export interface OrgAdmin {
   }>;
 }
 
+export interface EmailObject {
+  email: string;
+  id: number;
+}
+
 export interface OrgAdminList extends Array<OrgAdmin> {}
 
 export interface GetFeedbacksResponse extends Array<Feedback> {}

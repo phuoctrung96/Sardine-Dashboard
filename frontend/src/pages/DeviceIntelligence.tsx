@@ -8,14 +8,13 @@ import { isErrorWithResponseStatus } from "utils/errorUtils";
 import { replaceAllUnderscoresWithSpaces } from "utils/stringUtils";
 import * as Sentry from "@sentry/react";
 import {
-  AnyTodo,
   DATA_SOURCE,
   DeviceProfile,
   DEVICE_WHITELISTED_FILTERS,
   SOURCE_QUERY_FIELD,
 } from "sardine-dashboard-typescript-definitions";
 import { useCookies } from "react-cookie";
-import { selectIsAdmin, selectIsSuperAdmin, useUserStore } from "store/user";
+import { selectIsAdmin, selectIsSuperAdmin, UseUserStore, useUserStore } from "store/user";
 import { getClientFromQueryParams } from "utils/getClientFromQueryParams";
 import { datetimeToTimestamp } from "utils/timeUtils";
 import Layout from "../components/Layout/Main";
@@ -80,7 +79,6 @@ export function getSourceFromQueryParams(pathSearch: string, isSuperAdmin: boole
   const searchParams = new URLSearchParams(pathSearch);
   return searchParams.get(SOURCE_QUERY_FIELD) || (isSuperAdmin ? DATA_SOURCE.DATASTORE : DATA_SOURCE.ELASTIC_SEARCH);
 }
-
 const DeviceIntelligence = (): JSX.Element => {
   const limit = 100;
   const { state, dispatch } = useContext(StoreCtx);
@@ -96,7 +94,7 @@ const DeviceIntelligence = (): JSX.Element => {
 
   const { addToast } = useToasts();
 
-  const { isSuperAdmin, isAdmin, userOrganization } = useUserStore((state: AnyTodo) => ({
+  const { isSuperAdmin, isAdmin, userOrganization } = useUserStore((state: UseUserStore) => ({
     userOrganization: state.organisation,
     isSuperAdmin: selectIsSuperAdmin(state),
     isAdmin: selectIsAdmin(state),
@@ -126,7 +124,7 @@ const DeviceIntelligence = (): JSX.Element => {
 
   const manageStoreBeforePush = () => {
     const payload = {
-      list: deviceData as AnyTodo,
+      list: deviceData,
       offset,
       organisation,
       deviceId,
@@ -140,7 +138,7 @@ const DeviceIntelligence = (): JSX.Element => {
     return payload;
   };
 
-  const tableColumns: DataColumn<AnyTodo>[] = [
+  const tableColumns: DataColumn<DeviceProfile>[] = [
     {
       title: "Session Key",
       field: "session_key",
@@ -157,13 +155,13 @@ const DeviceIntelligence = (): JSX.Element => {
       title: "Session Risk",
       field: "session_risk",
       grouping: false,
-      render: (rowData: DeviceProfile) => <Badge title={rowData.session_risk || "unknown"} />,
+      render: (rowData) => <Badge title={rowData.session_risk || "unknown"} />,
     },
     {
       title: "Device Reputation",
       field: "device_reputation",
       grouping: false,
-      render: (rowData: DeviceProfile) => <Badge title={rowData.device_reputation || "unknown"} />,
+      render: (rowData) => <Badge title={rowData.device_reputation || "unknown"} />,
     },
     {
       title: "Browser",
@@ -293,8 +291,8 @@ const DeviceIntelligence = (): JSX.Element => {
           setDeviceData(deviceData.concat(result));
         }
       } else if (result.hits && Array.isArray(result.hits.hits)) {
-        const res = result.hits.hits.map((item: AnyTodo) => item._source);
-        setIsLastPage(res === 0);
+        const res = result.hits.hits.map((hit) => hit._source);
+        setIsLastPage(res.length === 0);
         if (offset === 0) {
           setDeviceData(res);
         } else {
@@ -318,7 +316,7 @@ const DeviceIntelligence = (): JSX.Element => {
         setOffset(fraudScore.offset);
         setDeviceId(fraudScore.deviceId);
         setUserId(fraudScore.userId);
-        setDeviceData(fraudScore.list as AnyTodo);
+        setDeviceData(fraudScore.list);
       } else {
         fetchData()
           .then()
@@ -327,7 +325,7 @@ const DeviceIntelligence = (): JSX.Element => {
     }
   }, [isDataLoaded, isLoadMore, deviceData]);
 
-  const prepareMarkerInfo = (data: { [key: string]: AnyTodo }) => {
+  const prepareMarkerInfo = (data: DeviceProfile) => {
     const keysToCover = tableColumns.map((c) => c.field);
     const info: string[] = [];
     const { session_key, session_risk, city } = data;
@@ -337,12 +335,16 @@ const DeviceIntelligence = (): JSX.Element => {
       city,
     };
 
+    const keysData: (keyof DeviceProfile)[] = Object.keys(data) as (keyof DeviceProfile)[];
     Object.keys(markerData).forEach((key) => {
       if (keysToCover.includes(key)) {
-        const k = replaceAllUnderscoresWithSpaces(key);
-        const value = data[key];
-        if (value) {
-          info.push(`${k}: ${value}`);
+        const keyData = keysData.find((kd) => kd === key);
+        if (keyData) {
+          const value = data[keyData];
+          if (value) {
+            const k = replaceAllUnderscoresWithSpaces(key);
+            info.push(`${k}: ${value}`);
+          }
         }
       }
     });
@@ -358,7 +360,7 @@ const DeviceIntelligence = (): JSX.Element => {
           details: prepareMarkerInfo(data),
         }));
 
-  const pushToDetails = (event: React.KeyboardEvent, rowData: AnyTodo) => {
+  const pushToDetails = (event: React.KeyboardEvent, rowData: DeviceProfile) => {
     const pathSearch = `session=${encodeURIComponent(
       rowData.session_key
     )}&${SOURCE_QUERY_FIELD}=${dbSource}&${CLIENT_QUERY_FIELD}=${organisation}`;
@@ -419,8 +421,8 @@ const DeviceIntelligence = (): JSX.Element => {
               navigate(
                 {
                   pathname: "device-view",
-                  search: `session=${encodeURIComponent((deviceData[index] as AnyTodo).session_key)}&userId=${encodeURIComponent(
-                    (deviceData[index] as AnyTodo).user_id_hash
+                  search: `session=${encodeURIComponent(deviceData[index].session_key)}&userId=${encodeURIComponent(
+                    deviceData[index].user_id_hash
                   )}`,
                 },
                 {
@@ -444,7 +446,7 @@ const DeviceIntelligence = (): JSX.Element => {
                 debounceInterval: 1500,
                 exportFileName: `devices_data_${startDate}_${endDate}`,
               }}
-              onRowClick={(event: React.KeyboardEvent, rowData: AnyTodo) => {
+              onRowClick={(event: React.KeyboardEvent, rowData: DeviceProfile) => {
                 const selection = window.getSelection()?.toString() || "";
                 if (selection.length > 0) {
                   navigator.clipboard.writeText(selection).then(copiedToast, () => {
@@ -468,7 +470,7 @@ const DeviceIntelligence = (): JSX.Element => {
                 },
               }}
               components={{
-                Toolbar: ({ data: tableData }: { data: AnyTodo }) => (
+                Toolbar: ({ data: tableData }: { data: DeviceProfile[] }) => (
                   <ToolBarWithTitle title="Device Sessions History" data={tableData} />
                 ),
               }}

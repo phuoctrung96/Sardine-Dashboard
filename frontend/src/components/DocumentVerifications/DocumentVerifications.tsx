@@ -146,7 +146,7 @@ export const DocumentVerifications: React.FC = () => {
       <StyledMainDiv>
         <StyledStickyNav id="document-verifications" className="m-2">
           <StyledNavTitle className="w-100">
-            <StyledTitleName data-tid="title_document_verifications">Document Verfications</StyledTitleName>
+            <StyledTitleName data-tid="title_document_verifications">Document Verifications</StyledTitleName>
             {isAdmin && (
               <StyledDropdownDiv>
                 <OrganisationDropDown organisation={organisation} changeOrganisation={updateFilters} />

@@ -5,3 +5,5 @@ export const DATE_FORMATS = {
   DATE: "YYYY-MM-DD",
   LLL: "LLL",
 } as const;
+
+export const COOKIE_SESSION = "sardine__sess";

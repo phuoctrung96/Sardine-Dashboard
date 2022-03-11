@@ -23,6 +23,7 @@ import {
   SETTINGS_PATH,
   RULES_PATH,
   FEEDBACKS_PATH,
+  SUPER_ADMIN_MEMBERS_PATH,
 } from "modulePaths";
 import { useUserStore } from "store/user";
 import { CLIENT_QUERY_FIELD } from "utils/constructFiltersQueryParams";
@@ -77,7 +78,6 @@ import queuesIconActive from "../../utils/logo/sidebar/ic_queue_active.svg";
 import infoIcon from "../../utils/logo/sidebar/ic_info.svg";
 import infoIconActive from "../../utils/logo/sidebar/ic_info_active.svg";
 import feedbacks from "../../utils/logo/sidebar/ic_feedbacks.svg";
-import feedbacksActive from "../../utils/logo/sidebar/ic_feedbacks_active.svg";
 import { SuperAdminVisible } from "../Auth/SuperAdminVisible";
 import { AdminVisible } from "../Auth/AdminVisible";
 
@@ -130,6 +130,15 @@ const superAdminMenuProps = [
     tid: "sidebar_link_sardine_admin_send_notification",
     path: NOTIFICATIONS_PATH,
     activePath: NOTIFICATIONS_PATH,
+    normalIcon: docsIcon,
+    activeIcon: docsIconActive,
+    badge: null,
+  },
+  {
+    title: "Super Admin Members",
+    tid: "sidebar_link_sardine_admin_super_admin_members",
+    path: SUPER_ADMIN_MEMBERS_PATH,
+    activePath: SUPER_ADMIN_MEMBERS_PATH,
     normalIcon: docsIcon,
     activeIcon: docsIconActive,
     badge: null,

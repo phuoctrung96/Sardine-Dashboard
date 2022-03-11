@@ -104,6 +104,14 @@ export const getCustomFeatures = (organization?: string): FeatureItem[] => {
       feature: stringChild("Trulioo_DOCUMENT_VERIFICATION_Result", ""),
       organization: vault,
     },
+    {
+      feature: stringChild("Trulioo_GOVERNMENT_REGISTRY_BusinessStatus", ""),
+      organization: vault,
+    },
+    {
+      feature: stringChild("Trulioo_KYB_Result", ""),
+      organization: vault,
+    },
   ];
   const org = (organization || "").toLowerCase();
   const features: FeatureItem[] = featureLists

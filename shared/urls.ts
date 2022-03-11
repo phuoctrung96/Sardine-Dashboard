@@ -177,6 +177,8 @@ export const superAdminUrls = createUrls({
     getCredentialsRoute: { path: "/credentials", httpMethod: "get" },
     revokeCredentialsRoute: { path: "/revoke-credentials", httpMethod: "post" },
     generateCredentialsRoute: { path: "/generate-credentials", httpMethod: "post" },
+    listSuperAdminEmailsRoute: { path: "/list-super-admin-emails", httpMethod: "get" },
+    addSuperAdminEmailRoute: { path: "/add-super-admin-emails", httpMethod: "post" },
   },
 });
 

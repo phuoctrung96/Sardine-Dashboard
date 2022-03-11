@@ -151,17 +151,17 @@ export interface MaterialTableComponents {
   Cell?: (props: AnyTodo) => JSX.Element | null;
 }
 
-interface DataTableProps {
+interface DataTableProps<T = AnyTodo> {
   columns: DataColumn<AnyTodo>[];
   components?: MaterialTableComponents;
   data: AnyTodo[];
-  detailPanel?: (rowData: AnyTodo) => JSX.Element;
+  detailPanel?: (rowData: T) => JSX.Element;
   editable?: Editable;
   isLoading?: boolean;
   localization?: AnyTodo;
   onChangePage?: (page: number, pageSize: number) => void;
   onFilterChange?: (rowData: AnyTodo) => void;
-  onRowClick?: (event: AnyTodo, rowData: AnyTodo) => void;
+  onRowClick?: (event: AnyTodo, rowData: T) => void;
   options?: AnyTodo;
   title: string;
 }

@@ -1,4 +1,4 @@
-import { AnyTodo, RuleProps } from "sardine-dashboard-typescript-definitions";
+import { AnyTodo, DeviceProfile, RuleProps } from "sardine-dashboard-typescript-definitions";
 import { BlocklistProps } from "../../components/BlockAllowList/RowItem";
 
 export interface UserProps {
@@ -35,12 +35,12 @@ export interface StoreProps {
 }
 
 export interface FraudListProps {
-  list: AnyTodo[];
+  list: DeviceProfile[];
   offset: number;
   organisation: string;
   deviceId: string;
   userId: string;
-  filters: AnyTodo[];
+  filters: FilterData[];
   dates: DatesProps;
 }
 
@@ -91,4 +91,11 @@ export interface BlockAllowlistProps {
   strSearch: string;
   fieldType: string;
   shouldRefresh: boolean;
+}
+
+interface FilterData {
+  key: string;
+  value: string;
+  apply: boolean;
+  currently_applied: boolean;
 }

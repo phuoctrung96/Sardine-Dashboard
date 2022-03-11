@@ -3,13 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button, FormControl, Image } from "react-bootstrap";
 import { SortableContainer, SortEndHandler } from "react-sortable-hoc";
 import { useToasts } from "react-toast-notifications";
-import {
-  AnyTodo,
-  CHECKPOINTS as CHECK_POINTS,
-  Rule,
-  RuleExpression,
-  RULE_ENV_MODES,
-} from "sardine-dashboard-typescript-definitions";
+import { CHECKPOINTS as CHECK_POINTS, Rule, RuleExpression, RULE_ENV_MODES } from "sardine-dashboard-typescript-definitions";
 import { captureException } from "utils/errorUtils";
 import downArrow from "utils/logo/down.svg";
 import { useUpdateUrlParams } from "hooks/UseUpdateUrlParams";
@@ -145,7 +139,7 @@ const DropDownContainer = ({
   setIsSorting: Dispatch<SetStateAction<boolean>>;
 }): JSX.Element => {
   const [visibleDropDown, setVisibleDropDown] = useState<string>("");
-  const refOrgSearch = useRef(null);
+  const refOrgSearch = useRef<HTMLInputElement>(null);
   const updateUrlParams = useUpdateUrlParams();
 
   const [organisationSearch, setOrganisationSearch] = useState("");
@@ -220,7 +214,9 @@ const DropDownContainer = ({
               const text = event.target.value;
               setOrganisationSearch(text);
               setTimeout(() => {
-                (refOrgSearch as AnyTodo).current.focus();
+                if (refOrgSearch.current) {
+                  refOrgSearch.current.focus();
+                }
               }, 50);
             }}
           />

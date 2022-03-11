@@ -157,6 +157,7 @@ const DeviceInfo = (props: DeviceInfoProps): JSX.Element => {
         <Link
           target="_blank"
           href={`https://maps.google.com?q=${location.lat},${location.lon}`}
+          rel="noreferrer"
         >{`${location.lat},${location.lon}`}</Link>
       ),
       toolTip: "Location of the device (Longitude, Latitude)",
