@@ -1,5 +1,6 @@
 import { Query } from "@google-cloud/datastore";
-import { FeedbackKind } from "sardine-dashboard-typescript-definitions";
+import moment from "moment";
+import { FeedbackKind, FeedbacksRequestBody } from "sardine-dashboard-typescript-definitions";
 import { firebaseAdmin } from "../../firebase";
 import { FEEDBACK_KIND } from "./common";
 
@@ -15,5 +16,22 @@ export class Feedback {
     }
 
     return entities;
+  }
+
+  public static async getFeedbackListTable(filters: FeedbacksRequestBody) {
+    const { startDate, endDate, page = 0, rows = 15, order = "desc", orderBy = "CustomerFeedback.Id" } = filters;
+    console.log(order, orderBy);
+
+    const dsQuery = ds.createQuery(FEEDBACK_KIND);
+
+    if (startDate) dsQuery.filter("CustomerFeedback.CreatedAtMillis", ">=", moment(startDate).unix() * 1000);
+    if (endDate) dsQuery.filter("CustomerFeedback.CreatedAtMillis", "<=", moment(endDate).unix() * 1000);
+
+    dsQuery.offset(page * rows).limit(rows);
+
+    const [entities, info] = await ds.runQuery(dsQuery);
+    const isLast = info.moreResults === "NO_MORE_RESULTS";
+
+    return { feedbacks: (entities as FeedbackKind[]) ?? [], isLast };
   }
 }

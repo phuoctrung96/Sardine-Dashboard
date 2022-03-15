@@ -3,7 +3,7 @@ import { AmlKind } from "./datastore/aml_schema";
 import { DocumentVerification } from "./datastore/document-verifications-schema";
 import { HealthCheckEvent, HealthCheckRequest } from "./bigquery";
 import { OrganizationUser, Feedback } from "./domain";
-import { DashboardInvitation, RuleActionTag, RuleProps } from ".";
+import { DashboardInvitation, FeedbackRow, RuleActionTag, RuleProps } from ".";
 
 export type GetOrganisationFeatureFlagsResponse = {
   enabledFeatureFlagNames: string[];
@@ -140,6 +140,8 @@ export interface EmailObject {
 export interface OrgAdminList extends Array<OrgAdmin> {}
 
 export interface GetFeedbacksResponse extends Array<Feedback> {}
+
+export interface GetFeedbacksListResponse extends Array<FeedbackRow> {}
 
 export interface GetRuleStatsResponse {
   key: string;

@@ -73,7 +73,7 @@ import {
   SUPER_ADMIN_MEMBERS_PATH,
 } from "./modulePaths";
 import Transactions from "./components/Transactions";
-import AdminNotificatons from "./components/Admin/AdminNotificatons";
+import AdminNotifications from "./components/Admin/AdminNotifications";
 import { SuperAdminOnly } from "./components/Auth/SuperAdminOnly";
 
 const queryClient = new QueryClient({
@@ -178,7 +178,7 @@ const App = (): JSX.Element => {
                       element={<AuthenticatedOnly element={<PaymentMethodDetails />} />}
                     />
                     <Route path={TRANSACTION_DETAILS_PATH} element={<AuthenticatedOnly element={<TransactionDetails />} />} />
-                    <Route path={NOTIFICATIONS_PATH} element={<SuperAdminOnly element={<AdminNotificatons />} />} />
+                    <Route path={NOTIFICATIONS_PATH} element={<SuperAdminOnly element={<AdminNotifications />} />} />
                     <Route path={CUSTOMER_PROFILE_PATH} element={<AuthenticatedOnly element={<CustomerProfile />} />} />
                     <Route
                       path={DOCUMENT_VERIFICATION_DETAIL_PATH}

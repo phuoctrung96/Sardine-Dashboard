@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, CSSProperties } from "react";
 import styled from "styled-components";
 import { replaceAllSpacesWithUnderscores } from "utils/stringUtils";
 import dayjs, { Dayjs } from "dayjs";
@@ -48,11 +48,6 @@ const CHARTS_DROPDOWN: readonly ChartDropdownElement[] = [
   },
   {
     icon: iconPath,
-    field: 365,
-    option: "Last 1 Year",
-  },
-  {
-    icon: iconPath,
     field: 0,
     option: "Custom dates",
   },
@@ -80,8 +75,7 @@ const INDEX_1_MONTH = 2;
 const INDEX_2_MONTHS = 3;
 const INDEX_3_MONTHS = 4;
 const INDEX_6_MONTHS = 5;
-const INDEX_1_YEAR = 6;
-const INDEX_CUSTOM_DATES = 7;
+const INDEX_CUSTOM_DATES = 6;
 
 // Calculate dateIndex based on the startDate and endDate.
 function getDateIndex(startDate?: Date, endDate?: Date) {
@@ -107,8 +101,6 @@ function getDateIndex(startDate?: Date, endDate?: Date) {
         return INDEX_3_MONTHS;
       case 180:
         return INDEX_6_MONTHS;
-      case 365:
-        return INDEX_1_YEAR;
       default:
         return INDEX_CUSTOM_DATES;
     }
@@ -120,9 +112,11 @@ const DaysDropdown = (props: {
   startDateString?: string;
   endDateString?: string;
   handleUpdateDate: (index: number, dateData: DatesProps) => void;
+  style?: CSSProperties;
+  setSelectedLabel?: (label: string) => void;
 }): JSX.Element => {
   const daysDropdownRef = useRef<HTMLDivElement>(null);
-  const { handleUpdateDate } = props;
+  const { handleUpdateDate, setSelectedLabel } = props;
   const { startDateString, endDateString } = props;
   let startDate: Date | null;
   let endDate: Date | null;
@@ -177,6 +171,7 @@ const DaysDropdown = (props: {
 
   const clickedItem = (days: number, index: number) => {
     setSelectedIndex(index);
+    if (setSelectedLabel) setSelectedLabel(CHARTS_DROPDOWN[index].option);
     if (index !== INDEX_CUSTOM_DATES) {
       updateDate(index, dayjs().subtract(days, "days"), dayjs());
       setOpen(false);
@@ -184,7 +179,7 @@ const DaysDropdown = (props: {
   };
 
   return open ? (
-    <StyledDropdownDiv ref={daysDropdownRef}>
+    <StyledDropdownDiv ref={daysDropdownRef} style={props.style}>
       <StyledDropdownList>
         {CHARTS_DROPDOWN.map((ele, index) => (
           <DropwdownItem
@@ -219,6 +214,7 @@ const DaysDropdown = (props: {
             }
           : CHARTS_DROPDOWN[selectedIndex]
       }
+      style={props.style}
     />
   );
 };

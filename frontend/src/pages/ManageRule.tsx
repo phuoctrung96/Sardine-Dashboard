@@ -90,7 +90,7 @@ import {
   BatchRuleData,
   CheckPoint,
   FunctionChild,
-  FEATURE_SAPARATOR,
+  FEATURE_SEPARATOR,
 } from "../rulesengine/dataProvider";
 import {
   ADD_CUSTOM,
@@ -270,7 +270,7 @@ const DropdownItem = ({
       let subValues = selectedSubSections;
       // parentTitle would be like PaymentMethod_Bank_PrimaryIdentity_Address_City
       // And we already have first & last value so removing them from the list and considering intermediate features
-      const pathValues = pTitle.split(FEATURE_SAPARATOR);
+      const pathValues = pTitle.split(FEATURE_SEPARATOR);
       if (pathValues.length > 1) {
         pathValues.shift(); // Remove main section value
         pathValues.pop(); // Remove last selected value
@@ -332,7 +332,7 @@ const DropdownItem = ({
           <SubA
             data-tid={`${type}_${parentIndex}_${index}_${item}`.replace(/_NaN/g, "")}
             key={item}
-            onClick={() => handleItemClick(item, type, parentIndex, index, `${parentTitle}${FEATURE_SAPARATOR}${item.title}`)}
+            onClick={() => handleItemClick(item, type, parentIndex, index, `${parentTitle}${FEATURE_SEPARATOR}${item.title}`)}
             className="dropdown"
           >
             {item}
@@ -342,7 +342,7 @@ const DropdownItem = ({
             data-tid={`${type}_${parentIndex}_${index}_${item.title}`.replace(/_NaN/g, "")}
             key={item.title}
             onClick={() =>
-              handleItemClick(item.title, type, parentIndex, index, `${parentTitle}${FEATURE_SAPARATOR}${item.title}`)
+              handleItemClick(item.title, type, parentIndex, index, `${parentTitle}${FEATURE_SEPARATOR}${item.title}`)
             }
             className="dropdown"
           >
@@ -360,8 +360,8 @@ const DropdownItem = ({
                 const section = rulesData.filter((r: AnyTodo) => r.title === selectedSection);
                 if (section.length > 0) {
                   // Splitting each value from path by _
-                  const itemPath = `${parentTitle}${FEATURE_SAPARATOR}${item.title}`;
-                  const pathValues = itemPath.split(FEATURE_SAPARATOR);
+                  const itemPath = `${parentTitle}${FEATURE_SEPARATOR}${item.title}`;
+                  const pathValues = itemPath.split(FEATURE_SEPARATOR);
                   if (pathValues.length > 0) {
                     pathValues.shift(); // Removing first element as it is section and not subsection
                     setSelectedSubSections(pathValues);
@@ -396,7 +396,7 @@ const DropdownItem = ({
                   type={type}
                   parentIndex={parentIndex}
                   index={index}
-                  parentTitle={`${parentTitle}${FEATURE_SAPARATOR}${item.title}`}
+                  parentTitle={`${parentTitle}${FEATURE_SEPARATOR}${item.title}`}
                   rules={rules}
                   rulesData={rulesData}
                   selectedSection={selectedSection}
@@ -1726,7 +1726,7 @@ const ManageRule: React.FC = () => {
       const splitData = ruleData.rule.split(".");
 
       if (splitData.length > 2) {
-        const splitLastEle = splitData[2].split(FEATURE_SAPARATOR);
+        const splitLastEle = splitData[2].split(FEATURE_SEPARATOR);
 
         const sectionFilter = rulesData.filter((r) => r.title === splitData[0]);
         if (sectionFilter.length > 0) {
@@ -1740,7 +1740,7 @@ const ManageRule: React.FC = () => {
         }
       } else if (splitData.length > 1) {
         const sectionFilter = rulesData.filter((r) => r.title === splitData[0]);
-        const splitLastEle = splitData[1].split(FEATURE_SAPARATOR);
+        const splitLastEle = splitData[1].split(FEATURE_SEPARATOR);
         if (sectionFilter.length > 0) {
           const subSection = sectionFilter[0].items.filter((sub) => splitLastEle[0].toLowerCase() === sub.title.toLowerCase());
           if (subSection.length > 0) {

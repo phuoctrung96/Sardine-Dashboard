@@ -1,28 +1,143 @@
+import { useLocation } from "react-router-dom";
+import moment from "moment";
+import { MenuItem, Popover } from "@mui/material";
+import * as Sentry from "@sentry/react";
 import { StyledStickyNav } from "components/Dashboard/styles";
 import { FeedbackGraph } from "components/Feedbacks/FeedbackChart";
 import { FeedbackListTable } from "components/Feedbacks/FeedbackListTable";
 import {
   AddFeedbackDropdown,
   AddFilterBadge,
+  StyledDaysDropdown,
   FeedbackChartSwitch,
   SpaceBetweenContainer,
   StyledButton,
+  ChartTypeButton,
 } from "components/Feedbacks/styles";
 import { HorizontalContainer, StyledMainContentDiv, StyledMainDiv } from "components/Queues/styles";
-import { useState } from "react";
-import { Dropdown, ToggleButton } from "react-bootstrap";
+import { useCallback, useEffect, useState } from "react";
 import { FaAngleDown, FaPlus } from "react-icons/fa";
+import { FeedbackRow } from "sardine-dashboard-typescript-definitions";
+import { getFeedbacksTable } from "utils/api";
+import { getDatesFromQueryParams } from "components/Transactions";
+import { isErrorWithResponseStatus } from "utils/errorUtils";
+import columnsIcon from "../utils/logo/columns.svg";
 import Layout from "../components/Layout/Main";
 import exportIcon from "../utils/logo/export.svg";
 import graphIcon from "../utils/logo/graph.svg";
 import mapIcon from "../utils/logo/map.svg";
 import readonlyIcon from "../utils/logo/readonly.svg";
 import upDownArrowIcon from "../utils/logo/up-down-arrow.svg";
-import columnsIcon from "../utils/logo/columns.svg";
+import { DatesProps } from "../utils/store/interface";
+
+const AddFeedbackMenu = (): JSX.Element => {
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [showMenu, setShowMenu] = useState(false);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+    setShowMenu(!showMenu);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setShowMenu(false);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? "add_feedback_menu_popover" : undefined;
+
+  return (
+    <div>
+      <AddFeedbackDropdown
+        style={{
+          backgroundColor: "#3147ff",
+          color: "white",
+          padding: "10px 12px 10px 16px",
+          textTransform: "none",
+          borderRadius: 8,
+        }}
+        aria-describedby={id}
+        onClick={handleClick}
+      >
+        Add Feedback
+        <FaAngleDown size={13} style={{ marginLeft: 10 }} />
+      </AddFeedbackDropdown>
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+      >
+        <div style={{ padding: "12px 8px" }}>
+          <MenuItem>Add manually</MenuItem>
+          <MenuItem>Upload .csv</MenuItem>
+        </div>
+      </Popover>
+    </div>
+  );
+};
 
 export const Feedbacks = (): JSX.Element => {
-  const [chartType, setChartType] = useState("graph");
-  const handleChartTypeSwitch = (type: string) => setChartType(type);
+  const [chartGraphType, setChartGraphType] = useState(true);
+  const handleChartTypeSwitch = () => setChartGraphType((prevState) => !prevState);
+
+  const [feedbacksData, setFeedbacksData] = useState<FeedbackRow[]>([]);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
+
+  const { search } = useLocation();
+
+  const [rows, setRows] = useState(15);
+  const [page, setPage] = useState(1);
+
+  const dates = getDatesFromQueryParams(search);
+  const [startDate, setStartDate] = useState(dates.startDate);
+  const [endDate, setEndDate] = useState(dates.endDate);
+  const [selectedDateLabel, setSelectedDateLabel] = useState("Last 24 hours");
+
+  const [order, setOrder] = useState<"asc" | "desc">("asc");
+  const [orderBy, setOrderBy] = useState("");
+
+  const updateDate = (index: number, dateData: DatesProps) => {
+    setStartDate(dateData.startDate);
+    setEndDate(dateData.endDate);
+  };
+
+  const handleRequestSort = (event: React.MouseEvent<unknown>, property: string) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
+
+  const fetchData = useCallback(async () => {
+    try {
+      const res = await getFeedbacksTable({
+        startDate,
+        endDate,
+        page,
+        rows,
+        order,
+        orderBy,
+      });
+      const { feedbacks } = res;
+
+      setIsDataLoaded(true);
+      setFeedbacksData(feedbacks);
+    } catch (error) {
+      setIsDataLoaded(true);
+      if (!isErrorWithResponseStatus(error)) throw error;
+    }
+  }, [feedbacksData, rows, page, startDate, endDate, order, orderBy]);
+
+  useEffect(() => {
+    fetchData()
+      .then()
+      .catch((e) => Sentry.captureException(e));
+  }, [isDataLoaded, page, rows, startDate, endDate, order, orderBy]);
 
   return (
     <Layout>
@@ -53,21 +168,13 @@ export const Feedbacks = (): JSX.Element => {
                 border: "none",
                 backgroundColor: "#EBEDFF",
                 color: "#141A39",
+                textTransform: "none",
               }}
             >
               <span style={{ marginRight: 6 }}>Export</span>
               <img src={exportIcon} alt="export icon" />
             </StyledButton>
-            <AddFeedbackDropdown>
-              <Dropdown.Toggle>
-                <span style={{ marginRight: 6 }}>Add Feedback</span>
-                <FaAngleDown size={14} />
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-                <Dropdown.Item as="button">Add manually</Dropdown.Item>
-                <Dropdown.Item as="button">Upload .csv</Dropdown.Item>
-              </Dropdown.Menu>
-            </AddFeedbackDropdown>
+            <AddFeedbackMenu />
           </HorizontalContainer>
         </HorizontalContainer>
       </StyledStickyNav>
@@ -75,33 +182,35 @@ export const Feedbacks = (): JSX.Element => {
       <StyledMainContentDiv>
         <StyledMainDiv style={{ backgroundColor: "#F2F6FF", padding: "16px 32px", minHeight: 320 }}>
           <div className="d-flex justify-content-end">
-            <FeedbackChartSwitch type="radio" name="feedback-chart" value={chartType} onChange={handleChartTypeSwitch}>
-              <ToggleButton value="graph">
-                <img src={graphIcon} alt="Graph icon" />
+            <FeedbackChartSwitch value={chartGraphType} exclusive onChange={handleChartTypeSwitch}>
+              {/* eslint-disable-next-line react/jsx-boolean-value */}
+              <ChartTypeButton value={true}>
+                <img src={graphIcon} alt="Graph icon" style={{ marginRight: 8 }} />
                 Graph
-              </ToggleButton>
-              <ToggleButton value="map">
-                <img src={mapIcon} alt="Map icon" />
+              </ChartTypeButton>
+              <ChartTypeButton value={false}>
+                <img src={mapIcon} alt="Map icon" style={{ marginRight: 8 }} />
                 Map
-              </ToggleButton>
+              </ChartTypeButton>
             </FeedbackChartSwitch>
           </div>
-          {chartType === "graph" && <FeedbackGraph />}
+          {chartGraphType && <FeedbackGraph />}
         </StyledMainDiv>
 
         <StyledMainDiv>
           <SpaceBetweenContainer style={{ margin: "16px 0" }}>
-            <StyledButton style={{ backgroundColor: "#141A39", color: "#FFFFFF", padding: "6px 12px" }}>
-              Add filter <AddFilterBadge>1</AddFilterBadge>
+            <StyledButton style={{ backgroundColor: "#141A39", color: "#FFFFFF", padding: "6px 12px", textTransform: "none" }}>
+              Add filter <AddFilterBadge badgeContent="1" />
             </StyledButton>
-            <div style={{ display: "flex", gap: 12 }}>
-              <StyledButton variant="outlined" style={{ border: "1px solid #E6ECFA" }}>
-                <span className="text-black" style={{ fontWeight: 500 }}>
-                  Last 30 days -
-                </span>{" "}
-                <span style={{ color: "#969AB6" }}> Dec 23, 2021 - Feb 02, 2022</span>
-              </StyledButton>
-              <StyledButton variant="outlined" style={{ border: "1px solid #E6ECFA" }}>
+            <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+              <StyledDaysDropdown
+                handleUpdateDate={updateDate}
+                startDateString={startDate}
+                endDateString={endDate}
+                style={{ backgroundColor: "white", zIndex: 100 }}
+                setSelectedLabel={(label) => setSelectedDateLabel(label)}
+              />
+              <StyledButton style={{ border: "1px solid #E6ECFA" }}>
                 <img src={readonlyIcon} alt="" />
               </StyledButton>
             </div>
@@ -126,8 +235,11 @@ export const Feedbacks = (): JSX.Element => {
                   fontSize: 13,
                 }}
               >
-                <span>Last 7 days</span>
-                <span style={{ color: "#969AB6" }}> / From Dec 23 - Dec 29</span>
+                <span>{selectedDateLabel}</span>
+                <span style={{ color: "#969AB6" }}>
+                  {" "}
+                  / From {moment(startDate).format("MMM DD")} - {moment(endDate).format("MMM DD")}
+                </span>
               </span>
             </div>
             <div className="d-flex align-items-center" style={{ gap: 16 }}>
@@ -146,13 +258,23 @@ export const Feedbacks = (): JSX.Element => {
                 <StyledButton variant="outlined" style={{ border: "1px solid #E6ECFA" }}>
                   <img src={columnsIcon} alt="" />
                 </StyledButton>
-                <StyledButton variant="outlined" style={{ border: "1px solid #E6ECFA", padding: "8px 0px" }}>
+                <StyledButton variant="outlined" color="inherit" style={{ border: "1px solid #E6ECFA", padding: "8px 0px" }}>
                   <FaPlus size={13} />
                 </StyledButton>
               </div>
             </div>
           </SpaceBetweenContainer>
-          <FeedbackListTable />
+          <FeedbackListTable
+            feedbacks={feedbacksData}
+            isLoading={!isDataLoaded}
+            page={page}
+            setPage={setPage}
+            rows={rows}
+            setRows={setRows}
+            order={order}
+            orderBy={orderBy}
+            onRequestSort={handleRequestSort}
+          />
         </StyledMainDiv>
       </StyledMainContentDiv>
     </Layout>

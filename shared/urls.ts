@@ -161,6 +161,7 @@ export const feedbackUrls = createUrls({
   routes: {
     submitFeedbackRoute: { path: "", httpMethod: "post" },
     getFeedbacksRoute: { path: "", httpMethod: "get" },
+    getFeedbacksTableRoute: { path: "/list", httpMethod: "get" },
   },
 });
 
@@ -179,6 +180,7 @@ export const superAdminUrls = createUrls({
     generateCredentialsRoute: { path: "/generate-credentials", httpMethod: "post" },
     listSuperAdminEmailsRoute: { path: "/list-super-admin-emails", httpMethod: "get" },
     addSuperAdminEmailRoute: { path: "/add-super-admin-emails", httpMethod: "post" },
+    deleteSuperAdminEmailRoute: { path: "/delete-super-admin-emails", httpMethod: "delete" },
   },
 });
 

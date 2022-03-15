@@ -311,11 +311,13 @@ const TransactionDetails = (): JSX.Element => {
                       </DetailsHeaderChild>
                       <DetailsHeaderChild>
                         <DetailsHeaderTile id="transaction_id_title">Transaction Id</DetailsHeaderTile>
-                        <DetailsHeaderValue id="transaction_id_value">{transactionData?.id || "-"}</DetailsHeaderValue>
+                        <DetailsHeaderValue id="transaction_id_value" data-tid="transaction_id_value">
+                          {transactionData?.id || "-"}
+                        </DetailsHeaderValue>
                       </DetailsHeaderChild>
                       <DetailsHeaderChild>
                         <DetailsHeaderTile id="session_key_title">Session Key</DetailsHeaderTile>
-                        <DetailsHeaderValue id="session_key_value">
+                        <DetailsHeaderValue id="session_key_value" data-tid="session_key_value">
                           {transactionData?.session_key ? (
                             <SessionDetailsLink
                               clientId={transactionData?.client_id || ""}
@@ -330,7 +332,7 @@ const TransactionDetails = (): JSX.Element => {
                       </DetailsHeaderChild>
                       <DetailsHeaderChild>
                         <DetailsHeaderTile id="user_id_title">Customer Id</DetailsHeaderTile>
-                        <DetailsHeaderValue id="user_id_value">
+                        <DetailsHeaderValue id="user_id_value" data-tid="user_id_value">
                           {transactionData?.customer_id ? (
                             <CustomerProfileLink
                               clientId={transactionData?.client_id || ""}

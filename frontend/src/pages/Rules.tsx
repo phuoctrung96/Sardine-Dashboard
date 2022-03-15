@@ -386,8 +386,8 @@ const Rules = (): JSX.Element => {
     document.body.removeChild(link);
   };
 
-  const handleSearch = () => {
-    const text = searchString.trim().toLowerCase();
+  const handleSearch = (searchValue: string) => {
+    const text = searchValue.trim().toLowerCase();
     const data = [...rulesHolder];
     if (text.length === 0) {
       setRules(data);
@@ -458,7 +458,7 @@ const Rules = (): JSX.Element => {
                     if (text.length === 0) {
                       setRules(rulesHolder);
                     } else {
-                      handleSearch();
+                      handleSearch(text);
                     }
                   }}
                 />

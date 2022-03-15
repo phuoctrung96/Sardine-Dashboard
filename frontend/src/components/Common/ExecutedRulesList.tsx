@@ -126,7 +126,7 @@ const ExecutedRulesList: React.FC<IProps> = (props) => {
   ) : rulesData.length === 0 ? (
     <TdValue style={{ color: "grey" }}>No data available!</TdValue>
   ) : (
-    <StyledRulesWrapper id="executed_rules">
+    <StyledRulesWrapper id="executed_rules_wrapper" data-tid="executed_rules_wrapper">
       <StyledTable>
         <thead style={{ height: 50 }}>
           <StyledTr>

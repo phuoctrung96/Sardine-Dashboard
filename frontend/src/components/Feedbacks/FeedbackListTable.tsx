@@ -1,17 +1,13 @@
-import { useEffect, useRef, useState } from "react";
-import { TableBody, TableCell, TableRow, TableSortLabel } from "@mui/material";
-import DropwdownButton from "components/Dropdown/DropdownButton";
-import { replaceAllSpacesWithUnderscores } from "utils/stringUtils";
-import DropdownItem from "components/Dropdown/DropdownItem";
+import { CircularProgress, TableBody, TableCell, TableRow, TableSortLabel } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { Form } from "react-bootstrap";
+import moment from "moment";
 import { FEEDBACK_DETAILS_PATH } from "modulePaths";
-import { MOCK_TABLE_DATA } from "./mockData";
+import { GetFeedbacksListResponse } from "sardine-dashboard-typescript-definitions";
 import {
   BorderedTCell,
   ReasonCodeBadge,
   TextWithStatus,
-  StyledDropdownDiv,
-  StyledDropdownList,
   StyledPagination,
   StyledTable,
   StyledTableContainer,
@@ -20,71 +16,103 @@ import {
 } from "./styles";
 import settlementIcon from "../../utils/logo/settlement.svg";
 import chargebackIcon from "../../utils/logo/chargeback.svg";
-import japanFlag from "../../utils/logo/japanFlag.svg";
-import usFlag from "../../utils/logo/usFlag.svg";
+import usFlagIcon from "../../utils/logo/usFlag.svg";
 
-const RowsDropdown = (props: {
-  open?: boolean;
-  setOpen: (open: boolean) => void;
-  selectedIndex: number;
-  setSelectedIndex: (index: number) => void;
-  options: string[];
-}) => {
-  const { open, setOpen, selectedIndex, setSelectedIndex, options } = props;
-  const ref = useRef<HTMLDivElement>(null);
+const tableHeadCells = [
+  {
+    id: "CustomerFeedback.Id",
+    label: "User ID",
+  },
+  {
+    id: "Feedback.Type",
+    label: "Type",
+  },
+  {
+    id: "Feedback.Status",
+    label: "Status",
+  },
+  {
+    id: "country",
+    label: "Country",
+  },
+  {
+    id: "city",
+    label: "City",
+  },
+  {
+    id: "reasonCodes",
+    label: "Reason Codes",
+  },
+  {
+    id: "CustomerFeedback.CreatedAtMillis",
+    label: "Date/time",
+  },
+];
 
-  const onItemClicked = (index: number) => {
-    setSelectedIndex(index);
-    setOpen(false);
+const convertTimestampToDateAndTime = (timestamp: string) => {
+  const date = new Date(timestamp);
+  return {
+    date: moment(date).format("YYYY-MM-DD"),
+    time: moment(date).format("h:mm"),
   };
-
-  const handleClick = (e: MouseEvent) => {
-    if (!(ref && ref.current && ref.current.contains(e.target as Node))) {
-      setOpen(false);
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClick);
-    return () => {
-      document.removeEventListener("mousedown", handleClick);
-    };
-  }, []);
-
-  return (
-    <div style={{ width: 120 }}>
-      {open ? (
-        <StyledDropdownDiv ref={ref}>
-          <StyledDropdownList>
-            {options.map((ele, index) => (
-              <DropdownItem
-                clicked={() => onItemClicked(index)}
-                key={ele}
-                item={{ option: ele }}
-                isSelected={index === selectedIndex}
-                id={`dropdown_item_${replaceAllSpacesWithUnderscores(ele)}`}
-              />
-            ))}
-          </StyledDropdownList>
-        </StyledDropdownDiv>
-      ) : (
-        <DropwdownButton
-          id="rule-performance-start-from"
-          clicked={() => {}}
-          item={{ option: options[selectedIndex] }}
-          style={{ backgroundColor: "white", marginLeft: 0 }}
-        />
-      )}
-    </div>
-  );
 };
 
-export const FeedbackListTable = (): JSX.Element => {
-  const options = ["10 rows", "15 rows", "20 rows"];
-  const [rowsDropdownOpen, setRowsDropdownOpen] = useState(false);
-  const [rowsOptionSelected, setRowsOptionSelected] = useState(1);
+type FeedbackListTableProps = {
+  feedbacks: GetFeedbacksListResponse;
+  isLoading?: boolean;
+  page: number;
+  setPage: (page: number) => void;
+  rows: number;
+  setRows: (rows: number) => void;
+  order: "asc" | "desc";
+  orderBy: string;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: string) => void;
+};
+
+export const FeedbackListTable = (props: FeedbackListTableProps): JSX.Element => {
+  const { feedbacks, isLoading, page, setPage, rows, setRows, order, orderBy, onRequestSort } = props;
+
+  const options = [
+    {
+      title: "15 rows",
+      value: 15,
+    },
+    {
+      title: "20 rows",
+      value: 20,
+    },
+    {
+      title: "30 rows",
+      value: 30,
+    },
+  ];
+
+  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    if (setPage) setPage(value);
+  };
+
+  const createSortHandler = (property: string) => (event: React.MouseEvent<unknown>) => {
+    onRequestSort(event, property);
+  };
 
   const navigate = useNavigate();
+
+  if (isLoading) {
+    return (
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 16 }}>
+        <CircularProgress color="inherit" />
+        <span>Loading...</span>
+      </div>
+    );
+  }
+
+  if (!feedbacks.length) {
+    return (
+      <div style={{ height: "50vh", marginTop: 64, display: "flex", justifyContent: "center" }}>
+        <span>No data found</span>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -92,87 +120,96 @@ export const FeedbackListTable = (): JSX.Element => {
         <StyledTable>
           <StyledTHead>
             <TableRow>
-              <BorderedTCell>
-                <TableSortLabel>Session Key</TableSortLabel>
+              <BorderedTCell sortDirection={orderBy === "SessionKey" ? order : false}>
+                <TableSortLabel
+                  active={orderBy === "SessionKey"}
+                  direction={orderBy === "SessionKey" ? order : undefined}
+                  onClick={createSortHandler("SessionKey")}
+                >
+                  Session Key
+                </TableSortLabel>
               </BorderedTCell>
-              <TableCell>
-                <TableSortLabel>User ID</TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel>Type</TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel>Status</TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel>Country</TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel>City</TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel>Reason Codes</TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel>Date/time</TableSortLabel>
-              </TableCell>
+              {tableHeadCells.map((cell) => (
+                <TableCell key={cell.id} sortDirection={orderBy === cell.id ? order : false}>
+                  <TableSortLabel
+                    active={orderBy === cell.id}
+                    direction={orderBy === cell.id ? order : undefined}
+                    onClick={createSortHandler(cell.id)}
+                  >
+                    {cell.label}
+                  </TableSortLabel>
+                </TableCell>
+              ))}
             </TableRow>
           </StyledTHead>
           <TableBody>
-            {MOCK_TABLE_DATA.map((data) => (
-              <TableRow key={data.sessionKey} onClick={() => navigate(FEEDBACK_DETAILS_PATH)} style={{ cursor: "pointer" }}>
-                <BorderedTCell>
-                  <StyledTCell>{data.sessionKey}</StyledTCell>
-                </BorderedTCell>
-                <TableCell>
-                  <StyledTCell>{data.userId}</StyledTCell>
-                </TableCell>
-                <TableCell>
-                  <StyledTCell>
-                    <img src={data.type === "Settlement" ? settlementIcon : chargebackIcon} alt="" /> {data.type}
-                  </StyledTCell>
-                </TableCell>
-                <TableCell>
-                  <StyledTCell>
-                    <TextWithStatus $color={data.status === "ach_chargeback" ? "#F7B904" : "#2FB464"}>
-                      {data.status}
-                    </TextWithStatus>
-                  </StyledTCell>
-                </TableCell>
-                <TableCell>
-                  <StyledTCell>
-                    <img src={data.country === "Japan" ? japanFlag : usFlag} alt="" /> {data.country}
-                  </StyledTCell>
-                </TableCell>
-                <TableCell>
-                  <StyledTCell>{data.city}</StyledTCell>
-                </TableCell>
-                <TableCell>
-                  <StyledTCell>
-                    {data.reasonCodes.map((code) => (
-                      <ReasonCodeBadge key={`reason-code-badge-${data.sessionKey}-${code}`}>{code}</ReasonCodeBadge>
-                    ))}
-                  </StyledTCell>
-                </TableCell>
-                <TableCell>
-                  <StyledTCell>
-                    {data.date} <span style={{ color: "#969AB6" }}>{data.time}</span>
-                  </StyledTCell>
-                </TableCell>
-              </TableRow>
-            ))}
+            {feedbacks.map((data, index) => {
+              const dateTime = convertTimestampToDateAndTime(data.dateTime);
+              return (
+                <TableRow
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={`${data.sessionKey}_${data.userId}_${index}`}
+                  onClick={() => navigate(FEEDBACK_DETAILS_PATH)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <BorderedTCell>
+                    <StyledTCell>{data.sessionKey}</StyledTCell>
+                  </BorderedTCell>
+                  <TableCell>
+                    <StyledTCell>{data.userId}</StyledTCell>
+                  </TableCell>
+                  <TableCell>
+                    <StyledTCell>
+                      {data.type ? (
+                        <>
+                          <img src={data.type === "settlement" ? settlementIcon : chargebackIcon} alt="" /> {data.type}
+                        </>
+                      ) : null}
+                    </StyledTCell>
+                  </TableCell>
+                  <TableCell>
+                    <StyledTCell>
+                      <TextWithStatus $color={data.status.toLowerCase().includes("approved") ? "#2FB464" : "#F7B904"}>
+                        {data.status}
+                      </TextWithStatus>
+                    </StyledTCell>
+                  </TableCell>
+                  <TableCell>
+                    <StyledTCell>
+                      <img src={usFlagIcon} alt="" style={{ marginRight: 6 }} />
+                      {data.country}
+                    </StyledTCell>
+                  </TableCell>
+                  <TableCell>
+                    <StyledTCell>{data.city}</StyledTCell>
+                  </TableCell>
+                  <TableCell>
+                    <StyledTCell>
+                      {data.reasonCodes.split(" ").map((code) => (
+                        <ReasonCodeBadge key={`reason-code-badge-${data.sessionKey}-${code}`}>{code}</ReasonCodeBadge>
+                      ))}
+                    </StyledTCell>
+                  </TableCell>
+                  <TableCell>
+                    <StyledTCell>
+                      {dateTime.date} <span style={{ color: "#969AB6" }}>{dateTime.time}</span>
+                    </StyledTCell>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </StyledTable>
       </StyledTableContainer>
       <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 16 }}>
-        <RowsDropdown
-          open={rowsDropdownOpen}
-          setOpen={setRowsDropdownOpen}
-          selectedIndex={rowsOptionSelected}
-          setSelectedIndex={setRowsOptionSelected}
-          options={options}
-        />
-        <StyledPagination count={12} showFirstButton showLastButton />
+        <Form.Select style={{ maxWidth: 110 }} value={rows} onChange={(e) => setRows(+e.target.value)}>
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.title}
+            </option>
+          ))}
+        </Form.Select>
+        <StyledPagination count={12} page={page} onChange={handleChange} showFirstButton showLastButton />
       </div>
     </div>
   );

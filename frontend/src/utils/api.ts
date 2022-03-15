@@ -74,6 +74,7 @@ import {
   UserAggregationKind,
   GetFeedbacksResponse,
   FetchInvitationsResponse,
+  FeedbacksRequestBody,
   CreateOrganisation,
   CreateOrganisationResponse,
   EmailObject,
@@ -97,6 +98,7 @@ const {
   revokeCredentialsRoute,
   listSuperAdminEmailsRoute,
   addSuperAdminEmailRoute,
+  deleteSuperAdminEmailRoute,
 } = superAdminUrls.routes;
 const { updateWebhookRoute, getWebhookRoute, deleteWebhookRoute, createWebhookRoute } = webhookUrls.routes;
 
@@ -155,7 +157,7 @@ const { getDeviceProfileRoute, getDeviceDetailsRoute, getUserAggregationsRoute }
 
 const { getChartValues } = dataDistributionUrls.routes;
 
-const { submitFeedbackRoute, getFeedbacksRoute } = feedbackUrls.routes;
+const { submitFeedbackRoute, getFeedbacksRoute, getFeedbacksTableRoute } = feedbackUrls.routes;
 
 const axiosInstance = axios.create();
 
@@ -424,6 +426,12 @@ export const fetchSuperAdminEmailObjects = (): Promise<EmailObject[]> => {
 export const addSuperAdminEmail = (email: string): Promise<EmailObject> => {
   const url = new URL(getApiPath(superAdminUrls.basePath, addSuperAdminEmailRoute.path), window.location.origin);
   return httpMethods[addSuperAdminEmailRoute.httpMethod]({ url: String(url), data: { email } });
+};
+
+export const deleteSuperAdminEmail = (id: number): Promise<EmailObject> => {
+  const url = new URL(getApiPath(superAdminUrls.basePath, deleteSuperAdminEmailRoute.path), window.location.origin);
+  url.searchParams.append("id", String(id));
+  return httpMethods[deleteSuperAdminEmailRoute.httpMethod]({ url: String(url) });
 };
 
 export const getCredentialsByName = (name: string) => {
@@ -993,4 +1001,9 @@ export const getFeedbacks = async (sessionKey: string): Promise<Result<GetFeedba
     }
     return createFailure(new Error("Failed to get feedbacks."));
   }
+};
+
+export const getFeedbacksTable = (data: FeedbacksRequestBody) => {
+  const url = new URL(getApiPath(feedbackUrls.basePath, getFeedbacksTableRoute.path), window.location.origin);
+  return httpMethods[getFeedbacksTableRoute.httpMethod]({ url: String(url), params: data });
 };

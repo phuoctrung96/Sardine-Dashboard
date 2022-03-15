@@ -80,7 +80,13 @@ export const TableRow = ({ entity, onEntityView, customerData }: AmlListItemProp
         </ul>
       </Cell>
       <Cell>
-        <span onClick={() => onEntityView(entity)} className="btn btn-link text-dark">
+        <span
+          role="button"
+          tabIndex={0}
+          onClick={() => onEntityView(entity)}
+          onKeyPress={() => onEntityView(entity)}
+          className="btn btn-link text-dark"
+        >
           Details
         </span>
       </Cell>

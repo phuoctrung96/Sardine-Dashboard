@@ -10,6 +10,18 @@ export interface FeedbackKind {
     Status: string;
     Id: string;
   };
+  SessionKey: string;
+  CustomerFeedback: {
+    CreatedDate: string;
+    CreatedAtMillis: string;
+    ShippingAddress: {
+      CountryCode: string;
+      PostalCode: string;
+      City: string;
+      RegionCode: string;
+    };
+    Id: string;
+  };
 }
 
 export const FEEDBACK_SCOPES = {

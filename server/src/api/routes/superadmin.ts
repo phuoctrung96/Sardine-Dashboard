@@ -6,13 +6,8 @@ import { mw } from "../../commons/middleware";
 import { db } from "../../commons/db";
 import { AuthService } from "../../commons/AuthService";
 import { captureException, getErrorMessage, isErrorWithSpecificMessage } from "../../utils/error-utils";
-import {
-  RequestWithUser,
-  RevokeCredentialsRequest,
-  GenerateCredentialRequest,
-  RequestWithCurrentUser,
-} from "../request-interface";
-import { addSuperAdminEmail, listSuperAdminEmails } from "../../use-case/super-admin-use-case";
+import { RevokeCredentialsRequest, GenerateCredentialRequest, RequestWithCurrentUser } from "../request-interface";
+import { addSuperAdminEmail, deleteSuperAdminEmail, listSuperAdminEmails } from "../../use-case/super-admin-use-case";
 
 const {
   generateCredentialsRoute,
@@ -20,6 +15,7 @@ const {
   revokeCredentialsRoute,
   listSuperAdminEmailsRoute,
   addSuperAdminEmailRoute,
+  deleteSuperAdminEmailRoute,
 } = superAdminUrls.routes;
 
 const router = express.Router();
@@ -29,7 +25,7 @@ const superAdminRouter = (authService: AuthService) => {
     getCredentialsRoute.path,
     [query("organisation").exists()],
     mw.requireAdminAccess,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<{}, { organisation: string }>, res: Response) => {
       const { organisation = "" } = req.query;
       try {
         const clientId = await db.superadmin.getClientId(organisation.toString());
@@ -48,8 +44,8 @@ const superAdminRouter = (authService: AuthService) => {
     revokeCredentialsRoute.path,
     [body("uuid").exists(), body("clientID").exists()],
     mw.validateRequest,
-    async (req: RequestWithUser, res: Response) => {
-      const { uuid, clientID } = req.body as RevokeCredentialsRequest;
+    async (req: RequestWithCurrentUser<RevokeCredentialsRequest>, res: Response) => {
+      const { uuid, clientID } = req.body;
       await authService.revokeCredentials(clientID, uuid);
       return res.end();
     }
@@ -59,8 +55,8 @@ const superAdminRouter = (authService: AuthService) => {
     generateCredentialsRoute.path,
     [body("organisation").exists()],
     mw.validateRequest,
-    async (req: RequestWithUser, res: Response) => {
-      const { organisation } = req.body as GenerateCredentialRequest;
+    async (req: RequestWithCurrentUser<GenerateCredentialRequest>, res: Response) => {
+      const { organisation } = req.body;
       const clientId = await db.superadmin.getClientId(organisation);
       const result = await authService.generateNewCredentails(clientId);
       return res.status(200).json(result);
@@ -70,7 +66,7 @@ const superAdminRouter = (authService: AuthService) => {
   router[listSuperAdminEmailsRoute.httpMethod](
     listSuperAdminEmailsRoute.path,
     mw.requireSuperAdmin,
-    async (req: RequestWithCurrentUser, res: Response) => {
+    async (_req: RequestWithCurrentUser, res: Response) => {
       try {
         const superAdmins = await listSuperAdminEmails();
         return res.status(200).json(superAdmins.map((superAdmin) => ({ id: Number(superAdmin.id), email: superAdmin.email })));
@@ -105,6 +101,39 @@ const superAdminRouter = (authService: AuthService) => {
           if (e.code === "P2002") {
             message = `Email already exists`;
           }
+          return res.status(500).json({ error: message });
+        }
+        const message = getErrorMessage(e);
+        return res.status(500).json({ error: message });
+      }
+    }
+  );
+
+  router[deleteSuperAdminEmailRoute.httpMethod](
+    deleteSuperAdminEmailRoute.path,
+    mw.requireSuperAdmin,
+    [query("id").exists()],
+    async (req: RequestWithCurrentUser<{}, { id: string }>, res: Response) => {
+      try {
+        const { id } = req.query;
+        if (id === undefined) {
+          return res.status(400).json({ error: "id is required" });
+        }
+        const idNumber = Number(id);
+
+        const { currentUser } = req;
+        if (currentUser === undefined) {
+          return res.status(401).json({ error: "Unauthorized" });
+        }
+        // If the super admin record with the ID does not exist, error will be raised.
+        const superAdmin = await deleteSuperAdminEmail({ id: idNumber, currentUser });
+
+        return res.status(200).json({ id: Number(superAdmin.id), email: superAdmin.email });
+      } catch (e) {
+        captureException(e);
+
+        if (e instanceof Prisma.PrismaClientKnownRequestError) {
+          const message = `Error code: ${e.code}`;
           return res.status(500).json({ error: message });
         }
         const message = getErrorMessage(e);
