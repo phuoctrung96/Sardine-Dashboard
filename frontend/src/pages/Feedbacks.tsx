@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
+import { useQuery } from "react-query";
 import { MenuItem, Popover } from "@mui/material";
-import * as Sentry from "@sentry/react";
 import { StyledStickyNav } from "components/Dashboard/styles";
 import { FeedbackListTable } from "components/Feedbacks/FeedbackListTable";
 import {
@@ -11,14 +11,15 @@ import {
   StyledButton,
 } from "components/Feedbacks/styles";
 import { HorizontalContainer, StyledMainContentDiv, StyledMainDiv } from "components/Queues/styles";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { FaAngleDown, FaPlus } from "react-icons/fa";
 import { FeedbackRow } from "sardine-dashboard-typescript-definitions";
-import { getFeedbacksTable } from "utils/api";
+import { getFeedbacksList } from "utils/api";
+import { useToasts } from "react-toast-notifications";
 import { getDatesFromQueryParams } from "components/Transactions";
-import { isErrorWithResponseStatus } from "utils/errorUtils";
+import { captureException } from "utils/errorUtils";
 import { formatDate } from "utils/timeUtils";
-import { DATE_FORMATS } from "../constants";
+import { CACHE_KEYS, DATE_FORMATS } from "../constants";
 import columnsIcon from "../utils/logo/columns.svg";
 import Layout from "../components/Layout/Main";
 import exportIcon from "../utils/logo/export.svg";
@@ -82,6 +83,8 @@ export const Feedbacks = (): JSX.Element => {
   const [feedbacksData, setFeedbacksData] = useState<FeedbackRow[]>([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
+  const { addToast } = useToasts();
+
   const { search } = useLocation();
 
   const [rows, setRows] = useState(15);
@@ -106,31 +109,23 @@ export const Feedbacks = (): JSX.Element => {
     setOrderBy(property);
   };
 
-  const fetchData = useCallback(async () => {
-    try {
-      const res = await getFeedbacksTable({
-        startDate,
-        endDate,
-        page,
-        rows,
-        order,
-        orderBy,
-      });
-      const { feedbacks } = res;
-
-      setIsDataLoaded(true);
-      setFeedbacksData(feedbacks);
-    } catch (error) {
-      setIsDataLoaded(true);
-      if (!isErrorWithResponseStatus(error)) throw error;
+  useQuery<{ feedbacks: FeedbackRow[]; isLast: boolean }, Error>(
+    [CACHE_KEYS.FEEDBACKS, isDataLoaded, startDate, endDate, page, rows, order, orderBy],
+    () => getFeedbacksList({ startDate, endDate, page, rows, order, orderBy }),
+    {
+      onSuccess: (data) => {
+        setFeedbacksData(data.feedbacks);
+        setIsDataLoaded(true);
+      },
+      onError: (error: Error) => {
+        addToast("Failed to fetch feedbacks", {
+          appearance: "error",
+          autoDismiss: true,
+        });
+        captureException(error);
+      },
     }
-  }, [feedbacksData, rows, page, startDate, endDate, order, orderBy]);
-
-  useEffect(() => {
-    fetchData()
-      .then()
-      .catch((e) => Sentry.captureException(e));
-  }, [isDataLoaded, page, rows, startDate, endDate, order, orderBy]);
+  );
 
   return (
     <Layout>

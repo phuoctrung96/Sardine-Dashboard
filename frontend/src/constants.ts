@@ -37,6 +37,7 @@ export const CACHE_KEYS = {
   CLIENT_ID: "clientId",
   LAT_LNG: "latLng",
   CUSTOMER_CRYPTO_DETAILS: "customerCryptoDetails",
+  FEEDBACKS: "feedbacks",
 } as const;
 
 export const QUERY_STATUS = {

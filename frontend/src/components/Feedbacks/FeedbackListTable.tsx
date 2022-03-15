@@ -92,7 +92,7 @@ type FeedbackListTableProps = {
 };
 
 export const FeedbackListTable = (props: FeedbackListTableProps): JSX.Element => {
-  const { feedbacks, isLoading, page, setPage, rows, setRows, order, orderBy, onRequestSort } = props;
+  const { feedbacks, isLoading = false, page, setPage, rows, setRows, order, orderBy, onRequestSort } = props;
 
   const options = [
     {
