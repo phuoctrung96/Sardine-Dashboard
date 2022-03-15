@@ -1003,7 +1003,7 @@ export const getFeedbacks = async (sessionKey: string): Promise<Result<GetFeedba
   }
 };
 
-export const getFeedbacksTable = (data: FeedbacksRequestBody) => {
+export const getFeedbacksList = (data: FeedbacksRequestBody) => {
   const url = new URL(getApiPath(feedbackUrls.basePath, getFeedbacksTableRoute.path), window.location.origin);
   return httpMethods[getFeedbacksTableRoute.httpMethod]({ url: String(url), params: data });
 };

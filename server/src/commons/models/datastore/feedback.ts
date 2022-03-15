@@ -18,9 +18,8 @@ export class Feedback {
     return entities;
   }
 
-  public static async getFeedbackListTable(filters: FeedbacksRequestBody) {
-    const { startDate, endDate, page = 0, rows = 15, order = "desc", orderBy = "CustomerFeedback.Id" } = filters;
-    console.log(order, orderBy);
+  public static async getFeedbacks(filters: FeedbacksRequestBody) {
+    const { startDate, endDate, page = 0, rows = 15 } = filters;
 
     const dsQuery = ds.createQuery(FEEDBACK_KIND);
 

@@ -1,31 +1,28 @@
 import { useLocation } from "react-router-dom";
-import moment from "moment";
+import { useQuery } from "react-query";
 import { MenuItem, Popover } from "@mui/material";
-import * as Sentry from "@sentry/react";
 import { StyledStickyNav } from "components/Dashboard/styles";
-import { FeedbackGraph } from "components/Feedbacks/FeedbackChart";
 import { FeedbackListTable } from "components/Feedbacks/FeedbackListTable";
 import {
   AddFeedbackDropdown,
   AddFilterBadge,
   StyledDaysDropdown,
-  FeedbackChartSwitch,
   SpaceBetweenContainer,
   StyledButton,
-  ChartTypeButton,
 } from "components/Feedbacks/styles";
 import { HorizontalContainer, StyledMainContentDiv, StyledMainDiv } from "components/Queues/styles";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { FaAngleDown, FaPlus } from "react-icons/fa";
 import { FeedbackRow } from "sardine-dashboard-typescript-definitions";
-import { getFeedbacksTable } from "utils/api";
+import { getFeedbacksList } from "utils/api";
+import { useToasts } from "react-toast-notifications";
 import { getDatesFromQueryParams } from "components/Transactions";
-import { isErrorWithResponseStatus } from "utils/errorUtils";
+import { captureException } from "utils/errorUtils";
+import { formatDate } from "utils/timeUtils";
+import { CACHE_KEYS, DATE_FORMATS } from "../constants";
 import columnsIcon from "../utils/logo/columns.svg";
 import Layout from "../components/Layout/Main";
 import exportIcon from "../utils/logo/export.svg";
-import graphIcon from "../utils/logo/graph.svg";
-import mapIcon from "../utils/logo/map.svg";
 import readonlyIcon from "../utils/logo/readonly.svg";
 import upDownArrowIcon from "../utils/logo/up-down-arrow.svg";
 import { DatesProps } from "../utils/store/interface";
@@ -83,11 +80,10 @@ const AddFeedbackMenu = (): JSX.Element => {
 };
 
 export const Feedbacks = (): JSX.Element => {
-  const [chartGraphType, setChartGraphType] = useState(true);
-  const handleChartTypeSwitch = () => setChartGraphType((prevState) => !prevState);
-
   const [feedbacksData, setFeedbacksData] = useState<FeedbackRow[]>([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+
+  const { addToast } = useToasts();
 
   const { search } = useLocation();
 
@@ -113,31 +109,23 @@ export const Feedbacks = (): JSX.Element => {
     setOrderBy(property);
   };
 
-  const fetchData = useCallback(async () => {
-    try {
-      const res = await getFeedbacksTable({
-        startDate,
-        endDate,
-        page,
-        rows,
-        order,
-        orderBy,
-      });
-      const { feedbacks } = res;
-
-      setIsDataLoaded(true);
-      setFeedbacksData(feedbacks);
-    } catch (error) {
-      setIsDataLoaded(true);
-      if (!isErrorWithResponseStatus(error)) throw error;
+  useQuery<{ feedbacks: FeedbackRow[]; isLast: boolean }, Error>(
+    [CACHE_KEYS.FEEDBACKS, isDataLoaded, startDate, endDate, page, rows, order, orderBy],
+    () => getFeedbacksList({ startDate, endDate, page, rows, order, orderBy }),
+    {
+      onSuccess: (data) => {
+        setFeedbacksData(data.feedbacks);
+        setIsDataLoaded(true);
+      },
+      onError: (error: Error) => {
+        addToast("Failed to fetch feedbacks", {
+          appearance: "error",
+          autoDismiss: true,
+        });
+        captureException(error);
+      },
     }
-  }, [feedbacksData, rows, page, startDate, endDate, order, orderBy]);
-
-  useEffect(() => {
-    fetchData()
-      .then()
-      .catch((e) => Sentry.captureException(e));
-  }, [isDataLoaded, page, rows, startDate, endDate, order, orderBy]);
+  );
 
   return (
     <Layout>
@@ -180,22 +168,22 @@ export const Feedbacks = (): JSX.Element => {
       </StyledStickyNav>
 
       <StyledMainContentDiv>
+        {/* ====== TODO: Add graph when ready 
         <StyledMainDiv style={{ backgroundColor: "#F2F6FF", padding: "16px 32px", minHeight: 320 }}>
           <div className="d-flex justify-content-end">
             <FeedbackChartSwitch value={chartGraphType} exclusive onChange={handleChartTypeSwitch}>
-              {/* eslint-disable-next-line react/jsx-boolean-value */}
-              <ChartTypeButton value={true}>
+              <ChartTypeButton value={true} style={{ textTransform: "none" }}>
                 <img src={graphIcon} alt="Graph icon" style={{ marginRight: 8 }} />
                 Graph
               </ChartTypeButton>
-              <ChartTypeButton value={false}>
+              <ChartTypeButton value={false} style={{ textTransform: "none" }}>
                 <img src={mapIcon} alt="Map icon" style={{ marginRight: 8 }} />
                 Map
               </ChartTypeButton>
             </FeedbackChartSwitch>
           </div>
           {chartGraphType && <FeedbackGraph />}
-        </StyledMainDiv>
+        </StyledMainDiv> */}
 
         <StyledMainDiv>
           <SpaceBetweenContainer style={{ margin: "16px 0" }}>
@@ -238,7 +226,7 @@ export const Feedbacks = (): JSX.Element => {
                 <span>{selectedDateLabel}</span>
                 <span style={{ color: "#969AB6" }}>
                   {" "}
-                  / From {moment(startDate).format("MMM DD")} - {moment(endDate).format("MMM DD")}
+                  / From {formatDate(startDate, DATE_FORMATS.SHORT_DATE)} - {formatDate(endDate, DATE_FORMATS.SHORT_DATE)}
                 </span>
               </span>
             </div>
