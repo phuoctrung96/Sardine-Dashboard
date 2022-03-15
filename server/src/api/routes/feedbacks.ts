@@ -2,7 +2,6 @@ import express, { Response } from "express";
 import axios from "axios";
 import config from "config";
 import { query } from "express-validator";
-
 import {
   FeedbackRequest,
   FeedbacksRequestBody,
@@ -11,7 +10,7 @@ import {
   GetFeedbacksResponse,
 } from "sardine-dashboard-typescript-definitions";
 import { mw } from "../../commons/middleware";
-import { RequestWithUser } from "../request-interface";
+import { RequestWithCurrentUser, RequestWithUser } from "../request-interface";
 import { captureException } from "../../utils/error-utils";
 import { Feedback } from "../../commons/models/datastore/feedback";
 
@@ -54,9 +53,9 @@ const feedbacksRouter = () => {
     "/list",
     [],
     [mw.validateRequest, mw.requireLoggedIn],
-    async (req: RequestWithUser<FeedbacksRequestBody>, res: Response) => {
+    async (req: RequestWithCurrentUser<FeedbacksRequestBody>, res: Response) => {
       try {
-        const { feedbacks, isLast } = await Feedback.getFeedbackListTable(req.query);
+        const { feedbacks, isLast } = await Feedback.getFeedbacks(req.query);
         return res.json({
           feedbacks: feedbacks.reduce<GetFeedbacksListResponse>((acc, feedback) => {
             acc.push({
@@ -67,9 +66,6 @@ const feedbacksRouter = () => {
               time: feedback.Feedback.Time,
               sessionKey: feedback.SessionKey,
               userId: feedback.CustomerFeedback?.Id,
-              country: "US",
-              city: "California",
-              reasonCodes: "PRM POM PNS",
               dateTime: feedback.CustomerFeedback?.CreatedAtMillis,
             });
             return acc;
@@ -78,7 +74,6 @@ const feedbacksRouter = () => {
         });
       } catch (err: unknown) {
         captureException(err);
-        console.log(err);
 
         if (err instanceof Error) {
           return res.status(500).json({ error: err.message, err });
@@ -97,11 +92,9 @@ const feedbacksRouter = () => {
     mw.assignOrganisationClientId,
     async (req: RequestWithUser<FeedbackRequest>, res: Response) => {
       if (!process.env.SARDINE_API_INTERNAL_KEY) {
-        console.log("Error SARDINE_API_INTERNAL_KEY is not set.");
         return res.status(500).json({ error: "Internal server error" });
       }
       if (!req.currentUser?.organisation_client_id) {
-        console.log("Error organisation client id is missing");
         return res.status(400).json({ error: "Organisation client id is missing" });
       }
 

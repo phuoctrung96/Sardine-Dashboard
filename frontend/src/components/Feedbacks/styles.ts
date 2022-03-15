@@ -57,13 +57,13 @@ export const FeedbackChartSwitch = styled(ToggleButtonGroup)`
   height: 32px;
 
   .Mui-selected {
-    background-color: white !important;
+    background-color: white;
   }
 `;
 
 export const ChartTypeButton = styled(ToggleButton)`
   width: 50%;
-  text-transform: unset !important;
+  text-transform: none;
   font-style: normal;
   font-weight: 500;
   font-size: 13px;
@@ -146,7 +146,7 @@ export const TextWithStatus = styled.span<{ $color: string }>`
 `;
 
 export const ReasonCodeBadge = styled(Badge)`
-  background-color: rgba(100, 110, 133, 0.1) !important;
+  background-color: rgba(100, 110, 133, 0.1);
   border-radius: 4px;
   font-weight: normal;
   margin-left: 8px;
@@ -162,8 +162,8 @@ export const StyledPagination = styled(Pagination)`
     line-height: 16px;
   }
 
-  & .Mui-selected {
-    background-color: #3147ff !important;
+  & button.Mui-selected {
+    background-color: #3147ff;
     color: #fafbff;
   }
 `;

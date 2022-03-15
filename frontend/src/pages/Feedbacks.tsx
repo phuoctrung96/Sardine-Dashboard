@@ -1,18 +1,14 @@
 import { useLocation } from "react-router-dom";
-import moment from "moment";
 import { MenuItem, Popover } from "@mui/material";
 import * as Sentry from "@sentry/react";
 import { StyledStickyNav } from "components/Dashboard/styles";
-import { FeedbackGraph } from "components/Feedbacks/FeedbackChart";
 import { FeedbackListTable } from "components/Feedbacks/FeedbackListTable";
 import {
   AddFeedbackDropdown,
   AddFilterBadge,
   StyledDaysDropdown,
-  FeedbackChartSwitch,
   SpaceBetweenContainer,
   StyledButton,
-  ChartTypeButton,
 } from "components/Feedbacks/styles";
 import { HorizontalContainer, StyledMainContentDiv, StyledMainDiv } from "components/Queues/styles";
 import { useCallback, useEffect, useState } from "react";
@@ -21,11 +17,11 @@ import { FeedbackRow } from "sardine-dashboard-typescript-definitions";
 import { getFeedbacksTable } from "utils/api";
 import { getDatesFromQueryParams } from "components/Transactions";
 import { isErrorWithResponseStatus } from "utils/errorUtils";
+import { formatDate } from "utils/timeUtils";
+import { DATE_FORMATS } from "../constants";
 import columnsIcon from "../utils/logo/columns.svg";
 import Layout from "../components/Layout/Main";
 import exportIcon from "../utils/logo/export.svg";
-import graphIcon from "../utils/logo/graph.svg";
-import mapIcon from "../utils/logo/map.svg";
 import readonlyIcon from "../utils/logo/readonly.svg";
 import upDownArrowIcon from "../utils/logo/up-down-arrow.svg";
 import { DatesProps } from "../utils/store/interface";
@@ -83,9 +79,6 @@ const AddFeedbackMenu = (): JSX.Element => {
 };
 
 export const Feedbacks = (): JSX.Element => {
-  const [chartGraphType, setChartGraphType] = useState(true);
-  const handleChartTypeSwitch = () => setChartGraphType((prevState) => !prevState);
-
   const [feedbacksData, setFeedbacksData] = useState<FeedbackRow[]>([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
@@ -180,22 +173,22 @@ export const Feedbacks = (): JSX.Element => {
       </StyledStickyNav>
 
       <StyledMainContentDiv>
+        {/* ====== TODO: Add graph when ready 
         <StyledMainDiv style={{ backgroundColor: "#F2F6FF", padding: "16px 32px", minHeight: 320 }}>
           <div className="d-flex justify-content-end">
             <FeedbackChartSwitch value={chartGraphType} exclusive onChange={handleChartTypeSwitch}>
-              {/* eslint-disable-next-line react/jsx-boolean-value */}
-              <ChartTypeButton value={true}>
+              <ChartTypeButton value={true} style={{ textTransform: "none" }}>
                 <img src={graphIcon} alt="Graph icon" style={{ marginRight: 8 }} />
                 Graph
               </ChartTypeButton>
-              <ChartTypeButton value={false}>
+              <ChartTypeButton value={false} style={{ textTransform: "none" }}>
                 <img src={mapIcon} alt="Map icon" style={{ marginRight: 8 }} />
                 Map
               </ChartTypeButton>
             </FeedbackChartSwitch>
           </div>
           {chartGraphType && <FeedbackGraph />}
-        </StyledMainDiv>
+        </StyledMainDiv> */}
 
         <StyledMainDiv>
           <SpaceBetweenContainer style={{ margin: "16px 0" }}>
@@ -238,7 +231,7 @@ export const Feedbacks = (): JSX.Element => {
                 <span>{selectedDateLabel}</span>
                 <span style={{ color: "#969AB6" }}>
                   {" "}
-                  / From {moment(startDate).format("MMM DD")} - {moment(endDate).format("MMM DD")}
+                  / From {formatDate(startDate, DATE_FORMATS.SHORT_DATE)} - {formatDate(endDate, DATE_FORMATS.SHORT_DATE)}
                 </span>
               </span>
             </div>
