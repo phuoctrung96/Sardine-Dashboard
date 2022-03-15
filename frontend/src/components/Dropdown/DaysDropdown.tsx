@@ -48,11 +48,6 @@ const CHARTS_DROPDOWN: readonly ChartDropdownElement[] = [
   },
   {
     icon: iconPath,
-    field: 365,
-    option: "Last 1 Year",
-  },
-  {
-    icon: iconPath,
     field: 0,
     option: "Custom dates",
   },
@@ -80,8 +75,7 @@ const INDEX_1_MONTH = 2;
 const INDEX_2_MONTHS = 3;
 const INDEX_3_MONTHS = 4;
 const INDEX_6_MONTHS = 5;
-const INDEX_1_YEAR = 6;
-const INDEX_CUSTOM_DATES = 7;
+const INDEX_CUSTOM_DATES = 6;
 
 // Calculate dateIndex based on the startDate and endDate.
 function getDateIndex(startDate?: Date, endDate?: Date) {
@@ -107,8 +101,6 @@ function getDateIndex(startDate?: Date, endDate?: Date) {
         return INDEX_3_MONTHS;
       case 180:
         return INDEX_6_MONTHS;
-      case 365:
-        return INDEX_1_YEAR;
       default:
         return INDEX_CUSTOM_DATES;
     }

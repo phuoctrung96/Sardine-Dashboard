@@ -371,7 +371,7 @@ const SessionsDetails = (): JSX.Element => {
 
           setIsDataLoaded(true);
         } else {
-          addToast("Failed to load details for the sessoin!", {
+          addToast("Failed to load details for the session!", {
             appearance: "error",
             autoDismiss: false,
           });

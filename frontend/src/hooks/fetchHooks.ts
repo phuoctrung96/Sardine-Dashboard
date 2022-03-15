@@ -9,6 +9,7 @@ import {
   getCustomerCryptoDetails,
   fetchSuperAdminEmailObjects,
   addSuperAdminEmail,
+  deleteSuperAdminEmail,
 } from "utils/api";
 import {
   ClientIdObject,
@@ -180,11 +181,27 @@ export const useAddSuperAdminEmailMutation = (): UseMutationResult<
   string,
   unknown
 > => {
-  const queryclient = useQueryClient();
+  const queryClient = useQueryClient();
 
   const mutation = useMutation((email: string) => addSuperAdminEmail(email), {
     onSuccess: (_data, _variables, _context) => {
-      queryclient.invalidateQueries(CACHE_KEYS.SUPER_ADMIN_EMAILS).then().catch(captureException);
+      queryClient.invalidateQueries(CACHE_KEYS.SUPER_ADMIN_EMAILS).then().catch(captureException);
+    },
+  });
+  return mutation;
+};
+
+export const useDeleteSuperAdminEmailMutation = (): UseMutationResult<
+  EmailObject,
+  ErrorWithResponseDataErrorObject | unknown,
+  number,
+  unknown
+> => {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation((id: number) => deleteSuperAdminEmail(id), {
+    onSuccess: (_data, _variables, _context) => {
+      queryClient.invalidateQueries(CACHE_KEYS.SUPER_ADMIN_EMAILS).then().catch(captureException);
     },
   });
   return mutation;

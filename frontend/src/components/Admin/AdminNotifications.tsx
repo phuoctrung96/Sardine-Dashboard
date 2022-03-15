@@ -11,7 +11,7 @@ import Layout from "../Layout/Main";
 import { getAdminOrganisations, sendAdminNotification } from "../../utils/api";
 import RadioButton from "../Common/RadioButton";
 
-const AdminNotificatons: React.FC = () => {
+const AdminNotifications: React.FC = () => {
   const [searchString, setSearchString] = useState("");
   const [fetchOrg, setFetchOrg] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -202,4 +202,4 @@ const AdminNotificatons: React.FC = () => {
   );
 };
 
-export default AdminNotificatons;
+export default AdminNotifications;

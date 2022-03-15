@@ -180,6 +180,7 @@ export const superAdminUrls = createUrls({
     generateCredentialsRoute: { path: "/generate-credentials", httpMethod: "post" },
     listSuperAdminEmailsRoute: { path: "/list-super-admin-emails", httpMethod: "get" },
     addSuperAdminEmailRoute: { path: "/add-super-admin-emails", httpMethod: "post" },
+    deleteSuperAdminEmailRoute: { path: "/delete-super-admin-emails", httpMethod: "delete" },
   },
 });
 

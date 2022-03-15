@@ -77,7 +77,7 @@ const CardAttributes: React.FC<CardAttributesProps> = (props) => {
 };
 
 const DataCard: React.FC<Props> = (props) => {
-  const { header, attributes, children, bodyStyle, headerStyle, icon } = props;
+  const { header, attributes, children, headerStyle, icon } = props;
   return (
     <DetailsCardView>
       <Card.Header
@@ -86,7 +86,7 @@ const DataCard: React.FC<Props> = (props) => {
           ...headerStyle,
         }}
       >
-        {icon || <></>}
+        <>{icon}</>
         <span>{header}</span>
       </Card.Header>
       {attributes.length === 0 ? (

@@ -108,7 +108,14 @@ const FunctionsPopup: React.FC<Props> = (props) => {
   };
 
   return (
-    <Modal show={show} onHide={handleClose} animation size={selectedFunction.length > 0 ? "lg" : undefined} centered>
+    <Modal
+      show={show}
+      style={{ overflowX: "scroll" }}
+      onHide={handleClose}
+      animation
+      size={selectedFunction.length > 0 ? "lg" : undefined}
+      centered
+    >
       <Modal.Header style={{ alignSelf: "center", display: "flex", alignItems: "center" }}>
         <Title style={{ fontSize: 16, marginRight: 10 }}>Select function type: </Title>
         <RecursiveDropdown

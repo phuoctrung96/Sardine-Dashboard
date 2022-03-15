@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Image } from "react-bootstrap";
-import { DROP_DOWN_BG, FEATURE_SAPARATOR } from "../../rulesengine/dataProvider";
+import { DROP_DOWN_BG, FEATURE_SEPARATOR } from "../../rulesengine/dataProvider";
 import { isDurationValue } from "../../utils/ruleUtils";
 import rightArrow from "../../utils/logo/rightArrow.png";
 import rightArrowWhite from "../../utils/logo/rightArrowWhite.png";
@@ -53,7 +53,7 @@ const RecursiveDropdown = (p: RecursiveDropdownProps) => {
       let subValues = selectedSubSections;
       // parentTitle would be like PaymentMethod_Bank_PrimaryIdentity_Address_City
       // And we already have first & last value so removing them from the list and considering intermediate features
-      const pathValues = parentTitle.split("_");
+      const pathValues = parentTitle.split(FEATURE_SEPARATOR);
       if (pathValues.length > 1) {
         pathValues.shift(); // Remove main section value
         pathValues.pop(); // Remove last selected value
@@ -81,7 +81,7 @@ const RecursiveDropdown = (p: RecursiveDropdownProps) => {
       item.items.length === 0 ? (
         <SubA
           key={item.title}
-          onClick={() => handleItemClick(item.title, item.datatype, `${parentTitle}${FEATURE_SAPARATOR}${item.title}`)}
+          onClick={() => handleItemClick(item.title, item.datatype, `${parentTitle}${FEATURE_SEPARATOR}${item.title}`)}
           className="dropdown"
         >
           {item.title}
@@ -94,8 +94,8 @@ const RecursiveDropdown = (p: RecursiveDropdownProps) => {
               const section = p.data.filter((r: DataProps) => r.title === selectedSection);
               if (section.length > 0) {
                 // Splitting each value from path by _
-                const itemPath = `${parentTitle}${FEATURE_SAPARATOR}${item.title}`;
-                const pathValues = itemPath.split("_");
+                const itemPath = `${parentTitle}${FEATURE_SEPARATOR}${item.title}`;
+                const pathValues = itemPath.split(FEATURE_SEPARATOR);
                 if (pathValues.length > 0) {
                   pathValues.shift(); // Removing first element as it is section and not subsection
                   setSelectedSubSections(pathValues);
@@ -121,7 +121,7 @@ const RecursiveDropdown = (p: RecursiveDropdownProps) => {
           </SubDropbtn>
           {selectedSubSections.includes(item.title) ? (
             <SubDropDownContent style={{ top: 0, left: 280, display: "block" }} className="dropdown">
-              {renderDropDownItem(item.items, `${parentTitle}${FEATURE_SAPARATOR}${item.title}`)}
+              {renderDropDownItem(item.items, `${parentTitle}${FEATURE_SEPARATOR}${item.title}`)}
             </SubDropDownContent>
           ) : null}
         </div>
