@@ -10,7 +10,7 @@ export const DATE_FORMATS = {
   DATETIME: "YYYY-MM-DD HH:mm:ss",
   DATE: "YYYY-MM-DD",
   SHORT_DATE: "MMM DD",
-  TIME: "h:mm",
+  HOUR_MINUTE: "h:mm",
   LLL: "LLL",
 } as const;
 export type DateFormat = typeof DATE_FORMATS[keyof typeof DATE_FORMATS];

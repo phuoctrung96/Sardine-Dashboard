@@ -19,7 +19,7 @@ import { formatTimestampInUtc } from "../../utils/timeUtils";
 
 const convertTimestampToDateAndTime = (timestamp: string) => ({
   date: formatTimestampInUtc(+timestamp, { unit: TIME_UNITS.MILLISECOND, format: DATE_FORMATS.DATE }),
-  time: formatTimestampInUtc(+timestamp, { unit: TIME_UNITS.MILLISECOND, format: DATE_FORMATS.TIME }),
+  time: formatTimestampInUtc(+timestamp, { unit: TIME_UNITS.MILLISECOND, format: DATE_FORMATS.HOUR_MINUTE }),
 });
 
 export const FeedbackTableRow = (props: { data: FeedbackRow }): JSX.Element => {
