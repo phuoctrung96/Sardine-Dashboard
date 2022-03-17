@@ -1,5 +1,6 @@
 import { Query } from "@google-cloud/datastore";
 import { AmlKind } from "sardine-dashboard-typescript-definitions";
+import { CLIENT_ID_FIELD, CUSTOMER_ID_FIELD } from "../../../constants";
 import { firebaseAdmin } from "../../firebase";
 import { AML_KIND } from "./common";
 
@@ -16,8 +17,8 @@ export class Aml {
   public static async query(clientId: string, customerId: string, sessionKey: string): Promise<AmlKind | null> {
     const dataStoreQuery: Query = ds
       .createQuery(AML_KIND)
-      .filter("client_id", clientId)
-      .filter("customer_id", customerId)
+      .filter(CLIENT_ID_FIELD, clientId)
+      .filter(CUSTOMER_ID_FIELD, customerId)
       .filter("session_id", sessionKey)
       .order("time", { descending: true })
       .limit(1);

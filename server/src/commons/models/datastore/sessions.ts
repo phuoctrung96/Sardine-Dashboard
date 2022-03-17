@@ -14,6 +14,7 @@ import { WebhookRequest, updateCaseStatus } from "../../pubsub/CaseManagement";
 import { UpdateSessionRequest } from "../../../api/request-interface";
 import { DocumentVerficationDS } from "./document-verifications";
 import { fetchDocumentVerificatonsImages } from "../../../api/routes/document-verifications";
+import { CLIENT_ID_FIELD, CUSTOMER_ID_FIELD } from "../../../constants";
 
 const ds = firebaseAdmin.datastore;
 
@@ -72,7 +73,7 @@ export class Session {
     const dataStoreQuery: Query = ds.createQuery(SESSION_KIND);
 
     if (customerId.length === 0) {
-      dataStoreQuery.filter("session_key", sessionKey).filter("client_id", clientId);
+      dataStoreQuery.filter("session_key", sessionKey).filter(CLIENT_ID_FIELD, clientId);
     } else {
       dataStoreQuery.filter("__key__", key);
     }
@@ -89,8 +90,8 @@ export class Session {
   public static async getTransactionsList(clientId: string, customerId: string, sessionKey: string): Promise<Array<Transaction>> {
     const dataStoreQuery: Query = ds
       .createQuery(TRANSACTION_KIND)
-      .filter("client_id", clientId)
-      .filter("customer_id", customerId)
+      .filter(CLIENT_ID_FIELD, clientId)
+      .filter(CUSTOMER_ID_FIELD, customerId)
       .filter("session_key", sessionKey)
       .limit(100);
 
@@ -169,7 +170,7 @@ export class Session {
   ): Promise<SessionList> {
     let query: Query = ds
       .createQuery(SESSION_KIND)
-      .filter("client_id", "=", clientId)
+      .filter(CLIENT_ID_FIELD, "=", clientId)
       .filter("timestamp", ">=", startTimestamp)
       .filter("timestamp", "<=", endTimestamp);
 
@@ -208,13 +209,13 @@ export class Session {
   ): Promise<CustomerProfileResponse> {
     const query: Query = ds
       .createQuery(SESSION_KIND)
-      .filter("client_id", clientId)
-      .filter("customer_id", customerId)
+      .filter(CLIENT_ID_FIELD, clientId)
+      .filter(CUSTOMER_ID_FIELD, customerId)
       .order("timestamp", { descending: true }); // Order by timestamp descending. New session comes first.
     const transactionQuery: Query = ds
       .createQuery(TRANSACTION_KIND)
-      .filter("client_id", clientId)
-      .filter("customer_id", customerId)
+      .filter(CLIENT_ID_FIELD, clientId)
+      .filter(CUSTOMER_ID_FIELD, customerId)
       .limit(limit);
 
     const filters = {

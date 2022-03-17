@@ -1,12 +1,13 @@
-import express, { Response } from "express";
-import { query, body } from "express-validator";
 import { BigQuery } from "@google-cloud/bigquery";
 import * as Sentry from "@sentry/node";
-import { CustomerRequestBody, AnyTodo, customerUrls } from "sardine-dashboard-typescript-definitions";
+import express, { Response } from "express";
+import { body, query } from "express-validator";
 import moment from "moment";
-import { Session } from "../../commons/models/datastore/sessions";
-import { RequestWithUser } from "../request-interface";
+import { AnyTodo, CustomerRequestBody, customerUrls } from "sardine-dashboard-typescript-definitions";
 import { mw } from "../../commons/middleware";
+import { Customer } from "../../commons/models/datastore/customer";
+import { Session } from "../../commons/models/datastore/sessions";
+import { RequestWithCurrentUser, RequestWithUser } from "../request-interface";
 
 const {
   getCustomersRoute,
@@ -336,55 +337,15 @@ const customersRouter = () => {
 
   router[getBankDetailsRoute.httpMethod](
     getBankDetailsRoute.path,
-    [query(["customerId"]).exists()],
+    [query(["customerId"]).exists(), query(["clientId"]).exists()],
     mw.validateRequest,
     mw.requireLoggedIn,
-    async (req: RequestWithUser, res: Response) => {
-      const customerId: string = req.query.customerId as string;
-      let result: AnyTodo[];
-
-      const date = moment().subtract(6, "months").format();
+    async (req: RequestWithCurrentUser<{}, { customerId: string; clientId: string }>, res: Response) => {
+      const { customerId, clientId } = req.query;
 
       try {
-        const query = `WITH cus AS (
-          select * from (
-              SELECT
-                  row_number() over (partition by session_key order by timestamp desc) as seq_num,
-               -- bank.account_number,
-               transaction_id as trans_id,
-               -- bank.routing_number,
-               bank.account_type,
-               bank.balance,
-               bank.balance_currency,
-               bank.total_amount_spent,
-           FROM business.customers
-               WHERE customer.id="${customerId}"
-               AND timestamp>'${date}'
-              ) where seq_num = 1
-          ),
-   tran AS (
-       select * from 
-           (SELECT
-               id,
-               COALESCE(payment_method.bank.routing_number, payment_method.wire.routing_number, recipient_payment_method.wire.routing_number, recipient_payment_method.bank.routing_number) as routing_number,
-               COALESCE(payment_method.bank.account_number, payment_method.wire.account_number, recipient_payment_method.wire.account_number, recipient_payment_method.bank.account_number) as account_number,
-               row_number() over (partition by session_key order by created_at_millis desc) as seq_num,
-               amount,
-               currency_code,
-               item_category,
-               created_at_millis,
-               action_type,
-               payment_method.type,
-           FROM business.transactions
-               WHERE customer_id="${customerId}"
-               AND created_at_millis>'${date}'
-           ) where seq_num = 1
-      )
-  SELECT * FROM cus
-  inner join tran on tran.id = cus.trans_id
-  `;
+        const result = await Customer.getBankDetailsCustomer(clientId, customerId);
 
-        result = await runQuery(query, {});
         res.json({ result });
       } catch (e) {
         res.json({ result: [], error: e });
@@ -396,51 +357,15 @@ const customersRouter = () => {
 
   router[getCardDetailsRoute.httpMethod](
     getCardDetailsRoute.path,
-    [query(["customerId"]).exists()],
+    [query(["customerId"]).exists(), query(["clientId"]).exists()],
     mw.validateRequest,
     mw.requireLoggedIn,
-    async (req: RequestWithUser, res: Response) => {
-      const customerId: string = req.query.customerId as string;
-      let result: AnyTodo[];
-
-      const date = moment().subtract(6, "months").format();
+    async (req: RequestWithCurrentUser<{}, { customerId: string; clientId: string }>, res: Response) => {
+      const { customerId, clientId } = req.query;
 
       try {
-        const query = `
-        WITH cus AS (
-          select * from (
-              SELECT
-               row_number() over (partition by session_key order by timestamp desc) as seq_num,
-               transaction_id as trans_id,
-               customer.emailage_response.transaction.card_type,
-               customer.emailage_response.transaction.issuer_bank,
-               customer.emailage_response.transaction.issuer_brand,
-               customer.emailage_response.transaction.is_prepaid,
-               customer.emailage_response.transaction.card_category,
-           FROM business.customers
-               WHERE customer.id="${customerId}"
-               AND timestamp>'${date}'
-              ) where seq_num = 1
-          ),
-   tran AS (
-       select * from 
-           (SELECT
-              DISTINCT 
-               id,
-               row_number() over (partition by session_key order by created_at_millis desc) as seq_num,
-               payment_method.card.last4,
-               payment_method.card.first6,
-           FROM business.transactions
-               WHERE customer_id="${customerId}"
-               AND created_at_millis>'${date}'
-               AND payment_method.type='card'
-           ) where seq_num = 1
-      )
-  SELECT * FROM tran
-  inner join cus on tran.id = cus.trans_id
-        `;
+        const result = await Customer.getCardDetailsCustomer(clientId, customerId);
 
-        result = await runQuery(query, {});
         res.json({ result });
       } catch (e) {
         res.json({ result: [], error: e });
@@ -452,36 +377,15 @@ const customersRouter = () => {
 
   router[getCryptoDetailsRoute.httpMethod](
     getCryptoDetailsRoute.path,
-    [query(["customerId"]).exists()],
+    [query(["customerId"]).exists(), query(["clientId"]).exists()],
     mw.validateRequest,
     mw.requireLoggedIn,
-    async (req: RequestWithUser, res: Response) => {
-      const customerId: string = req.query.customerId as string;
-      let result: AnyTodo[];
-
-      const date = moment().subtract(6, "months").format();
+    async (req: RequestWithCurrentUser<{}, { customerId: string; clientId: string }>, res: Response) => {
+      const { customerId, clientId } = req.query;
 
       try {
-        const query = `
+        const result = await Customer.getCryptoDetailsCustomer(clientId, customerId);
 
-        SELECT
-          * EXCEPT (seq_num)
-        FROM (
-          SELECT
-            DISTINCT recipient_payment_method.crypto.address,
-            ROW_NUMBER() OVER (PARTITION BY recipient_payment_method.crypto.address ORDER BY created_at_millis DESC) AS seq_num,
-            recipient_payment_method.crypto.currency_code,
-            recipient_payment_method.crypto.coinbase_response.result.addressRiskScore,
-            recipient_payment_method.crypto.coinbase_response.result.userRiskScore,
-            ARRAY_TO_STRING(recipient_payment_method.crypto.coinbase_response.result.metadata.categories,",") AS categories,
-          FROM
-            business.transactions
-          WHERE customer_id="${customerId}"
-            AND created_at_millis>'${date}'
-            AND recipient_payment_method.type = "crypto")
-        WHERE
-          seq_num = 1`;
-        result = await runQuery(query, {});
         res.json({ result });
       } catch (e) {
         res.json({ result: [], error: e });

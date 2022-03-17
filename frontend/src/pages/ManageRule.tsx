@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, memo } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { Image, ToggleButtonGroup, ToggleButton, OverlayTrigger, Form, Tooltip, Spinner, Button } from "react-bootstrap";
 import { useGTMDispatch } from "@elgorditosalsero/react-gtm-hook";
 import { CSVReader } from "react-papaparse";
@@ -530,7 +530,7 @@ const DropdownContainer = ({
             if (parentIdx === -1) {
               newRules[idx].rule = val;
             } else {
-              (newRules[parentIdx].rules[idx] as AnyTodo).rule = val;
+              newRules[parentIdx].rules[idx].rule = val;
             }
 
             setRules(newRules);
@@ -938,6 +938,7 @@ const ERROR_TYPES = {
 const ManageRule: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const sendDataToGTM = useGTMDispatch();
   const ref = useRef(null);
   const { addToast } = useToasts();
@@ -1248,7 +1249,7 @@ const ManageRule: React.FC = () => {
           }
         }
       } catch (e) {
-        setError(e as AnyTodo);
+        setError(String(e));
         captureException(e);
       }
     }
@@ -1271,16 +1272,26 @@ const ManageRule: React.FC = () => {
 
             if (ruleDetails.checkpoint && ruleDetails.organisation) {
               const orgName = ruleDetails.organisation.name ? ruleDetails.organisation.name : ruleDetails.organisation;
-              setRulesData(getRulesData(isDemoMode, ruleDetails.checkpoint, isAdmin, orgName) as AnyTodo);
+              setRulesData(getRulesData(isDemoMode, ruleDetails.checkpoint, isAdmin, orgName));
               Promise.all([queueAPICalls(orgName), jiraAPICall(orgName)]).catch((e) => {
                 captureException(e);
               });
             }
           } else if (orgData.length > 0) {
-            setOrganisation(orgData[0]);
-            const org = orgData[0].name;
-            setRulesData(getRulesData(isDemoMode, checkpoint, isAdmin, org) as AnyTodo);
-            Promise.all([queueAPICalls(org), jiraAPICall(org)]).catch((e) => {
+            const orgName = searchParams.get("orgName");
+            let chosenOrg: OrgName;
+            if (orgName === null) {
+              [chosenOrg] = orgData;
+            } else {
+              [chosenOrg] = orgData.filter((orgDataItem) => orgDataItem.name === orgName);
+              if (chosenOrg === undefined) {
+                [chosenOrg] = orgData;
+              }
+            }
+            setOrganisation(chosenOrg);
+            const chosenOrgName = chosenOrg.name;
+            setRulesData(getRulesData(isDemoMode, checkpoint, isAdmin, chosenOrgName));
+            Promise.all([queueAPICalls(chosenOrgName), jiraAPICall(chosenOrgName)]).catch((e) => {
               captureException(e);
             });
           }
@@ -1289,13 +1300,13 @@ const ManageRule: React.FC = () => {
             if (ruleDetails.checkpoint !== undefined) {
               setCheckpoint(ruleDetails.checkpoint);
               setActionsData(getActionData(isSuperAdmin, ruleDetails.checkpoint));
-              setRulesData(getRulesData(isDemoMode, ruleDetails.checkpoint, isAdmin, organisationFromUserStore) as AnyTodo);
+              setRulesData(getRulesData(isDemoMode, ruleDetails.checkpoint, isAdmin, organisationFromUserStore));
             }
           } else {
-            setRulesData(getRulesData(isDemoMode, checkpoint, isAdmin, organisationFromUserStore) as AnyTodo);
+            setRulesData(getRulesData(isDemoMode, checkpoint, isAdmin, organisationFromUserStore));
           }
 
-          setOrganisation({ name: organisationFromUserStore } as AnyTodo);
+          setOrganisation({ name: organisationFromUserStore });
           Promise.all([queueAPICalls(organisationFromUserStore), jiraAPICall(organisationFromUserStore)]).catch((e) => {
             captureException(e);
           });
@@ -1517,7 +1528,7 @@ const ManageRule: React.FC = () => {
 
         if (r.rules.length > 0) {
           finalRule += ` ${r.join} `;
-          (r.rules as AnyTodo).forEach((sr: AnyTodo, ind: number) => {
+          r.rules.forEach((sr, ind: number) => {
             finalRule +=
               `${sr.rule} ${sr.operator} ${prepareValueForString(sr, validateString)}`.trim() +
               (ind !== r.rules.length - 1 ? ` ${sr.join} ` : "");

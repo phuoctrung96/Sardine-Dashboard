@@ -77,9 +77,11 @@ import {
   FeedbacksRequestBody,
   CreateOrganisation,
   CreateOrganisationResponse,
+  BankDetailsResponse,
   EmailObject,
+  CryptoDetailsResponse,
+  CardDetailsResponse,
 } from "sardine-dashboard-typescript-definitions";
-import { CryptoObject } from "components/Customers/UserView";
 
 import { FilterData } from "components/Common/FilterField";
 import { captureException, getErrorMessage } from "./errorUtils";
@@ -655,19 +657,23 @@ export const getCustomers = (clientId: string, data: CustomerRequestBody) => {
 
 export const fetchUserAggregations = (data: UserAggregationsRequestBody): Promise<{ result: UserAggregationKind }> =>
   httpMethods[getUserAggregationsRoute.httpMethod]({ url: getApiPath(searchUrls.basePath, getUserAggregationsRoute.path), data });
-export const getCustomerBankDetails = (customerId: string) => {
+
+export const getCustomerBankDetails = (customerId: string, clientId: string): Promise<{ result: BankDetailsResponse[] }> => {
   const url = new URL(getApiPath(customerUrls.basePath, getBankDetailsRoute.path), window.location.origin);
   url.searchParams.append("customerId", customerId);
+  url.searchParams.append("clientId", clientId);
   return httpMethods[getBankDetailsRoute.httpMethod]({ url: String(url) });
 };
-export const getCustomerCardDetails = (customerId: string) => {
+export const getCustomerCardDetails = (customerId: string, clientId: string): Promise<{ result: CardDetailsResponse[] }> => {
   const url = new URL(getApiPath(customerUrls.basePath, getCardDetailsRoute.path), window.location.origin);
   url.searchParams.append("customerId", customerId);
+  url.searchParams.append("clientId", clientId);
   return httpMethods[getCardDetailsRoute.httpMethod]({ url: String(url) });
 };
-export const getCustomerCryptoDetails = (customerId: string): Promise<{ result: CryptoObject[] }> => {
+export const getCustomerCryptoDetails = (customerId: string, clientId: string): Promise<{ result: CryptoDetailsResponse[] }> => {
   const url = new URL(getApiPath(customerUrls.basePath, getCryptoDetailsRoute.path), window.location.origin);
   url.searchParams.append("customerId", customerId);
+  url.searchParams.append("clientId", clientId);
   return httpMethods[getCryptoDetailsRoute.httpMethod]({ url: String(url) });
 };
 

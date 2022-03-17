@@ -35,6 +35,7 @@ ENV NODE_ENV=production
 WORKDIR /usr/src/app/server
 RUN npm link ../shared
 COPY server/src ./src
+COPY server/api-schema ./api-schema
 COPY server/config ./config
 COPY server/migrations ./migrations
 COPY server/database.json ./database.json

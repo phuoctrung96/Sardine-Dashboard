@@ -8,6 +8,7 @@ export interface CardAttribute {
   value: ReactNode;
   valueParser?: (val: ReactNode) => string;
   toolTip?: string;
+  click?: () => void;
 }
 
 interface Props {
@@ -67,11 +68,13 @@ const DetailCardTitle: React.FC<CardTitleProps> = (props) => {
 
 const CardAttributes: React.FC<CardAttributesProps> = (props) => {
   const { attribute, keyId } = props;
-  const { key, value, toolTip = "", valueParser = defaultValueParser } = attribute;
+  const { click, key, value, toolTip = "", valueParser = defaultValueParser } = attribute;
   return (
     <div key={keyId}>
       <DetailCardTitle title={replaceAllUnderscoresWithSpaces(key)} tooltip={toolTip} />
-      <div id={`${replaceAllSpacesWithUnderscores(key)}_value`}>{valueParser(value)}</div>
+      <div onClick={click} onKeyPress={click} role="button" tabIndex={0} id={`${replaceAllSpacesWithUnderscores(key)}_value`}>
+        {valueParser(value)}
+      </div>
     </div>
   );
 };

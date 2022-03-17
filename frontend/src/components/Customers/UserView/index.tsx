@@ -1,7 +1,15 @@
 import { Grid } from "@mui/material";
 import { uniqBy } from "lodash-es";
-import { Transaction } from "sardine-dashboard-typescript-definitions";
+import {
+  BANK_ACCOUNT_TYPE,
+  CardIssuerBrandType,
+  CARD_ISSUER_BRAND,
+  CryptoDetailsResponse,
+  hideCharacters,
+  Transaction,
+} from "sardine-dashboard-typescript-definitions";
 import { Link } from "components/Common/Links";
+import { useState } from "react";
 import american_express from "../../../utils/logo/cards/american_express.svg";
 import diners_club from "../../../utils/logo/cards/diners_club.svg";
 import discover from "../../../utils/logo/cards/discover.svg";
@@ -32,18 +40,10 @@ export interface CardObject {
   issuer_brand: string;
   issuer_icon?: string;
   is_prepaid: string;
-  card_category: string;
+  level: string;
   last4: string;
   first6: string;
   isRelevantToSession: boolean;
-}
-
-export interface CryptoObject {
-  addressRiskScore: string;
-  userRiskScore: string;
-  categories: string;
-  currency_code: string;
-  address: string;
 }
 
 export interface TransactionObject {
@@ -83,18 +83,11 @@ export const buildCardObject = (transaction: Transaction, sessionTransactionId: 
   card_type: "",
   issuer_brand: "",
   is_prepaid: "",
-  card_category: "",
+  level: "",
   last4: transaction.last_4,
   first6: transaction.first_6,
   isRelevantToSession: sessionTransactionId.length === 0 ? true : transaction.id === sessionTransactionId,
 });
-
-export const BANK_ACCOUNT_TYPE = {
-  0: "UNKNOWN",
-  1: "CHECKING",
-  2: "SAVING",
-  3: "OTHER",
-} as const;
 
 export const buildBankObject = (transaction: Transaction): BankObject => ({
   account_number: transaction.account_number,
@@ -105,7 +98,7 @@ export const buildBankObject = (transaction: Transaction): BankObject => ({
   total_amount_spent: "",
 });
 
-export const dedupeCryptoObjects = (cryptoObjects: CryptoObject[]): CryptoObject[] =>
+export const dedupeCryptoObjects = (cryptoObjects: CryptoDetailsResponse[]): CryptoDetailsResponse[] =>
   uniqBy(cryptoObjects, ({ currency_code, address, addressRiskScore, userRiskScore, categories }) =>
     [currency_code, address, addressRiskScore, userRiskScore, categories].join()
   );
@@ -116,11 +109,11 @@ export const dedupeBankObjects = (bankObjects: BankObject[]): BankObject[] =>
   );
 
 export const dedupeCardObjects = (cardObjects: CardObject[]): CardObject[] =>
-  uniqBy(cardObjects, ({ card_category, card_type, first6, last4, issuer_brand, is_prepaid }) =>
-    [card_category, card_type, first6, last4, issuer_brand, is_prepaid].join()
+  uniqBy(cardObjects, ({ level, card_type, first6, last4, issuer_brand, is_prepaid }) =>
+    [level, card_type, first6, last4, issuer_brand, is_prepaid].join()
   );
 
-export const buildCryptoObject = (transaction: Transaction): CryptoObject[] => {
+export const buildCryptoObject = (transaction: Transaction): CryptoDetailsResponse[] => {
   const output = [];
   if (transaction.crypto_address !== undefined) {
     output.push({
@@ -162,19 +155,29 @@ export const TableBodyTransactions = ({ t }: { t: TransactionObject }): JSX.Elem
   </tbody>
 );
 
-export const TableBodyBank = ({ b }: { b: BankObject }): JSX.Element => (
-  <tbody id="table_bank_body">
-    <StyledTr>
-      <Cell>{`${b.account_number}`}</Cell>
-      <Cell>{`${b.routing_number}`}</Cell>
-      <Cell>{`${b.account_type}`}</Cell>
-      <Cell>{`${b.balance} ${b.balance_currency}`}</Cell>
-      <Cell>{`${b.balance_currency} ${b.total_amount_spent}`}</Cell>
-    </StyledTr>
-  </tbody>
-);
+export const TableBodyBank = ({ b }: { b: BankObject }): JSX.Element => {
+  const [isAccountNumberHidden, setIsAccountNumberHidden] = useState(true);
 
-export const TableBodyCrypto = ({ c }: { c: CryptoObject }): JSX.Element => {
+  const handleAccountNumberClick = (): void => {
+    setIsAccountNumberHidden(!isAccountNumberHidden);
+  };
+
+  return (
+    <tbody id="table_bank_body">
+      <StyledTr>
+        <Cell onClick={handleAccountNumberClick} onKeyPress={handleAccountNumberClick}>
+          {isAccountNumberHidden ? hideCharacters(b.account_number, 0, b.account_number.length - 4) : b.account_number}
+        </Cell>
+        <Cell>{`${b.routing_number}`}</Cell>
+        <Cell>{`${b.account_type}`}</Cell>
+        <Cell>{`${b.balance} ${b.balance_currency}`}</Cell>
+        <Cell>{`${b.balance_currency} ${b.total_amount_spent}`}</Cell>
+      </StyledTr>
+    </tbody>
+  );
+};
+
+export const TableBodyCrypto = ({ c }: { c: CryptoDetailsResponse }): JSX.Element => {
   let link: JSX.Element | string = "-";
   let providerLink: JSX.Element | string = "-";
   if (c.currency_code && c.currency_code.toLowerCase() !== "") {
@@ -219,9 +222,9 @@ export const TableBodyOther = ({ c }: { c: CardObject }): JSX.Element => (
     <StyledTr isHighlight={c.isRelevantToSession}>
       <Cell>{`${c.card_type}`}</Cell>
       <Cell>{`${c.first6}••••••${c.last4}`}</Cell>
-      <Cell>{c.issuer_icon ? <img alt="" src={c.issuer_icon} style={{ height: 13 }} /> : `${c.issuer_brand}`}</Cell>
+      <Cell>{c.issuer_brand}</Cell>
       <Cell>{`${c.is_prepaid}`}</Cell>
-      <Cell>{`${c.card_category}`}</Cell>
+      <Cell>{`${c.level}`}</Cell>
     </StyledTr>
   </tbody>
 );
@@ -266,7 +269,7 @@ export const CARD_HEADERS: { [name in CardNameWithHeaders]: string[] } = {
     "COINBASE DASHBOARD",
     "ADDRESS DETAILS",
   ],
-  [KEY_CARD_DETAILS]: ["TYPE", "NUMBER", "ISSUER", "IS PREPAID", "CATEGORY"],
+  [KEY_CARD_DETAILS]: ["TYPE", "NUMBER", "ISSUER", "IS PREPAID", "LEVEL"],
   [KEY_BANK_DETAILS]: ["ACCOUNT NUMBER", "ROUTING NUMBER", "ACCOUNT TYPE", "BALANCE", "TOTAL SPENT"],
 };
 
@@ -303,48 +306,35 @@ export const CardContentFilled = ({
   </StyledTable>
 );
 
-export const getCardType = (val: number): string => {
-  switch (val) {
-    case 1:
-      return "Credit";
-    case 2:
-      return "Debit";
-    case 3:
-      return "Prepaid";
-    case 4:
-      return "Charge Card";
-    case 5:
-      return "Debit or Credit";
-    default:
-      return "Unknown";
+export const getIssuerIcon = (val?: CardIssuerBrandType): string | undefined => {
+  if (!val) {
+    return undefined;
   }
-};
 
-export const getIssuerIcon = (val: string): string | undefined => {
-  switch (val.toLowerCase()) {
-    case "american express":
+  switch (val) {
+    case CARD_ISSUER_BRAND.Amex:
       return american_express;
-    case "diners club":
+    case CARD_ISSUER_BRAND.DinersClub:
       return diners_club;
-    case "discover":
+    case CARD_ISSUER_BRAND.Discover:
       return discover;
-    case "elo":
+    case CARD_ISSUER_BRAND.EloCard:
       return elo;
-    case "hiper":
+    case CARD_ISSUER_BRAND.HIPER:
       return hiper;
-    case "jcb":
+    case CARD_ISSUER_BRAND.Jcb:
       return jcb;
-    case "laser":
+    case CARD_ISSUER_BRAND.Laser:
       return laser;
-    case "maestro":
+    case CARD_ISSUER_BRAND.Maestro:
       return maestro;
-    case "mastercard":
+    case CARD_ISSUER_BRAND.Mastercard:
       return mastercard;
-    case "troy":
+    case CARD_ISSUER_BRAND.Troy:
       return troy;
-    case "unionpay":
+    case CARD_ISSUER_BRAND.ChinaUnionPay:
       return unionpay;
-    case "visa":
+    case CARD_ISSUER_BRAND.Visa:
       return visa;
     default:
       return undefined;

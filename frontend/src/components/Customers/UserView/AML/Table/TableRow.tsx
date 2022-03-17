@@ -43,7 +43,7 @@ export const TableRow = ({ entity, onEntityView, customerData }: AmlListItemProp
         <NameHighlighter customerData={customerData} value={entityName} />
       </Cell>
       <Cell>{matchScore}</Cell>
-      <Cell key="abc">
+      <Cell>
         {renderList<string>(
           aliases,
           (listitem) => (

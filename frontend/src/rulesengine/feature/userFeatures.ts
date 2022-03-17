@@ -265,4 +265,29 @@ export const userFeatures = [
       false
     ),
   ]),
+  new FeatureItem(
+    "MobileUserIdAggregation",
+    [
+      new FeatureItem("CustomerIdCountByLastSeenTime", [
+        intChild("ALL", "", false),
+        intChild("1HR", "", false),
+        intChild("2HRS", "", false),
+        intChild("1DAY", "", false),
+        intChild("7DAYS", "", false),
+      ]),
+      new FeatureItem("CustomerIdCountByFirstSeenTime", [
+        intChild("ALL", "", false),
+        intChild("1HR", "", false),
+        intChild("2HRS", "", false),
+        intChild("1DAY", "", false),
+        intChild("7DAYS", "", false),
+      ]),
+    ],
+    "",
+    "",
+    false
+  ),
 ];
+
+const deviceUserFeatureNames = ["Id", "MobileUserIdAggregation"];
+export const deviceUserFeatures = userFeatures.filter((f) => deviceUserFeatureNames.includes(f.title));

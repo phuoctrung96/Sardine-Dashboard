@@ -6,8 +6,8 @@ type HeaderField = {
 };
 
 export const headerFields: HeaderField[] = [
-  { key: "risk_level", highFirstOrder: false },
-  { key: "forgery_level", highFirstOrder: false },
+  { key: "risk_level", highFirstOrder: true },
+  { key: "forgery_level", highFirstOrder: true },
   { key: "document_match_level", highFirstOrder: true },
   { key: "image_quality_level", highFirstOrder: true },
   { key: "face_match_level", highFirstOrder: true },

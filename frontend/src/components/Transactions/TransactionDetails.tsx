@@ -4,13 +4,14 @@ import { useToasts } from "react-toast-notifications";
 import back_blue from "utils/logo/back_blue.svg";
 import { fetchTransactionDetails } from "utils/api";
 import {
+  CryptoDetailsResponse,
   indemnificationDecisionFromValue,
   KEY_EXECUTED_RULES,
   KEY_PAYMENT_METHOD,
   KEY_TRANSACTION_DATA,
   Transaction as TransactionResponse,
 } from "sardine-dashboard-typescript-definitions";
-import { KEY_CRYPTO_ADDRESSES, TableBodyCrypto, CryptoObject, dedupeCryptoObjects } from "components/Customers/UserView";
+import { KEY_CRYPTO_ADDRESSES, TableBodyCrypto, dedupeCryptoObjects } from "components/Customers/UserView";
 import CardContentOrLoadingOrNoData from "components/Customers/UserView/CardContent/CardContentOrLoadingOrNoData";
 import Loader from "components/Common/Loader";
 import DataCard, { CardAttribute } from "components/Common/DataCard";
@@ -95,7 +96,7 @@ const TransactionDetails = (): JSX.Element => {
   const [transactionData, setTransactionData] = useState<TransactionResponse>();
   const [isTransactionDataLoaded, setIsTransactionDataLoaded] = useState(false);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
-  let cryptoData: CryptoObject[] = [];
+  let cryptoData: CryptoDetailsResponse[] = [];
 
   const { addToast } = useToasts();
 
@@ -107,6 +108,7 @@ const TransactionDetails = (): JSX.Element => {
 
   const customerCryptoDetailsFetchResult = useCustomerCryptoDetailsFetchResult({
     customerId: transactionData?.customer_id || "",
+    clientId: transactionData?.client_id || "",
     enabled: transactionData !== undefined,
   });
 
