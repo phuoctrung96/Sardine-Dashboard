@@ -10,6 +10,7 @@ import {
   fetchSuperAdminEmailObjects,
   addSuperAdminEmail,
   deleteSuperAdminEmail,
+  getFeedbacksList,
 } from "utils/api";
 import {
   ClientIdObject,
@@ -19,6 +20,7 @@ import {
   DashboardInvitation,
   DocumentVerification,
   EmailObject,
+  GetFeedbacksListResponse,
 } from "sardine-dashboard-typescript-definitions";
 import { CryptoObject } from "../components/Customers/UserView";
 import { CACHE_KEYS } from "../constants";
@@ -220,6 +222,33 @@ export const useCustomerCryptoDetailsFetchResult = ({
     {
       enabled,
     }
+  );
+
+  return {
+    status,
+    data,
+    error,
+  };
+};
+
+export const useFeedbacksFetchResult = ({
+  startDate,
+  endDate,
+  page,
+  rows,
+  order,
+  orderBy,
+}: {
+  startDate?: string;
+  endDate?: string;
+  page?: number;
+  rows?: number;
+  order?: "asc" | "desc";
+  orderBy?: string;
+}): QueryResult<{ feedbacks: GetFeedbacksListResponse; isLast: boolean }> => {
+  const { data, error, status } = useQuery<{ feedbacks: GetFeedbacksListResponse; isLast: boolean }, Error>(
+    [CACHE_KEYS.FEEDBACKS, startDate, endDate, page, rows, order, orderBy],
+    () => getFeedbacksList({ startDate, endDate, page, rows, order, orderBy })
   );
 
   return {

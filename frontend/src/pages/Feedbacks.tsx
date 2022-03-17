@@ -1,5 +1,4 @@
 import { useLocation } from "react-router-dom";
-import { useQuery } from "react-query";
 import { MenuItem, Popover } from "@mui/material";
 import { StyledStickyNav } from "components/Dashboard/styles";
 import { FeedbackListTable } from "components/Feedbacks/FeedbackListTable";
@@ -11,21 +10,23 @@ import {
   StyledButton,
 } from "components/Feedbacks/styles";
 import { HorizontalContainer, StyledMainContentDiv, StyledMainDiv } from "components/Queues/styles";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaAngleDown, FaPlus } from "react-icons/fa";
-import { FeedbackRow } from "sardine-dashboard-typescript-definitions";
-import { getFeedbacksList } from "utils/api";
 import { useToasts } from "react-toast-notifications";
 import { getDatesFromQueryParams } from "components/Transactions";
 import { captureException } from "utils/errorUtils";
 import { formatDate } from "utils/timeUtils";
-import { CACHE_KEYS, DATE_FORMATS } from "../constants";
+import { DATE_FORMATS, QUERY_STATUS } from "../constants";
 import columnsIcon from "../utils/logo/columns.svg";
 import Layout from "../components/Layout/Main";
 import exportIcon from "../utils/logo/export.svg";
 import readonlyIcon from "../utils/logo/readonly.svg";
 import upDownArrowIcon from "../utils/logo/up-down-arrow.svg";
 import { DatesProps } from "../utils/store/interface";
+import { useFeedbacksFetchResult } from "../hooks/fetchHooks";
+
+const DEFAULT_ROWS = 15;
+const DEFAULT_SELECTED_DATE_LABEL = "Last 24 hours";
 
 const AddFeedbackMenu = (): JSX.Element => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -80,20 +81,17 @@ const AddFeedbackMenu = (): JSX.Element => {
 };
 
 export const Feedbacks = (): JSX.Element => {
-  const [feedbacksData, setFeedbacksData] = useState<FeedbackRow[]>([]);
-  const [isDataLoaded, setIsDataLoaded] = useState(false);
-
   const { addToast } = useToasts();
 
   const { search } = useLocation();
 
-  const [rows, setRows] = useState(15);
+  const [rows, setRows] = useState(DEFAULT_ROWS);
   const [page, setPage] = useState(1);
 
   const dates = getDatesFromQueryParams(search);
   const [startDate, setStartDate] = useState(dates.startDate);
   const [endDate, setEndDate] = useState(dates.endDate);
-  const [selectedDateLabel, setSelectedDateLabel] = useState("Last 24 hours");
+  const [selectedDateLabel, setSelectedDateLabel] = useState(DEFAULT_SELECTED_DATE_LABEL);
 
   const [order, setOrder] = useState<"asc" | "desc">("asc");
   const [orderBy, setOrderBy] = useState("");
@@ -109,23 +107,17 @@ export const Feedbacks = (): JSX.Element => {
     setOrderBy(property);
   };
 
-  useQuery<{ feedbacks: FeedbackRow[]; isLast: boolean }, Error>(
-    [CACHE_KEYS.FEEDBACKS, isDataLoaded, startDate, endDate, page, rows, order, orderBy],
-    () => getFeedbacksList({ startDate, endDate, page, rows, order, orderBy }),
-    {
-      onSuccess: (data) => {
-        setFeedbacksData(data.feedbacks);
-        setIsDataLoaded(true);
-      },
-      onError: (error: Error) => {
-        addToast("Failed to fetch feedbacks", {
-          appearance: "error",
-          autoDismiss: true,
-        });
-        captureException(error);
-      },
+  const feedbacksResult = useFeedbacksFetchResult({ startDate, endDate, page, rows, order, orderBy });
+
+  useEffect(() => {
+    if (feedbacksResult.error !== null) {
+      addToast("Failed to fetch feedbacks", {
+        appearance: "error",
+        autoDismiss: true,
+      });
+      captureException(feedbacksResult.error);
     }
-  );
+  }, [feedbacksResult.error, addToast]);
 
   return (
     <Layout>
@@ -253,8 +245,8 @@ export const Feedbacks = (): JSX.Element => {
             </div>
           </SpaceBetweenContainer>
           <FeedbackListTable
-            feedbacks={feedbacksData}
-            isLoading={!isDataLoaded}
+            feedbacks={feedbacksResult.data?.feedbacks ?? []}
+            isLoading={feedbacksResult.status === QUERY_STATUS.LOADING}
             page={page}
             setPage={setPage}
             rows={rows}
