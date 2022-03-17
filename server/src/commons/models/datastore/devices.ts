@@ -1,6 +1,7 @@
 import { Query } from "@google-cloud/datastore";
 import { entity } from "@google-cloud/datastore/build/src/entity";
 import { DeviceKind, DEVICE_WHITELISTED_FILTERS, UserAggregationKind } from "sardine-dashboard-typescript-definitions";
+import { CLIENT_ID_FIELD } from "../../../constants";
 import { firebaseAdmin } from "../../firebase";
 import { constructCustomerKey, constructDeviceKey, DEVICES_KIND, USER_AGGREGATIONS_KIND } from "./common";
 
@@ -20,7 +21,7 @@ export class Devices {
     const dataStoreQuery: Query = ds.createQuery(DEVICES_KIND);
 
     if (deviceId.length === 0) {
-      dataStoreQuery.filter("session_key", sessionKey).filter("client_id", clientId);
+      dataStoreQuery.filter("session_key", sessionKey).filter(CLIENT_ID_FIELD, clientId);
     } else {
       dataStoreQuery.filter("__key__", key);
     }
@@ -37,7 +38,7 @@ export class Devices {
   public static async getDeviceDetails(clientId: string, sessionKey: string): Promise<DeviceKind | null> {
     const dataStoreQuery: Query = ds
       .createQuery(DEVICES_KIND)
-      .filter("client_id", clientId)
+      .filter(CLIENT_ID_FIELD, clientId)
       .filter("session_key", sessionKey)
       .limit(1)
       .order("timestamp", {
@@ -70,7 +71,7 @@ export class Devices {
   ): Promise<Array<DeviceKind>> {
     let query: Query = ds
       .createQuery(DEVICES_KIND)
-      .filter("client_id", "=", clientId)
+      .filter(CLIENT_ID_FIELD, "=", clientId)
       .filter("timestamp", ">=", startTimestampSeconds * 1000)
       .filter("timestamp", "<=", endTimestampSeconds * 1000);
 

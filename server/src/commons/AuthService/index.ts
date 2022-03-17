@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import config from "config";
 import { assertDefined } from "../../utils/error-utils";
+import { paths } from "../../../api-schema/auth-service-api-schema";
 
 export class AuthService {
   axiosInstance: AxiosInstance;
@@ -23,37 +24,46 @@ export class AuthService {
 
   getCustomerList = async () => {
     this.setAccessorKey();
-    const { data } = await this.axiosInstance.get(`/v1/customers`);
+    const { data } = await this.axiosInstance.get<paths["/customers"]["get"]["responses"]["200"]["schema"]>(`/v1/customers`);
     return data;
   };
 
   createNewClient = async (name: string) => {
     this.setCreatorKey();
-    const r = await this.axiosInstance.post(`/v1/customers`, { name });
+    const r = await this.axiosInstance.post<paths["/customers"]["post"]["responses"]["200"]["schema"]>(`/v1/customers`, { name });
     return r.data;
   };
 
   getAllKeys = async (clientId: string) => {
     this.setAccessorKey();
-    const { data } = await this.axiosInstance.get(`/v1/customers/keys`, {
-      data: { clientId },
-    });
+    const { data } = await this.axiosInstance.get<paths["/customers/keys"]["get"]["responses"]["200"]["schema"]>(
+      `/v1/customers/keys`,
+      {
+        data: { clientId },
+      }
+    );
     return data;
   };
 
-  generateNewCredentails = async (clientId: string) => {
+  generateNewCredentials = async (clientId: string) => {
     this.setCreatorKey();
-    const { data } = await this.axiosInstance.post(`/v1/customers/keys`, {
-      clientId,
-    });
+    const { data } = await this.axiosInstance.post<paths["/customers/keys"]["post"]["responses"]["200"]["schema"]>(
+      `/v1/customers/keys`,
+      {
+        clientId,
+      }
+    );
     return data;
   };
 
   revokeCredentials = async (clientID: string, uuid: string) => {
     this.setCreatorKey();
-    const { data } = await this.axiosInstance.delete(`/v1/customers/keys`, {
-      data: { clientID, uuid },
-    });
+    const { data } = await this.axiosInstance.delete<paths["/customers/keys"]["delete"]["responses"]["200"]["schema"]>(
+      `/v1/customers/keys`,
+      {
+        data: { clientID, uuid },
+      }
+    );
     return data;
   };
 }

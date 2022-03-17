@@ -1,4 +1,5 @@
 import { DocumentVerification, SessionKind, Transaction } from ".";
+import { BankType, CardIssuerBrandType, CardLevelType, CardType } from "../constants";
 
 export interface SessionList {
   sessions: Array<SessionKind>;
@@ -27,6 +28,41 @@ export interface OwnerProps {
   email: string;
   organisation?: string;
   organisation_id?: string;
+}
+
+export interface CryptoDetailsResponse {
+  address: string;
+  currency_code: string;
+  addressRiskScore: string;
+  userRiskScore: string;
+  categories: string;
+}
+
+export interface CardDetailsResponse {
+  last4?: string
+  first6?: string
+  card_type?: CardType
+  issuer_bank?: string
+  issuer_brand?: CardIssuerBrandType
+  is_prepaid?: boolean
+  level?: CardLevelType
+}
+
+export interface BankDetailsResponse {
+  account_type?: BankType;
+  balance: number;
+  balance_currency: string;
+  total_amount_spent?: any;
+  routing_number?: any;
+  account_number?: any;
+  amount?: any;
+  currency_code?: any;
+  item_category?: any;
+  created_at_millis: {
+    value: string;
+  };
+  action_type?: any;
+  type: string;
 }
 
 export interface AddressFields {

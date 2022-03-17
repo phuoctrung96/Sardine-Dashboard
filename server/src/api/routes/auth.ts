@@ -267,10 +267,16 @@ const authRouter = (authService: AuthService) => {
         );
 
         if (id && !Number.isNaN(parseInt(id, 10))) {
-          writeAuditLog(req, result.clientID, parseInt(id, 10), AUDIT_LOG_TYPES.CREATE_ORGANIZATION, {
-            name: organisation,
-            ...result,
-          });
+          writeAuditLog(
+            req,
+            result.clientID,
+            parseInt(id, 10),
+            AUDIT_LOG_TYPES.CREATE_ORGANIZATION,
+            String({
+              name: organisation,
+              ...result,
+            })
+          );
         }
 
         return res.json({ name: organisation, ...result });

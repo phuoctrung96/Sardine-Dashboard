@@ -6,6 +6,9 @@ dist
 # server's auto-generated migration folder
 migrations
 
+# server's auto-generated API schema definitions folder
+api-schema
+
 # frontend's build folderr
 build
 

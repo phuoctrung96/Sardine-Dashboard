@@ -19,8 +19,8 @@ import {
   DashboardInvitation,
   DocumentVerification,
   EmailObject,
+  CryptoDetailsResponse,
 } from "sardine-dashboard-typescript-definitions";
-import { CryptoObject } from "../components/Customers/UserView";
 import { CACHE_KEYS } from "../constants";
 import { QueryResult } from "../interfaces/queryInterfaces";
 import { fetchLatLng, LatLng } from "../components/GoogleMaps";
@@ -209,14 +209,16 @@ export const useDeleteSuperAdminEmailMutation = (): UseMutationResult<
 
 export const useCustomerCryptoDetailsFetchResult = ({
   customerId,
+  clientId,
   enabled,
 }: {
   customerId: string;
+  clientId: string;
   enabled: boolean;
-}): QueryResult<{ result: CryptoObject[] }> => {
-  const { data, error, status } = useQuery<{ result: CryptoObject[] }, Error>(
+}): QueryResult<{ result: CryptoDetailsResponse[] }> => {
+  const { data, error, status } = useQuery<{ result: CryptoDetailsResponse[] }, Error>(
     [CACHE_KEYS.CUSTOMER_CRYPTO_DETAILS],
-    () => getCustomerCryptoDetails(customerId),
+    () => getCustomerCryptoDetails(customerId, clientId),
     {
       enabled,
     }

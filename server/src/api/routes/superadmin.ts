@@ -58,7 +58,7 @@ const superAdminRouter = (authService: AuthService) => {
     async (req: RequestWithCurrentUser<GenerateCredentialRequest>, res: Response) => {
       const { organisation } = req.body;
       const clientId = await db.superadmin.getClientId(organisation);
-      const result = await authService.generateNewCredentails(clientId);
+      const result = await authService.generateNewCredentials(clientId);
       return res.status(200).json(result);
     }
   );

@@ -30,9 +30,9 @@ export interface FeedbackRow {
   time: number;
   sessionKey: string;
   userId: string;
-  country: string;
-  city: string;
-  reasonCodes: string;
+  country?: string;
+  city?: string;
+  reasonCodes?: string;
   dateTime: string;
 }
 

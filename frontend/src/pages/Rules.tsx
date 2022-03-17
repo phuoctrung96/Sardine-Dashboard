@@ -35,7 +35,7 @@ import { CHECKPOINT_QUERY_FIELD, QUERY_STATUS } from "../constants";
 import { MANAGE_RULE, RULE_DETAILS_PATH, SEARCH_PARAM_KEYS } from "../modulePaths";
 import { useClientIdFetchResult, useRulesFetchResult, useOrganizationNamesResult } from "../hooks/fetchHooks";
 
-interface Organisation {
+interface OrgNameObj {
   name: string;
 }
 
@@ -134,7 +134,7 @@ const DropDownContainer = ({
 }: {
   type: DropdownType;
   organisation: string | null;
-  organisations: Organisation[];
+  organisations: OrgNameObj[];
   checkpoint: string | null;
   setIsSorting: Dispatch<SetStateAction<boolean>>;
 }): JSX.Element => {
@@ -230,7 +230,7 @@ const DropDownContainer = ({
 const Rules = (): JSX.Element => {
   const navigate = useNavigate();
   const queries = useSearchQuery();
-  const organisation = queries.get(CLIENT_QUERY_FIELD);
+  const orgName = queries.get(CLIENT_QUERY_FIELD);
 
   const checkpoint = queries.get(CHECKPOINT_QUERY_FIELD);
   const updateUrlParams = useUpdateUrlParams();
@@ -238,9 +238,8 @@ const Rules = (): JSX.Element => {
   const [rulesHolder, setRulesHolder] = useState<RuleExpression[]>([]);
   const [rules, setRules] = useState<RuleExpression[]>([]);
   const [isLoadingRules, setIsLoadingRules] = useState(false);
-  const [searchString, setSearchString] = useState("");
   const [isSorting, setIsSorting] = useState(false);
-  const [organisations, setOrganisations] = useState<Organisation[]>([]);
+  const [orgNameObjList, setOrgNameObjList] = useState<OrgNameObj[]>([]);
   const { isAdmin, organisationFromUserStore } = useUserStore((state) => {
     const { setUserStoreOrganisation, organisation: org } = state;
 
@@ -253,12 +252,12 @@ const Rules = (): JSX.Element => {
 
   const organizationNamesResult = useOrganizationNamesResult({ enabled: isAdmin });
 
-  const clientIdResult = useClientIdFetchResult({ organisation: organisation || "", enabled: organisation !== null });
+  const clientIdResult = useClientIdFetchResult({ organisation: orgName || "", enabled: orgName !== null });
 
   const rulesResult = useRulesFetchResult({
     clientId: clientIdResult.data || "",
     checkpoint: checkpoint || "",
-    orgName: organisation || "",
+    orgName: orgName || "",
     enabled: clientIdResult.status === QUERY_STATUS.SUCCESS && !!clientIdResult.data && checkpoint !== null,
   });
 
@@ -306,17 +305,17 @@ const Rules = (): JSX.Element => {
 
   useEffect(() => {
     if (organizationNamesResult.data === undefined) {
-      setOrganisations([]);
+      setOrgNameObjList([]);
     } else {
-      setOrganisations(organizationNamesResult.data);
+      setOrgNameObjList(organizationNamesResult.data);
     }
   }, [organizationNamesResult.data]);
 
   useEffect(() => {
-    if (organisationFromUserStore && !isAdmin && organisation === null) {
+    if (organisationFromUserStore && !isAdmin && orgName === null) {
       updateUrlParams(CLIENT_QUERY_FIELD, organisationFromUserStore);
     }
-  }, [organisation, organisations, isAdmin]);
+  }, [orgName, orgNameObjList, isAdmin]);
 
   const onSortEnd: SortEndHandler = ({ oldIndex, newIndex }: { oldIndex: number; newIndex: number }) => {
     const newRules = [...rules];
@@ -336,7 +335,7 @@ const Rules = (): JSX.Element => {
       };
 
       try {
-        await sortRules(payload, String(organisation));
+        await sortRules(payload, String(orgName));
         addToast("Sorted successfully", {
           appearance: "success",
           autoDismiss: true,
@@ -347,7 +346,7 @@ const Rules = (): JSX.Element => {
           autoDismiss: true,
         });
       }
-    } else if (organisation && !organisation.toLowerCase().includes("sardine")) {
+    } else if (orgName && !orgName.toLowerCase().includes("sardine")) {
       const data = rules.filter((r) => r.isEditable === true);
       setRules(data);
     }
@@ -426,7 +425,7 @@ const Rules = (): JSX.Element => {
             id="button_add_new_rule"
             style={{ backgroundColor: "#2173FF" }}
             onClick={() => {
-              navigate(MANAGE_RULE);
+              navigate({ pathname: MANAGE_RULE, search: `orgName=${orgName}` });
             }}
           >
             {" "}
@@ -454,7 +453,6 @@ const Rules = (): JSX.Element => {
                   style={{ width: isWideScreen() ? 300 : 200, marginLeft: 30 }}
                   onChange={(event) => {
                     const text = event.target.value;
-                    setSearchString(text);
                     if (text.length === 0) {
                       setRules(rulesHolder);
                     } else {
@@ -465,8 +463,8 @@ const Rules = (): JSX.Element => {
                 <StyledUl style={{ justifyContent: "flex-end" }}>
                   <DropDownContainer
                     type={DROPDOWN_TYPE.CheckPoint}
-                    organisation={organisation}
-                    organisations={organisations}
+                    organisation={orgName}
+                    organisations={orgNameObjList}
                     checkpoint={checkpoint}
                     setIsSorting={setIsSorting}
                   />
@@ -474,8 +472,8 @@ const Rules = (): JSX.Element => {
                   {isAdmin ? (
                     <DropDownContainer
                       type={DROPDOWN_TYPE.Organisations}
-                      organisation={organisation}
-                      organisations={organisations}
+                      organisation={orgName}
+                      organisations={orgNameObjList}
                       checkpoint={checkpoint}
                       setIsSorting={setIsSorting}
                     />
@@ -501,7 +499,7 @@ const Rules = (): JSX.Element => {
                     onSortEnd={onSortEnd}
                     useDragHandle
                     rules={rules}
-                    organisation={organisation}
+                    organisation={orgName}
                     checkpoint={checkpoint}
                     isSorting={isSorting}
                   />

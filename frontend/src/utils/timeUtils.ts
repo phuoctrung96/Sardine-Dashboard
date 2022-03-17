@@ -52,3 +52,5 @@ export const datetimeToTimestamp = (
 
   return display(parse());
 };
+
+export const formatDate = (date: string | Date, format: string): string => dayjs(date).format(format);

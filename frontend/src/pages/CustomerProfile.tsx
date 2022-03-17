@@ -1,31 +1,33 @@
-import React, { useEffect, useState } from "react";
-import { getCustomerProfile, getCustomerBankDetails, getCustomerCardDetails, getCustomerCryptoDetails } from "utils/api";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { useToasts } from "react-toast-notifications";
-import { Button, Tabs, Tab } from "react-bootstrap";
-import { Transaction, AnyTodo, CustomerProfileResponse, CustomersResponse } from "sardine-dashboard-typescript-definitions";
-import { captureException } from "utils/errorUtils";
 import { Grid } from "@mui/material";
 import Badge from "components/Common/Badge";
-import { renderReasonCodes, ReasonCodesFromArray } from "utils/renderReasonCodes";
-import { SESSION_DETAILS_PATH } from "modulePaths";
 import BulletView, { BulletContainer } from "components/Common/BulletView";
-import { useUserStore } from "store/user";
-import Layout from "../components/Layout/Main";
-import Loader from "../components/Common/Loader";
-import { Link } from "../components/Common/Links";
-import UserNetwork from "../components/Customers/UserView/UserNetwork";
-import AccessControlPopUp from "../components/Customers/UserView/AccessControlPopUp";
-import { GoogleMapsWrapper, GoogleStreetViewMap } from "../components/GoogleMaps";
-import { StyledNavTitle, StyledStickyNav, StyledTitleName } from "../components/Dashboard/styles";
+import { SESSION_DETAILS_PATH } from "modulePaths";
+import React, { useEffect, useState } from "react";
+import { Button, Tab, Tabs } from "react-bootstrap";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useToasts } from "react-toast-notifications";
 import {
-  StyledMainDiv,
-  PinContainer,
-  InputGroupWrapper,
-  DetailsHeaderParent,
+  CryptoDetailsResponse,
+  CustomerProfileResponse,
+  CustomersResponse,
+  dedupeArrayObject,
+  Transaction,
+} from "sardine-dashboard-typescript-definitions";
+import { useUserStore } from "store/user";
+import { getCustomerBankDetails, getCustomerCardDetails, getCustomerCryptoDetails, getCustomerProfile } from "utils/api";
+import { captureException } from "utils/errorUtils";
+import { ReasonCodesFromArray, renderReasonCodes } from "utils/renderReasonCodes";
+import { Link } from "../components/Common/Links";
+import Loader from "../components/Common/Loader";
+import LoadingText from "../components/Common/LoadingText";
+import {
   DetailsHeaderChild,
-  DetailsHeaderValue,
+  DetailsHeaderParent,
   DetailsHeaderTile,
+  DetailsHeaderValue,
+  InputGroupWrapper,
+  PinContainer,
+  StyledMainDiv,
 } from "../components/Customers/styles";
 import {
   BankObject,
@@ -34,11 +36,9 @@ import {
   buildCryptoObject,
   buildTransactionObject,
   CardObject,
-  CryptoObject,
   dedupeBankObjects,
   dedupeCardObjects,
   dedupeCryptoObjects,
-  getCardType,
   getIssuerIcon,
   KEY_BANK_DETAILS,
   KEY_CARD_DETAILS,
@@ -53,18 +53,22 @@ import {
   TableBodyTransactions,
   TransactionObject,
 } from "../components/Customers/UserView";
-import SessionsList from "../components/Customers/UserView/SessionsList";
+import AccessControlPopUp from "../components/Customers/UserView/AccessControlPopUp";
 import CardContentOrLoadingOrNoData from "../components/Customers/UserView/CardContent/CardContentOrLoadingOrNoData";
-import { TableCardSection } from "../components/Customers/UserView/TableCardSection";
-import LoadingText from "../components/Common/LoadingText";
-import { TableCardData } from "../components/Customers/UserView/TableCard";
 import { DocumentVerificationSection } from "../components/Customers/UserView/DocumentVerification";
+import SessionsList from "../components/Customers/UserView/SessionsList";
+import { TableCardData } from "../components/Customers/UserView/TableCard";
+import { TableCardSection } from "../components/Customers/UserView/TableCardSection";
+import UserNetwork from "../components/Customers/UserView/UserNetwork";
+import { StyledNavTitle, StyledStickyNav, StyledTitleName } from "../components/Dashboard/styles";
+import { GoogleMapsWrapper, GoogleStreetViewMap } from "../components/GoogleMaps";
+import Layout from "../components/Layout/Main";
+import { GOOGLE_STREET_VIEW_MAP_STYLE, GOOGLE_STREET_VIEW_PANORAMA_OPTIONS } from "../constants";
 import {
   convertDatastoreSessionsToCustomerResponse,
   generateGoogleMapsUrlFromAddress,
   getAddressListFromCustomerResponse,
 } from "../utils/customerSessionUtils";
-import { GOOGLE_STREET_VIEW_MAP_STYLE, GOOGLE_STREET_VIEW_PANORAMA_OPTIONS } from "../constants";
 
 export const renderCustomerNotFound = (customerId: string): JSX.Element => (
   <Grid container justifyContent="center">
@@ -78,7 +82,7 @@ const AddressContainer = ({ addresses }: { addresses: string[] }): JSX.Element =
   <>
     {addresses && (
       <BulletContainer>
-        {addresses.map((address, index) => (
+        {dedupeArrayObject(addresses).map((address, index) => (
           <div key={address}>
             <div>
               <Link id="address_link" href={generateGoogleMapsUrlFromAddress(address)} rel="noreferrer" target="_blank">
@@ -106,25 +110,25 @@ const CustomerProfile: React.FC = () => {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const cusId = params.get("customerId") || "";
-  const clientId = params.get("clientId") || "";
+  const cliId = params.get("clientId") || "";
 
   const [customerProfile, setCustomerProfile] = useState<CustomerProfileResponse>();
   const [customerData, setCustomerData] = useState<CustomersResponse>();
   const [bankData, setBankData] = useState<BankObject[]>([]);
   const [cardData, setCardData] = useState<CardObject[]>([]);
-  const [cryptoData, setcryptoData] = useState<CryptoObject[]>([]);
+  const [cryptoData, setCryptoData] = useState<CryptoDetailsResponse[]>([]);
   const [transactionData, setTransactionData] = useState<TransactionObject[]>([]);
 
   const [selectedTab, setSelectedTab] = useState("overview");
   const [loadingTransactions, setLoadingTransactions] = useState(false);
   const [loadingCards, setLoadingCards] = useState(false);
-  const [loadingCrypto, setloadingCrypto] = useState(false);
+  const [loadingCrypto, setLoadingCrypto] = useState(false);
   const [showPopUp, setShowPopUp] = useState(false);
   const { addToast } = useToasts();
   const [customerNotFound, setCustomerNotFound] = useState(false);
 
   const isLoading = loadingTransactions || loadingCards || loadingCrypto;
-  const organisation = useUserStore(({ organisation }) => organisation);
+  const org = useUserStore(({ organisation }) => organisation);
 
   let cardsData: TableCardData[] = [
     {
@@ -323,7 +327,7 @@ const CustomerProfile: React.FC = () => {
           isLoading={isLoading}
           hasData={transactionData.length > 0}
           name={KEY_TRANSACTIONS}
-          tableBodyElements={transactionData.map((t) => (
+          tableBodyElements={dedupeArrayObject(transactionData).map((t) => (
             <TableBodyTransactions t={t} key={Object.values(t).join("_")} />
           ))}
         />
@@ -338,7 +342,7 @@ const CustomerProfile: React.FC = () => {
           hasData={cryptoData.length > 0}
           name={KEY_CRYPTO_ADDRESSES}
           tableBodyElements={cryptoData.map((c) => (
-            <TableBodyCrypto c={c} key={`${c.address}_${c.addressRiskScore}`} />
+            <TableBodyCrypto c={c} key={`${c.address}_${c.currency_code}_${c.addressRiskScore}`} />
           ))}
         />
       ),
@@ -346,31 +350,33 @@ const CustomerProfile: React.FC = () => {
   ]);
 
   useEffect(() => {
-    async function fetchBankData(customerId: string) {
+    async function fetchBankData(customerId: string, clientId: string) {
       try {
         setLoadingTransactions(true);
-        const { result } = await getCustomerBankDetails(customerId);
+        const { result } = await getCustomerBankDetails(customerId, clientId);
         setLoadingTransactions(false);
 
         if (Array(result).length > 0) {
           const resBank: BankObject[] = [];
           const bankFlags: boolean[] = [];
 
-          result.forEach((r: AnyTodo) => {
-            if (!bankFlags[r.account_number] && r.account_number) {
-              bankFlags[r.account_number] = true;
-              resBank.push({
-                account_number: r.account_number || "-",
-                routing_number: r.routing_number || "-",
-                account_type: r.account_type || "-",
-                balance: r.balance || "-",
-                balance_currency: r.balance_currency || "-",
-                total_amount_spent: r.total_amount_spent || "-",
-              });
-            }
-          });
+          result
+            .sort((a, b) => (a.balance > b.balance ? -1 : 1))
+            .forEach((r) => {
+              if (!bankFlags[r.account_number] && r.account_number) {
+                bankFlags[r.account_number] = true;
+                resBank.push({
+                  account_number: r.account_number || "-",
+                  routing_number: r.routing_number || "-",
+                  account_type: r.account_type || "-",
+                  balance: `${r.balance}` || "-",
+                  balance_currency: r.balance_currency || "-",
+                  total_amount_spent: r.total_amount_spent || "-",
+                });
+              }
+            });
 
-          setBankData(dedupeBankObjects(resBank));
+          setBankData(resBank);
         }
       } catch (error) {
         captureException(error);
@@ -394,48 +400,48 @@ const CustomerProfile: React.FC = () => {
         )
         .map(buildCryptoObject)
         .flat();
-      setcryptoData(dedupeCryptoObjects(cryptoDataVal));
+      setCryptoData(dedupeCryptoObjects(cryptoDataVal));
     }
 
-    async function fetchCardData(customerId: string) {
+    async function fetchCardData(customerId: string, clientId: string) {
       try {
         setLoadingCards(true);
-        const { result } = await getCustomerCardDetails(customerId);
+        const { result } = await getCustomerCardDetails(customerId, clientId);
         setLoadingCards(false);
 
         if (Array(result).length > 0) {
           const resCards: CardObject[] = [];
 
-          result.forEach((r: AnyTodo) => {
+          result.forEach((r) => {
             resCards.push({
-              card_type: getCardType(r.card_type || 0),
+              card_type: r.card_type || "-",
               issuer_brand: r.issuer_brand || "-",
-              issuer_icon: getIssuerIcon(r.issuer_brand || ""),
+              issuer_icon: getIssuerIcon(r.issuer_brand),
               is_prepaid: `${r.is_prepaid || false}`,
-              card_category: r.card_category || "-",
+              level: r.level || "-",
               last4: r.last4 || "-",
               first6: r.first6 || "-",
               isRelevantToSession: false,
             });
           });
 
-          setCardData(dedupeCardObjects(resCards));
+          setCardData(resCards);
         }
       } catch (error) {
         captureException(error);
       }
     }
 
-    async function fetchCryptoData(customerId: string) {
+    async function fetchCryptoData(customerId: string, clientId: string) {
       try {
-        setloadingCrypto(true);
-        const { result } = await getCustomerCryptoDetails(customerId);
-        setloadingCrypto(false);
+        setLoadingCrypto(true);
+        const { result } = await getCustomerCryptoDetails(customerId, clientId);
+        setLoadingCrypto(false);
 
         if (Array(result).length > 0) {
-          const resCards: CryptoObject[] = [];
+          const resCards: CryptoDetailsResponse[] = [];
 
-          result.forEach((r: AnyTodo) => {
+          result.forEach((r) => {
             resCards.push({
               currency_code: r.currency_code || "-",
               address: r.address || "-",
@@ -445,7 +451,7 @@ const CustomerProfile: React.FC = () => {
             });
           });
 
-          setcryptoData(dedupeCryptoObjects(resCards));
+          setCryptoData(resCards);
         }
       } catch (error) {
         captureException(error);
@@ -457,7 +463,7 @@ const CustomerProfile: React.FC = () => {
         try {
           let val: CustomersResponse | null = null;
 
-          const result = await getCustomerProfile(cusId, clientId);
+          const result = await getCustomerProfile(cusId, cliId);
           setCustomerProfile(result);
 
           const { sessions, transactions } = result;
@@ -468,7 +474,9 @@ const CustomerProfile: React.FC = () => {
 
           if (val !== null) {
             setCustomerData(val);
-            Promise.all([fetchBankData(cusId), fetchCardData(cusId), fetchCryptoData(cusId)]).catch(captureException);
+            Promise.all([fetchBankData(cusId, cliId), fetchCardData(cusId, cliId), fetchCryptoData(cusId, cliId)]).catch(
+              captureException
+            );
           } else {
             setCustomerNotFound(true);
           }
@@ -481,7 +489,7 @@ const CustomerProfile: React.FC = () => {
     if (!customerData) {
       fetchCustomerData().catch(captureException);
     }
-  }, [clientId, customerData, cusId]);
+  }, [cliId, customerData, cusId]);
 
   const renderCustomerData = () => (
     <StyledMainDiv>
@@ -590,7 +598,7 @@ const CustomerProfile: React.FC = () => {
                 marginTop: 10,
               }}
             >
-              <UserNetwork organisation={organisation} userId={cusId} clientId={clientId} />
+              <UserNetwork organisation={org} userId={cusId} clientId={cliId} />
             </div>
           ) : (
             <div />

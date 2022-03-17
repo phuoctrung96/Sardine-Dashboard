@@ -1,0 +1,29 @@
+export interface CustomerKind {
+  phone_level: string;
+  customer_score: number;
+  street_2: string;
+  client_id: string;
+  first_name: string;
+  phone: string;
+  risk_level: string;
+  email_address: string;
+  city: string;
+  session_key: string;
+  customer_id: string;
+  last_flow: string;
+  last_name: string;
+  tax_id: string;
+  request_id: string;
+  email_level: string;
+  company: string;
+  country_code: string;
+  is_phone_verified: boolean;
+  dob: string;
+  postal_code: string;
+  street_1: string;
+  last_updated: number;
+  middle_name: string;
+  region_code: string;
+  is_email_verified: boolean;
+  tax_id_level: string;
+}

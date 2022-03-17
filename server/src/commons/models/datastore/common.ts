@@ -7,6 +7,11 @@ export const DEVICES_KIND = "device_session_profile";
 export const DEVICE_AGGREGATIONS_KIND = "device_aggregations_multiday";
 export const USER_AGGREGATIONS_KIND = "user_aggregations_multiday";
 export const FEEDBACK_KIND = "feedback";
+export const CUSTOMER_KIND = "customer";
+export const BANK_KIND = "bank";
+export const CRYPTO_KIND = "crypto";
+export const CARD_KIND = "card";
+export const WIRE_KIND = "wire";
 
 export const constructCustomerKey = (clientId: string, customerId: string) => `${clientId}#${customerId}`;
 

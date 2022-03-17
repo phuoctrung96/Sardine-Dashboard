@@ -1,10 +1,12 @@
 import { getDeviceFeatures } from "./deviceFeatures";
 import { FeatureItem, intChild, newChild, boolChild, DATA_TYPES } from "../featureItem";
 import { getSessionFeatures } from "./sessionFeatures";
+import { deviceUserFeatures } from "./userFeatures";
 
 export const getDeviceRelatedFeaturesList = (checkpoint: string): FeatureItem[] => [
   new FeatureItem("Device", getDeviceFeatures(checkpoint)),
   new FeatureItem("Session", getSessionFeatures(checkpoint)),
+  new FeatureItem("User", deviceUserFeatures),
   new FeatureItem("Biometric", [
     intChild("LTMAutoFill", "Autofill data from user's interaction with form(s)", false),
     intChild("LTMExpertKey", "", false),

@@ -12,7 +12,7 @@
     "test": "jest",
     "lint": "npx eslint . --ext .js,.ts --fix",
     "nibble": "npx eslint-nibble src --ext .js,.ts",
-    "server-dev": "ts-node-dev --respawn -r tsconfig-paths/register --cls ./src/api/server.ts",
+    "server-dev": "ts-node-dev --respawn --exit-child -r tsconfig-paths/register --cls ./src/api/server.ts",
     "dev": "npm run server-dev | pino-pretty",
     "dev-filter-log": "npm run server-dev | pino-filter ./pino-filter-log.json | pino-pretty",
     "install-all": "npm ci && cd src/frontend && npm ci && cd ../..",

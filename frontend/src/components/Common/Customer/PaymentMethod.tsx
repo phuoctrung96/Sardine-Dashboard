@@ -1,3 +1,5 @@
+import { hideCharacters } from "sardine-dashboard-typescript-definitions";
+import { useState } from "react";
 import DataCard, { CardAttribute } from "../DataCard";
 import creditCardIcon from "../../../utils/logo/credit_card.svg";
 import { Link } from "../Links";
@@ -42,6 +44,8 @@ const PaymentMethod = (props: PaymentMethodProps): JSX.Element => {
     recipientCryptoCategories,
     recipientCryptoCurrencyCode,
   } = props;
+
+  const [isAccountNumberHidden, setIsAccountNumberHidden] = useState(true);
 
   const attributes: CardAttribute[] = [];
 
@@ -100,8 +104,9 @@ const PaymentMethod = (props: PaymentMethodProps): JSX.Element => {
   if (accountNumber) {
     attributes.push({
       key: "Account Number",
-      value: accountNumber,
-      toolTip: "Bank account number",
+      value: isAccountNumberHidden ? hideCharacters(accountNumber, 0, accountNumber.length - 4) : accountNumber,
+      toolTip: "Bank account number. Click on it to show the full number",
+      click: () => setIsAccountNumberHidden(!isAccountNumberHidden),
     });
   }
 
