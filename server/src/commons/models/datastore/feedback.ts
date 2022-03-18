@@ -1,36 +1,34 @@
 import { Query } from "@google-cloud/datastore";
-import moment from "moment";
+import dayjs from "dayjs";
 import { FeedbackKind, FeedbacksRequestBody } from "sardine-dashboard-typescript-definitions";
 import { firebaseAdmin } from "../../firebase";
 import { FEEDBACK_KIND } from "./common";
 
 const ds = firebaseAdmin.datastore;
 
-export class Feedback {
-  public static async getFeedbackList(sessionKey: string): Promise<Array<FeedbackKind>> {
-    const dataStoreQuery: Query = ds.createQuery(FEEDBACK_KIND).filter("SessionKey", sessionKey).limit(100);
+export const getFeedbackList = async (sessionKey: string): Promise<Array<FeedbackKind>> => {
+  const dataStoreQuery: Query = ds.createQuery(FEEDBACK_KIND).filter("SessionKey", sessionKey).limit(100);
 
-    const [entities] = await ds.runQuery(dataStoreQuery);
-    if (entities.length === 0) {
-      return [];
-    }
-
-    return entities;
+  const [entities] = await ds.runQuery(dataStoreQuery);
+  if (entities.length === 0) {
+    return [];
   }
 
-  public static async getFeedbacks(filters: FeedbacksRequestBody) {
-    const { startDate, endDate, page = 0, rows = 15 } = filters;
+  return entities;
+};
 
-    const dsQuery = ds.createQuery(FEEDBACK_KIND);
+export const getFeedbacks = async (filters: FeedbacksRequestBody) => {
+  const { startDate, endDate, page = 1, rows = 15 } = filters;
 
-    if (startDate) dsQuery.filter("CustomerFeedback.CreatedAtMillis", ">=", moment(startDate).unix() * 1000);
-    if (endDate) dsQuery.filter("CustomerFeedback.CreatedAtMillis", "<=", moment(endDate).unix() * 1000);
+  const dsQuery = ds.createQuery(FEEDBACK_KIND);
 
-    dsQuery.offset(page * rows).limit(rows);
+  if (startDate) dsQuery.filter("CustomerFeedback.CreatedAtMillis", ">=", dayjs(startDate).unix() * 1000);
+  if (endDate) dsQuery.filter("CustomerFeedback.CreatedAtMillis", "<=", dayjs(endDate).unix() * 1000);
 
-    const [entities, info] = await ds.runQuery(dsQuery);
-    const isLast = info.moreResults === "NO_MORE_RESULTS";
+  dsQuery.offset(page * rows).limit(rows);
 
-    return { feedbacks: (entities as FeedbackKind[]) ?? [], isLast };
-  }
-}
+  const [entities, info] = await ds.runQuery(dsQuery);
+  const isLast = info.moreResults === "NO_MORE_RESULTS";
+
+  return { feedbacks: (entities as FeedbackKind[]) ?? [], isLast };
+};
