@@ -5,7 +5,7 @@ import { captureException } from "utils/errorUtils";
 import { selectIsAdmin, useUserStore } from "store/user";
 import Layout from "../Layout/Main";
 import { StoreCtx } from "../../utils/store";
-import OrganisationDropDown from "../Dropdown/OrganisationDropDown";
+import OrganisationDropdown from "../Dropdown/OrganisationDropdown";
 import { StyledDropdownDiv, StyledNavTitle, StyledStickyNav, StyledTitleName } from "../Dashboard/styles";
 import { ActionTypes } from "../../utils/store/actionTypes";
 import { isWideScreen } from "../../utils/browserUtils";
@@ -20,7 +20,7 @@ import {
   HorizontalSpace,
   Container,
   Dropbtn,
-  DropDownContent,
+  DropdownContent,
   SubDropbtn,
   StyledUl,
 } from "./styles";
@@ -279,7 +279,7 @@ const BlockAllowList = (): JSX.Element => {
     );
   };
 
-  const renderDropDown = () =>
+  const renderDropdown = () =>
     ["All", "Field level", "Transaction level"].map((element) => (
       <Container key={element}>
         <SubDropbtn
@@ -294,7 +294,7 @@ const BlockAllowList = (): JSX.Element => {
       </Container>
     ));
 
-  const DropDownContainer = () => (
+  const DropdownContainer = () => (
     <Container style={{ display: "none" }}>
       <Dropbtn
         style={{
@@ -319,7 +319,7 @@ const BlockAllowList = (): JSX.Element => {
           }}
         />
       </Dropbtn>
-      <DropDownContent style={{ display: isDropdownVisible ? "block" : "none", width: 160 }}>{renderDropDown()}</DropDownContent>
+      <DropdownContent style={{ display: isDropdownVisible ? "block" : "none", width: 160 }}>{renderDropdown()}</DropdownContent>
     </Container>
   );
 
@@ -396,7 +396,7 @@ const BlockAllowList = (): JSX.Element => {
                 <>
                   Organization:
                   <div style={{ zIndex: 20 }}>
-                    <OrganisationDropDown organisation={organisation} changeOrganisation={changeOrganisation} />
+                    <OrganisationDropdown organisation={organisation} changeOrganisation={changeOrganisation} />
                   </div>
                 </>
               ) : null}
@@ -456,7 +456,7 @@ const BlockAllowList = (): JSX.Element => {
                     }
                   }}
                 />
-                <DropDownContainer />
+                <DropdownContainer />
               </HorizontalContainer>
               <Button
                 style={{ backgroundColor: "#2173FF", marginRight: 30 }}

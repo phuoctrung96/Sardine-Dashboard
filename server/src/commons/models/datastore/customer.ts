@@ -15,13 +15,16 @@ import dayjs from "dayjs";
 import { firebaseAdmin } from "../../firebase";
 import { BANK_KIND, CARD_KIND, CRYPTO_KIND } from "./common";
 import { Transaction } from "./transaction";
-import { CLIENT_ID_FIELD } from "../../../constants";
+import { CLIENT_ID_FIELD, CUSTOMER_ID_FIELD } from "../../../constants";
 
 const ds = firebaseAdmin.datastore;
 
 export class Customer {
   public static async getBanksCustomer(clientId: string, customerId: string): Promise<BankKind[]> {
-    const dataStoreQuery: Query = ds.createQuery(BANK_KIND).filter(CLIENT_ID_FIELD, customerId).filter(CLIENT_ID_FIELD, clientId);
+    const dataStoreQuery: Query = ds
+      .createQuery(BANK_KIND)
+      .filter(CUSTOMER_ID_FIELD, customerId)
+      .filter(CLIENT_ID_FIELD, clientId);
 
     const [entities]: [BankKind[], RunQueryInfo] = await ds.runQuery(dataStoreQuery);
     return entities || [];
@@ -30,7 +33,7 @@ export class Customer {
   public static async getCryptoCustomer(clientId: string, customerId: string): Promise<CryptoKind[]> {
     const dataStoreQuery: Query = ds
       .createQuery(CRYPTO_KIND)
-      .filter(CLIENT_ID_FIELD, customerId)
+      .filter(CUSTOMER_ID_FIELD, customerId)
       .filter(CLIENT_ID_FIELD, clientId);
 
     const [entities]: [CryptoKind[], RunQueryInfo] = await ds.runQuery(dataStoreQuery);
@@ -38,7 +41,10 @@ export class Customer {
   }
 
   public static async getCardCustomer(clientId: string, customerId: string): Promise<CardKind[]> {
-    const dataStoreQuery: Query = ds.createQuery(CARD_KIND).filter(CLIENT_ID_FIELD, customerId).filter(CLIENT_ID_FIELD, clientId);
+    const dataStoreQuery: Query = ds
+      .createQuery(CARD_KIND)
+      .filter(CUSTOMER_ID_FIELD, customerId)
+      .filter(CLIENT_ID_FIELD, clientId);
     const [entities]: [CardKind[], RunQueryInfo] = await ds.runQuery(dataStoreQuery);
     return entities || [];
   }

@@ -226,7 +226,7 @@ export const SubDropbtn = styled.div`
   }
 `;
 
-export const DropDownContent = styled.div`
+export const DropdownContent = styled.div`
   display: none;
   position: absolute;
   background-color: #f9f9f9;
@@ -236,7 +236,7 @@ export const DropDownContent = styled.div`
   z-index: 1;
 `;
 
-export const SubDropDownContent = styled.div`
+export const SubDropdownContent = styled.div`
   display: none;
   position: absolute;
   left: 250px;
@@ -247,7 +247,7 @@ export const SubDropDownContent = styled.div`
   z-index: 1;
 `;
 
-export const DropDownLi = styled(StyledLi)`
+export const DropdownLi = styled(StyledLi)`
   display: inline-block;
   &:hover {
     background-color: transparent;

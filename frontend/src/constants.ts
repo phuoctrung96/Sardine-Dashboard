@@ -10,7 +10,7 @@ export const DATE_FORMATS = {
   DATETIME: "YYYY-MM-DD HH:mm:ss",
   DATE: "YYYY-MM-DD",
   SHORT_DATE: "MMM DD",
-  TIME: "h:mm",
+  HOUR_MINUTE: "h:mm",
   LLL: "LLL",
 } as const;
 export type DateFormat = typeof DATE_FORMATS[keyof typeof DATE_FORMATS];
@@ -77,5 +77,7 @@ export const RISK_LEVELS = [
   "very_high_risk",
   "very high",
 ] as const;
+
+export const SESSION_KEY_LIMIT = 50;
 
 export { ADMIN_ROLES, DATASTORE_START_DATE, RULE_ADMIN_CLIENT_ID };

@@ -24,7 +24,7 @@ import {
   HorizontalSpace,
   Container,
   Dropbtn,
-  DropDownContent,
+  DropdownContent,
   SubDropbtn,
   StyledUl,
   SortBtn,
@@ -125,7 +125,7 @@ const SortableList = SortableContainer(
   }
 );
 
-const DropDownContainer = ({
+const DropdownContainer = ({
   type,
   organisation,
   organisations,
@@ -138,15 +138,15 @@ const DropDownContainer = ({
   checkpoint: string | null;
   setIsSorting: Dispatch<SetStateAction<boolean>>;
 }): JSX.Element => {
-  const [visibleDropDown, setVisibleDropDown] = useState<string>("");
+  const [visibleDropdown, setVisibleDropdown] = useState<string>("");
   const refOrgSearch = useRef<HTMLInputElement>(null);
   const updateUrlParams = useUpdateUrlParams();
 
   const [organisationSearch, setOrganisationSearch] = useState("");
 
   const handleDropdownClick = (dropdowntype: DropdownType) => {
-    const val = dropdowntype === visibleDropDown ? "" : dropdowntype;
-    setVisibleDropDown(val);
+    const val = dropdowntype === visibleDropdown ? "" : dropdowntype;
+    setVisibleDropdown(val);
   };
 
   const getDropdownTitle = (dropdownType: DropdownType) => {
@@ -156,7 +156,7 @@ const DropDownContainer = ({
     return checkpoint?.toUpperCase() || "Check Point";
   };
 
-  const renderDropDown = (dropdownType: DropdownType) => {
+  const renderDropdown = (dropdownType: DropdownType) => {
     const data =
       dropdownType === DROPDOWN_TYPE.Organisations
         ? organisations.filter((org) => org.name.toLowerCase().includes(organisationSearch.toLowerCase()))
@@ -170,7 +170,7 @@ const DropDownContainer = ({
             } else {
               updateUrlParams(CHECKPOINT_QUERY_FIELD, element.name);
             }
-            setVisibleDropDown("");
+            setVisibleDropdown("");
             setIsSorting(false);
           }}
         >
@@ -197,10 +197,10 @@ const DropDownContainer = ({
         {getDropdownTitle(type)}
         <Image src={downArrow} style={{ marginLeft: 10, width: 12, height: 12, alignSelf: "center" }} />
       </Dropbtn>
-      <DropDownContent
+      <DropdownContent
         className={`rules-list-dropdown-content-${type}`}
         id={`rules_list_dropdown_content_${type}`}
-        style={{ display: visibleDropDown === type ? "block" : "", width: 200, maxHeight: 300, overflowY: "scroll" }}
+        style={{ display: visibleDropdown === type ? "block" : "", width: 200, maxHeight: 300, overflowY: "scroll" }}
       >
         {type === DROPDOWN_TYPE.Organisations ? (
           <FormControl
@@ -221,8 +221,8 @@ const DropDownContainer = ({
             }}
           />
         ) : null}
-        {renderDropDown(type)}
-      </DropDownContent>
+        {renderDropdown(type)}
+      </DropdownContent>
     </Container>
   );
 };
@@ -461,7 +461,7 @@ const Rules = (): JSX.Element => {
                   }}
                 />
                 <StyledUl style={{ justifyContent: "flex-end" }}>
-                  <DropDownContainer
+                  <DropdownContainer
                     type={DROPDOWN_TYPE.CheckPoint}
                     organisation={orgName}
                     organisations={orgNameObjList}
@@ -470,7 +470,7 @@ const Rules = (): JSX.Element => {
                   />
                   <HorizontalSpace />
                   {isAdmin ? (
-                    <DropDownContainer
+                    <DropdownContainer
                       type={DROPDOWN_TYPE.Organisations}
                       organisation={orgName}
                       organisations={orgNameObjList}

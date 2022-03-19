@@ -11,7 +11,7 @@ import { CHECKPOINTS, SessionKind } from "sardine-dashboard-typescript-definitio
 import { replaceAllSpacesWithUnderscores } from "utils/stringUtils";
 import Layout from "../components/Layout/Main";
 import { StoreCtx } from "../utils/store";
-import OrganisationDropDown from "../components/Dropdown/OrganisationDropDown";
+import OrganisationDropdown from "../components/Dropdown/OrganisationDropdown";
 import { StyledDropdownDiv, StyledNavTitle, StyledStickyNav, StyledTitleName } from "../components/Dashboard/styles";
 import { ActionTypes } from "../utils/store/actionTypes";
 import {
@@ -25,7 +25,7 @@ import {
   HorizontalSpace,
   Container,
   Dropbtn,
-  DropDownContent,
+  DropdownContent,
   SubDropbtn,
 } from "../components/Queues/styles";
 import { Queue } from "../components/Queues/Components/Queue";
@@ -220,7 +220,7 @@ const Queues: React.FC = () => {
     </>
   );
 
-  const DropDownContainer = (): JSX.Element => (
+  const DropdownContainer = (): JSX.Element => (
     <Container>
       <Dropbtn
         style={{
@@ -245,9 +245,9 @@ const Queues: React.FC = () => {
           }}
         />
       </Dropbtn>
-      <DropDownContent style={{ display: isDropdownVisible ? "block" : "none", width: 200 }}>
+      <DropdownContent style={{ display: isDropdownVisible ? "block" : "none", width: 200 }}>
         <Dropdown />
-      </DropDownContent>
+      </DropdownContent>
     </Container>
   );
 
@@ -310,11 +310,11 @@ const Queues: React.FC = () => {
               }
             }}
           />
-          <DropDownContainer />
+          <DropdownContainer />
           <StyledDropdownDiv>
             {isAdmin ? (
               <div style={{ zIndex: 20, marginRight: 20, minWidth: "max-content" }}>
-                <OrganisationDropDown organisation={organisation} changeOrganisation={changeOrganisation} />
+                <OrganisationDropdown organisation={organisation} changeOrganisation={changeOrganisation} />
               </div>
             ) : (
               <div style={{ paddingRight: 100 }} />

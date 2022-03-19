@@ -8,6 +8,7 @@ import { BehaviorBiometricsPerFlow, DeviceProfile, AnyTodo } from "sardine-dashb
 import { DeviceProfileHit } from "utils/api_response/deviceResponse";
 import BehaviorBiometrics from "components/BehaviorBiometrics";
 import { replaceAllUnderscoresWithSpaces } from "utils/stringUtils";
+import { getLimitSessionKey } from "utils/customerSessionUtils";
 import { RULE_DETAILS_PATH, SEARCH_PARAM_KEYS } from "modulePaths";
 import { selectIsSuperAdmin, useUserStore } from "store/user";
 import Layout from "../components/Layout/Main";
@@ -35,7 +36,7 @@ import executedRulesIcon from "../utils/logo/executed_rules.svg";
 import cloudIcon from "../utils/logo/cloud.svg";
 import osIcon from "../utils/logo/os.svg";
 import { useDeviceProfileFetchResult } from "../hooks/fetchHooks";
-import { QUERY_STATUS } from "../constants";
+import { QUERY_STATUS, SESSION_KEY_LIMIT } from "../constants";
 
 const PARAM_KEYS = SEARCH_PARAM_KEYS[RULE_DETAILS_PATH];
 
@@ -268,7 +269,10 @@ const DeviceView: React.FC = () => {
                 </DetailsHeaderChild>
                 <DetailsHeaderChild>
                   <DetailsHeaderTile id="session_key_title">Session Key</DetailsHeaderTile>
-                  <DetailsHeaderValue id="session_key_value"> {sessionKey || "-"} </DetailsHeaderValue>
+                  <DetailsHeaderValue id="session_key_value">
+                    {" "}
+                    {getLimitSessionKey(sessionKey, SESSION_KEY_LIMIT) || "-"}{" "}
+                  </DetailsHeaderValue>
                 </DetailsHeaderChild>
               </DetailsHeaderParent>
             </DetailsHeaderParent>

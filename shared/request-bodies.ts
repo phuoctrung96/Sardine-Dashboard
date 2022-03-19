@@ -1,3 +1,4 @@
+import { WebhookTypeValues } from "./constants";
 import { OrganizationUser } from "./domain";
 import { Rule } from "./rules";
 
@@ -157,6 +158,7 @@ export interface OrganizationAction {
 export interface CreateWebhookRequestBody {
   url: string;
   organisation: string;
+  type: WebhookTypeValues;
 }
 
 // ---------- QUEUE --------

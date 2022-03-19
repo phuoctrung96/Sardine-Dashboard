@@ -1,4 +1,5 @@
 import pgPromise from "pg-promise";
+import { WebhookType } from "sardine-dashboard-typescript-definitions";
 
 const webhookModel = (db: pgPromise.IDatabase<{}>) => {
   const getWebhooks = async () => {
@@ -22,13 +23,13 @@ const webhookModel = (db: pgPromise.IDatabase<{}>) => {
     return result;
   };
 
-  const createWebhook = (clientId: string, url: string, secret: string) =>
+  const createWebhook = (clientId: string, url: string, secret: string, type: WebhookType) =>
     db.oneOrNone(
       `
       INSERT INTO organization_webhooks
-      (client_id, url, secret) VALUES ($1, $2, $3) RETURNING id
+      (client_id, url, secret, type) VALUES ($1, $2, $3, $4) RETURNING id
     `,
-      [clientId, url, secret]
+      [clientId, url, secret, type]
     );
 
   const updateWebhook = (id: string, clientId: string, url: string) =>

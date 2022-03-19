@@ -28,7 +28,7 @@ const CreateOrganization = (p: IProps) => {
   const [newOrganisation, setNewOrganisation] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [openDropDown, setOpenDropDown] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(false);
   const [error, setError] = useState("");
   const [selectedOrg, setSelectedOrg] = useState("");
   const [users, setUsers] = useState<IAdminUsers[]>([{ client_id: "", display_name: "none" }]);
@@ -147,13 +147,13 @@ const CreateOrganization = (p: IProps) => {
                   <Title>Parent (Optional):</Title>
                 </div>
                 <RecursiveDropdown
-                  show={openDropDown}
+                  show={openDropdown}
                   onDropdownClicked={() => {
-                    setOpenDropDown(!openDropDown);
+                    setOpenDropdown(!openDropdown);
                   }}
                   onItemClicked={(val) => {
                     setSelectedOrg(val);
-                    setOpenDropDown(false);
+                    setOpenDropdown(false);
                   }}
                   value={selectedOrg.length === 0 ? "None" : selectedOrg}
                   data={users.map((u: IAdminUsers) => ({

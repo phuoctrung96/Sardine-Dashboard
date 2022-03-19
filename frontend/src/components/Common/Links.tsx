@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import { getCustomerProfilePath, getSessionDetailsPath } from "../../utils/pathUtils";
+import { getLimitSessionKey } from "../../utils/customerSessionUtils";
+import { SESSION_KEY_LIMIT } from "../../constants";
 
 export const Link = styled.a`
   color: #325078;
@@ -23,6 +25,6 @@ export const SessionDetailsLink: React.FC<{ customerId: string; clientId: string
   text,
 }) => (
   <Link href={getSessionDetailsPath({ customerId, clientId, sessionKey })} rel="noreferrer" target="_blank">
-    {text === undefined ? sessionKey : text}
+    {text === undefined ? getLimitSessionKey(sessionKey, SESSION_KEY_LIMIT) : text}
   </Link>
 );

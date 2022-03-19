@@ -37,7 +37,7 @@ interface ContainerProps {
 }
 
 const QueueSection = (p: QueueProps) => {
-  const [visibleDropDown, setVisibleDropDown] = useState("");
+  const [visibleDropdown, setVisibleDropdown] = useState("");
   const [queue, setQueue] = useState<Queue | undefined>(p.queue);
   const [assignedTo, setAssignedTo] = useState<OrganizationUser | undefined>(p.user);
   const [isAddQueue, setIsAddQueue] = useState(false);
@@ -90,15 +90,15 @@ const QueueSection = (p: QueueProps) => {
     }
   };
 
-  const DropDownContainer = (props: ContainerProps) => {
+  const DropdownContainer = (props: ContainerProps) => {
     const isQueue = props.type === DROPDOWN_TYPES.Queue;
     return (
       <Container className={`queue-dropdown-${props.type}`} id={`queue_dropdown_${props.type}`} style={{ padding: "0px 20px" }}>
         <StyledSubHeading style={{ textTransform: "capitalize", fontWeight: 500 }}>{props.type}</StyledSubHeading>
         <RecursiveDropdown
-          show={visibleDropDown === props.type}
+          show={visibleDropdown === props.type}
           onDropdownClicked={(show) => {
-            setVisibleDropDown(show ? "" : props.type);
+            setVisibleDropdown(show ? "" : props.type);
           }}
           onItemClicked={(val, _) => {
             if (isQueue) {
@@ -119,7 +119,7 @@ const QueueSection = (p: QueueProps) => {
                 setAssignedTo(_user[0]);
               }
             }
-            setVisibleDropDown("");
+            setVisibleDropdown("");
           }}
           value={isQueue ? queue?.name || "" : assignedTo?.name || ""}
           data={
@@ -158,9 +158,9 @@ const QueueSection = (p: QueueProps) => {
       <StyledSubHeading style={{ margin: 20, color: "#001932", fontWeight: 600 }}>Case Management</StyledSubHeading>
 
       <StyledUl style={{ marginTop: 10, justifyContent: "flex-start" }}>
-        <DropDownContainer type={DROPDOWN_TYPES.Queue} />
+        <DropdownContainer type={DROPDOWN_TYPES.Queue} />
         <Container style={{ marginLeft: isWideScreen() ? 10 : 0 }}>
-          <DropDownContainer type={DROPDOWN_TYPES.QueueUser} />
+          <DropdownContainer type={DROPDOWN_TYPES.QueueUser} />
         </Container>
       </StyledUl>
       <Container style={{ padding: "10px 20px", maxWidth: isWideScreen() ? "50%" : "100%" }}>

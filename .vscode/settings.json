@@ -1,4 +1,13 @@
 {
   "eslint.workingDirectories": ["frontend", "server"],
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true,
+    "source.fixAll.eslint.validate": true,
+    "source.fixAll.eslint.format": true
+  },
+  "cSpell.words": [
+    "organisation",
+    "superadmin"
+  ],
 }

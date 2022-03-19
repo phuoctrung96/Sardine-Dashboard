@@ -1,4 +1,7 @@
-import { KEY_DEVICE_AND_BEHAVIOUR_DETAILS } from "components/Customers/UserView";
+import { KEY_DEVICE_DETAILS } from "components/Customers/UserView";
+import { DEVICE_VIEW_PATH } from "modulePaths";
+import { SOURCE_QUERY_FIELD, DATA_SOURCE } from "sardine-dashboard-typescript-definitions";
+import { CLIENT_ID_QUERY_FIELD } from "utils/constructFiltersQueryParams";
 import DataCard, { CardAttribute } from "../DataCard";
 import { Link } from "../Links";
 import deviceIcon from "../../../utils/logo/device.svg";
@@ -24,6 +27,8 @@ interface DeviceInfoProps {
         lon: number;
       }
     | undefined;
+  clientId?: string;
+  sessionKey?: string;
 }
 
 const DeviceInfo = (props: DeviceInfoProps): JSX.Element => {
@@ -42,14 +47,24 @@ const DeviceInfo = (props: DeviceInfoProps): JSX.Element => {
     trueOs,
     vpn,
     location,
+    clientId,
+    sessionKey,
   } = props;
+
+  const deviceDetailsPath = `${DEVICE_VIEW_PATH}?session=${sessionKey || ""}&${SOURCE_QUERY_FIELD}=${
+    DATA_SOURCE.DATASTORE
+  }&${CLIENT_ID_QUERY_FIELD}=${encodeURIComponent(clientId || "")}`;
 
   const attributes: CardAttribute[] = [];
 
   if (deviceId) {
     attributes.push({
       key: "Device Id",
-      value: deviceId,
+      value: (
+        <Link target="_blank" href={deviceDetailsPath} rel="noreferrer">
+          {deviceId}
+        </Link>
+      ),
       toolTip: "Id tagged to the customer's device",
     });
   }
@@ -165,11 +180,7 @@ const DeviceInfo = (props: DeviceInfoProps): JSX.Element => {
   }
 
   return attributes.length > 0 ? (
-    <DataCard
-      header={KEY_DEVICE_AND_BEHAVIOUR_DETAILS}
-      attributes={attributes}
-      icon={<img src={deviceIcon} alt="Device Icon" />}
-    />
+    <DataCard header={KEY_DEVICE_DETAILS} attributes={attributes} icon={<img src={deviceIcon} alt="Device Icon" />} />
   ) : (
     <div />
   );

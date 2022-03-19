@@ -6,7 +6,6 @@ import { PAYMENT_METHOD_DETAILS_PATH, TRANSACTIONS_PATH } from "modulePaths";
 import Loader from "components/Common/Loader";
 import { DatesProps } from "utils/store/interface";
 import { StyledDropdownDiv } from "styles/Layout";
-import DaysDropdown from "components/Dropdown/DaysDropdown";
 import { captureException } from "utils/errorUtils";
 import Layout from "../Layout/Main";
 import { StyledNavTitle, StyledStickyNav, StyledTitleName } from "../Dashboard/styles";
@@ -17,6 +16,7 @@ import PaymentMethodCard from "./Components/PaymentMethodCard";
 import PaymentMethodChart from "./Components/PaymentMethodChart";
 import RecentTransaction from "./Components/RecentTransaction";
 import { getDatesFromQueryParams } from ".";
+import DaysDropdown from "../Dropdown/DaysDropdown";
 
 const PaymentMethodDetails = (): JSX.Element => {
   const navigate = useNavigate();

@@ -84,7 +84,7 @@ export const getSampleValue = (sec: string, value: string): { sample: string; da
 
 const FunctionsPopup: React.FC<Props> = (props) => {
   const { show, isDemoMode, isSuperAdmin, organisation, handleSubmit, handleClose } = props;
-  const [visibleDropDown, setVisibleDropDown] = useState("");
+  const [visibleDropdown, setVisibleDropdown] = useState("");
   const [feature1, setFeature1] = useState("");
   const [feature2, setFeature2] = useState("");
   const [selectedFunction, setSelectedFunction] = useState("");
@@ -119,15 +119,15 @@ const FunctionsPopup: React.FC<Props> = (props) => {
       <Modal.Header style={{ alignSelf: "center", display: "flex", alignItems: "center" }}>
         <Title style={{ fontSize: 16, marginRight: 10 }}>Select function type: </Title>
         <RecursiveDropdown
-          show={visibleDropDown === DROPDOWN_TYPE.Functions}
+          show={visibleDropdown === DROPDOWN_TYPE.Functions}
           onDropdownClicked={(shown) => {
-            setVisibleDropDown(shown ? "" : DROPDOWN_TYPE.Functions);
+            setVisibleDropdown(shown ? "" : DROPDOWN_TYPE.Functions);
           }}
           onItemClicked={(val) => {
             setSelectedFunction(val);
             setFeature1("");
             setFeature2("");
-            setVisibleDropDown("");
+            setVisibleDropdown("");
 
             const functionsChild = supportedFunctions.filter((f) => f.title === val);
             if (functionsChild.length > 0) {
@@ -146,13 +146,13 @@ const FunctionsPopup: React.FC<Props> = (props) => {
                 {MULTI_FEATURE_FUNCTIONS.includes(selectedFunction) ? DROPDOWN_TYPE.Feature1 : "Select Feature"}
               </div>
               <RecursiveDropdown
-                show={visibleDropDown === DROPDOWN_TYPE.Feature1}
+                show={visibleDropdown === DROPDOWN_TYPE.Feature1}
                 onDropdownClicked={(shown) => {
-                  setVisibleDropDown(shown ? "" : DROPDOWN_TYPE.Feature1);
+                  setVisibleDropdown(shown ? "" : DROPDOWN_TYPE.Feature1);
                 }}
                 onItemClicked={(val) => {
                   setFeature1(val);
-                  setVisibleDropDown("");
+                  setVisibleDropdown("");
                 }}
                 value={feature1}
                 data={getDropdownData(loadRulesData())}
@@ -174,13 +174,13 @@ const FunctionsPopup: React.FC<Props> = (props) => {
                   {MULTI_FEATURE_FUNCTIONS.includes(selectedFunction) ? DROPDOWN_TYPE.Feature2 : "Select Feature"}
                 </div>
                 <RecursiveDropdown
-                  show={visibleDropDown === DROPDOWN_TYPE.Feature2}
+                  show={visibleDropdown === DROPDOWN_TYPE.Feature2}
                   onDropdownClicked={(shown) => {
-                    setVisibleDropDown(shown ? "" : DROPDOWN_TYPE.Feature2);
+                    setVisibleDropdown(shown ? "" : DROPDOWN_TYPE.Feature2);
                   }}
                   onItemClicked={(val) => {
                     setFeature2(val);
-                    setVisibleDropDown("");
+                    setVisibleDropdown("");
                   }}
                   value={feature2}
                   data={getDropdownData(loadRulesData())}
