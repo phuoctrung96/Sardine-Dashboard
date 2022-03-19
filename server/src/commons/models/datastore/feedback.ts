@@ -1,6 +1,7 @@
 import { Query } from "@google-cloud/datastore";
 import dayjs from "dayjs";
 import { FeedbackKind, FeedbacksRequestBody } from "sardine-dashboard-typescript-definitions";
+import { db } from "src/commons/db";
 import { firebaseAdmin } from "../../firebase";
 import { FEEDBACK_KIND } from "./common";
 
@@ -18,10 +19,13 @@ export const getFeedbackList = async (sessionKey: string): Promise<Array<Feedbac
 };
 
 export const getFeedbacks = async (filters: FeedbacksRequestBody) => {
-  const { startDate, endDate, page = 1, rows = 15 } = filters;
+  const { startDate = "", endDate = "", page = 1, rows = 15, organisation } = filters;
+
+  const clientId = (await db.organisation.getClientId(organisation)) || "";
 
   const dsQuery = ds.createQuery(FEEDBACK_KIND);
 
+  if (clientId) dsQuery.filter("ClientId", "=", clientId);
   if (startDate) dsQuery.filter("CustomerFeedback.CreatedAtMillis", ">=", dayjs(startDate).unix() * 1000);
   if (endDate) dsQuery.filter("CustomerFeedback.CreatedAtMillis", "<=", dayjs(endDate).unix() * 1000);
 

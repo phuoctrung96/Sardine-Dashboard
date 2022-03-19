@@ -270,12 +270,13 @@ export interface FeedbackRequest {
 }
 
 export interface FeedbacksRequestBody {
-  startDate?: string;
-  endDate?: string;
-  page?: number;
-  rows?: number;
-  orderBy?: string;
-  order?: "asc" | "desc";
+  startDate: string;
+  endDate: string;
+  page: number;
+  rows: number;
+  orderBy: string;
+  order: "asc" | "desc";
+  organisation: string;
 }
 
 //----------- Audit Logs -------------------

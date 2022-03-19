@@ -55,7 +55,7 @@ const feedbacksRouter = () => {
     [mw.validateRequest, mw.requireLoggedIn],
     async (req: RequestWithCurrentUser<FeedbacksRequestBody>, res: Response) => {
       try {
-        const { feedbacks, isLast } = await getFeedbacks(req.query);
+        const { feedbacks, isLast } = await getFeedbacks(req.query as FeedbacksRequestBody);
         return res.json({
           feedbacks: feedbacks.reduce<GetFeedbacksListResponse>((acc, feedback) => {
             acc.push({
@@ -73,6 +73,7 @@ const feedbacksRouter = () => {
           isLast,
         });
       } catch (err: unknown) {
+        console.log(err);
         captureException(err);
 
         if (err instanceof Error) {

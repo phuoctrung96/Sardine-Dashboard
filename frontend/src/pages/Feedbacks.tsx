@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { MenuItem, Popover } from "@mui/material";
 import { StyledStickyNav } from "components/Dashboard/styles";
 import { FeedbackListTable } from "components/Feedbacks/FeedbackListTable";
@@ -13,6 +13,10 @@ import { HorizontalContainer, StyledMainContentDiv, StyledMainDiv } from "compon
 import { useEffect, useState } from "react";
 import { FaAngleDown, FaPlus } from "react-icons/fa";
 import { useToasts } from "react-toast-notifications";
+import { selectIsAdmin, selectIsSuperAdmin, UseUserStore, useUserStore } from "store/user";
+import { useCookies } from "react-cookie";
+import { getClientFromQueryParams } from "utils/getClientFromQueryParams";
+import { FEEDBACKS_PATH } from "modulePaths";
 import { getDatesFromQueryParams } from "components/Transactions";
 import { captureException } from "utils/errorUtils";
 import { formatDate } from "utils/timeUtils";
@@ -24,9 +28,16 @@ import readonlyIcon from "../utils/logo/readonly.svg";
 import upDownArrowIcon from "../utils/logo/up-down-arrow.svg";
 import { DatesProps } from "../utils/store/interface";
 import { useFeedbacksFetchResult } from "../hooks/fetchHooks";
+import OrganisationDropDown from "../components/Dropdown/OrganisationDropDown";
 
 const DEFAULT_ROWS = 15;
 const DEFAULT_SELECTED_DATE_LABEL = "Last 24 hours";
+
+function constructQueryParams(client: string): string {
+  const params: { [key: string]: string } = {};
+  params.clientId = client;
+  return new URLSearchParams(params).toString();
+}
 
 const AddFeedbackMenu = (): JSX.Element => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -82,7 +93,7 @@ const AddFeedbackMenu = (): JSX.Element => {
 
 export const Feedbacks = (): JSX.Element => {
   const { addToast } = useToasts();
-
+  const navigate = useNavigate();
   const { search } = useLocation();
 
   const [rows, setRows] = useState(DEFAULT_ROWS);
@@ -96,6 +107,18 @@ export const Feedbacks = (): JSX.Element => {
   const [order, setOrder] = useState<"asc" | "desc">("asc");
   const [orderBy, setOrderBy] = useState("");
 
+  const { isAdmin, userOrganization } = useUserStore((state: UseUserStore) => ({
+    userOrganization: state.organisation,
+    isSuperAdmin: selectIsSuperAdmin(state),
+    isAdmin: selectIsAdmin(state),
+  }));
+
+  const [cookies] = useCookies(["organization"]);
+  const organisation = getClientFromQueryParams(search, isAdmin, userOrganization, cookies.organization);
+  const changeOrganisation = (org: string) => {
+    navigate(`${FEEDBACKS_PATH}?${constructQueryParams(org)}`);
+  };
+
   const updateDate = (index: number, dateData: DatesProps) => {
     setStartDate(dateData.startDate);
     setEndDate(dateData.endDate);
@@ -107,7 +130,7 @@ export const Feedbacks = (): JSX.Element => {
     setOrderBy(property);
   };
 
-  const feedbacksResult = useFeedbacksFetchResult({ startDate, endDate, page, rows, order, orderBy });
+  const feedbacksResult = useFeedbacksFetchResult({ startDate, endDate, page, rows, order, orderBy, organisation });
 
   useEffect(() => {
     if (feedbacksResult.error !== null) {
@@ -141,6 +164,7 @@ export const Feedbacks = (): JSX.Element => {
             </span>
           </HorizontalContainer>
           <HorizontalContainer style={{ gap: 16 }}>
+            <OrganisationDropDown changeOrganisation={changeOrganisation} organisation={organisation} />
             <StyledButton
               style={{
                 padding: "10px 12px 10px 16px",
