@@ -234,23 +234,25 @@ export const useCustomerCryptoDetailsFetchResult = ({
 };
 
 export const useFeedbacksFetchResult = ({
-  startDate,
-  endDate,
-  page,
-  rows,
-  order,
-  orderBy,
+  startDate = "",
+  endDate = "",
+  page = 1,
+  rows = 15,
+  order = "asc",
+  orderBy = "",
+  organisation = "",
 }: {
-  startDate?: string;
-  endDate?: string;
-  page?: number;
-  rows?: number;
-  order?: "asc" | "desc";
-  orderBy?: string;
+  startDate: string;
+  endDate: string;
+  page: number;
+  rows: number;
+  order: "asc" | "desc";
+  orderBy: string;
+  organisation: string;
 }): QueryResult<{ feedbacks: GetFeedbacksListResponse; isLast: boolean }> => {
   const { data, error, status } = useQuery<{ feedbacks: GetFeedbacksListResponse; isLast: boolean }, Error>(
-    [CACHE_KEYS.FEEDBACKS, startDate, endDate, page, rows, order, orderBy],
-    () => getFeedbacksList({ startDate, endDate, page, rows, order, orderBy })
+    [CACHE_KEYS.FEEDBACKS, startDate, endDate, page, rows, order, orderBy, organisation],
+    () => getFeedbacksList({ startDate, endDate, page, rows, order, orderBy, organisation })
   );
 
   return {

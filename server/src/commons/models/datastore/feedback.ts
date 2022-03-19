@@ -1,36 +1,38 @@
 import { Query } from "@google-cloud/datastore";
-import moment from "moment";
+import dayjs from "dayjs";
 import { FeedbackKind, FeedbacksRequestBody } from "sardine-dashboard-typescript-definitions";
+import { db } from "src/commons/db";
 import { firebaseAdmin } from "../../firebase";
 import { FEEDBACK_KIND } from "./common";
 
 const ds = firebaseAdmin.datastore;
 
-export class Feedback {
-  public static async getFeedbackList(sessionKey: string): Promise<Array<FeedbackKind>> {
-    const dataStoreQuery: Query = ds.createQuery(FEEDBACK_KIND).filter("SessionKey", sessionKey).limit(100);
+export const getFeedbackList = async (sessionKey: string): Promise<Array<FeedbackKind>> => {
+  const dataStoreQuery: Query = ds.createQuery(FEEDBACK_KIND).filter("SessionKey", sessionKey).limit(100);
 
-    const [entities] = await ds.runQuery(dataStoreQuery);
-    if (entities.length === 0) {
-      return [];
-    }
-
-    return entities;
+  const [entities] = await ds.runQuery(dataStoreQuery);
+  if (entities.length === 0) {
+    return [];
   }
 
-  public static async getFeedbacks(filters: FeedbacksRequestBody) {
-    const { startDate, endDate, page = 0, rows = 15 } = filters;
+  return entities;
+};
 
-    const dsQuery = ds.createQuery(FEEDBACK_KIND);
+export const getFeedbacks = async (filters: FeedbacksRequestBody) => {
+  const { startDate = "", endDate = "", page = 1, rows = 15, organisation } = filters;
 
-    if (startDate) dsQuery.filter("CustomerFeedback.CreatedAtMillis", ">=", moment(startDate).unix() * 1000);
-    if (endDate) dsQuery.filter("CustomerFeedback.CreatedAtMillis", "<=", moment(endDate).unix() * 1000);
+  const clientId = (await db.organisation.getClientId(organisation)) || "";
 
-    dsQuery.offset(page * rows).limit(rows);
+  const dsQuery = ds.createQuery(FEEDBACK_KIND);
 
-    const [entities, info] = await ds.runQuery(dsQuery);
-    const isLast = info.moreResults === "NO_MORE_RESULTS";
+  if (clientId) dsQuery.filter("ClientId", "=", clientId);
+  if (startDate) dsQuery.filter("CustomerFeedback.CreatedAtMillis", ">=", dayjs(startDate).unix() * 1000);
+  if (endDate) dsQuery.filter("CustomerFeedback.CreatedAtMillis", "<=", dayjs(endDate).unix() * 1000);
 
-    return { feedbacks: (entities as FeedbackKind[]) ?? [], isLast };
-  }
-}
+  dsQuery.offset(page * rows).limit(rows);
+
+  const [entities, info] = await ds.runQuery(dsQuery);
+  const isLast = info.moreResults === "NO_MORE_RESULTS";
+
+  return { feedbacks: (entities as FeedbackKind[]) ?? [], isLast };
+};
