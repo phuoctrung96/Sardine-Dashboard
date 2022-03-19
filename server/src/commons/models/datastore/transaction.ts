@@ -8,7 +8,7 @@ import { TRANSACTION_KIND } from "./common";
 const ds = firebaseAdmin.datastore;
 
 export class Transaction {
-  public static async getTransactionsCustomer(clientId: string, customerId: string, limit = 1): Promise<TransactionKind[]> {
+  public static async getTransactionsCustomer(clientId: string, customerId: string, limit = 10): Promise<TransactionKind[]> {
     const dataStoreQuery: Query = ds
       .createQuery(TRANSACTION_KIND)
       .filter(CUSTOMER_ID_FIELD, customerId)

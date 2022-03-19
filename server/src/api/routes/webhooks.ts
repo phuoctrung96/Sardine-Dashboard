@@ -2,10 +2,10 @@ import express, { Response } from "express";
 import { query, body } from "express-validator";
 import { v4 as uuidV4 } from "uuid";
 import { Org } from "@prisma/client";
-import { CreateWebhookRequestBody, webhookUrls } from "sardine-dashboard-typescript-definitions";
+import { CreateWebhookRequestBody, webhookUrls, WEBHOOK_TYPE } from "sardine-dashboard-typescript-definitions";
 import { mw } from "../../commons/middleware";
 import { db } from "../../commons/db";
-import { RequestWithUser } from "../request-interface";
+import { RequestWithCurrentUser, RequestWithUser } from "../request-interface";
 import { listWebhooks } from "../../repository/webhookRepository";
 import { listOrgs } from "../../repository/orgRepository";
 
@@ -38,21 +38,18 @@ const webhooksRouter = () => {
 
   router[createWebhookRoute.httpMethod](
     "",
-    [body("url").exists(), body("organisation").exists()],
+    [body("url").exists(), body("organisation").exists(), body("type").exists()],
     mw.validateRequest,
     mw.requireSuperAdmin,
-    async (req: RequestWithUser, res: Response) => {
-      const { url, organisation } = req.body as CreateWebhookRequestBody;
+    async (req: RequestWithCurrentUser<CreateWebhookRequestBody>, res: Response) => {
+      const { url, organisation, type } = req.body;
 
       const clientId = await db.superadmin.getClientId(organisation.toString());
 
-      let secret = uuidV4();
       const client = await db.webhooks.getSecretForClient(clientId);
-      if (client?.secret) {
-        secret = client.secret;
-      }
+      const secret: string = client?.secret || uuidV4();
 
-      const result = await db.webhooks.createWebhook(clientId, url, secret);
+      const result = await db.webhooks.createWebhook(clientId, url, secret, WEBHOOK_TYPE[type]);
       return res.status(200).json(result);
     }
   );

@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { FormControl } from "react-bootstrap";
 import { useCookies } from "react-cookie";
 import { selectIsAdmin, useUserStore } from "store/user";
-import DropwdownItem from "./DropdownItem";
+import DropdownItem from "./DropdownItem";
 import DropdownButton from "./DropdownButton";
 import { fetchOrganisationNames } from "../../utils/api";
 import { captureException } from "../../utils/errorUtils";
@@ -14,24 +14,23 @@ import { DEFAULT_ORGANISATION_FOR_SUPERUSER } from "../../config";
 const StyledDropdown = styled.div`
   z-index: 10;
   height: 40px;
-  margin-left: 20px;
+  padding-left: 0;
 `;
 
 const StyledDropdownItems = styled.div`
-  padding: 8px;
   background: #ffffff;
   z-index: 12;
   top: 0;
   border-radius: 4px;
   border: 1px solid rgba(0, 0, 0, 0.02);
-  max-height: 400px;
+  max-height: 40vh;
   overflow-y: scroll;
 `;
 
-const Dropdown = (props: AnyTodo) => {
+const OrganizationDropdown = (props: AnyTodo) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const [cookies, setCookie] = useCookies(["organization"]);
+  const [cookies] = useCookies(["organization"]);
 
   const [open, setOpen] = useState(false);
 
@@ -88,35 +87,37 @@ const Dropdown = (props: AnyTodo) => {
               type="text"
               value={organisationSearch}
               placeholder="Search here"
-              style={{ height: 30 }}
               onChange={(event) => {
                 setOrganisationSearch(event.target.value);
               }}
             />
             {organisations
               .filter((org) => org.option.toLowerCase().includes(organisationSearch.toLowerCase()))
-              .map((ele) => (
-                <DropwdownItem
+              .map(({ option }) => (
+                <DropdownItem
                   clicked={() => {
-                    setSelectedIndex(ele.option);
+                    setSelectedIndex(option);
                     setOpen(false);
-                    props.changeOrganisation(ele.option);
-
-                    setCookie("organization", ele.option);
+                    props.changeOrganisation(option);
                   }}
-                  key={ele.option}
-                  item={ele}
-                  isSelected={ele.option === selectedIndex}
-                  id={`dropdown_item_org_${replaceAllSpacesWithUnderscores(ele.option)}`}
+                  key={option}
+                  item={{ option }}
+                  isSelected={option === selectedIndex}
+                  id={`dropdown_item_org_${replaceAllSpacesWithUnderscores(option)}`}
                 />
               ))}
           </StyledDropdownItems>
         </StyledDropdown>
       ) : (
-        <DropdownButton clicked={() => setOpen(true)} item={activeData} title="Organization" id="dropdown_button_org" />
+        <DropdownButton
+          clicked={() => setOpen(true)}
+          item={{ option: activeData?.option }}
+          title="Organization"
+          id="dropdown_button_org"
+        />
       )}
     </>
   );
 };
 
-export default Dropdown;
+export default OrganizationDropdown;

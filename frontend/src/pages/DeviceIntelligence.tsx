@@ -19,7 +19,7 @@ import { getClientFromQueryParams } from "utils/getClientFromQueryParams";
 import { datetimeToTimestamp } from "utils/timeUtils";
 import Layout from "../components/Layout/Main";
 import { StoreCtx } from "../utils/store";
-import OrganisationDropDown from "../components/Dropdown/OrganisationDropDown";
+import OrganisationDropdown from "../components/Dropdown/OrganisationDropdown";
 import { StyledDropdownDiv, StyledNavTitle, StyledStickyNav, StyledTitleName } from "../components/Dashboard/styles";
 import Map from "../components/Maps";
 import { LayerContextProvider } from "../components/Maps/LayerContext";
@@ -394,7 +394,7 @@ const DeviceIntelligence = (): JSX.Element => {
             <StyledDropdownDiv style={{ marginRight: "50px" }}>
               {isAdmin ? (
                 <div style={{ zIndex: 20 }}>
-                  <OrganisationDropDown changeOrganisation={changeOrganisation} organisation={organisation} />
+                  <OrganisationDropdown changeOrganisation={changeOrganisation} organisation={organisation} />
                 </div>
               ) : null}
             </StyledDropdownDiv>

@@ -7,12 +7,12 @@ import rightArrowWhite from "../../utils/logo/rightArrowWhite.png";
 import {
   Title,
   StyledUl,
-  DropDownLi,
+  DropdownLi,
   Dropbtn,
   SubA,
-  SubDropDownContent,
+  SubDropdownContent,
   SubDropbtn,
-  DropDownContent,
+  DropdownContent,
 } from "../RulesModule/styles";
 
 export interface DataProps {
@@ -76,7 +76,7 @@ const RecursiveDropdown = (p: RecursiveDropdownProps) => {
     setSelectedSection("");
   };
 
-  const renderDropDownItem = (items: DataProps[], parentTitle: string): JSX.Element | JSX.Element[] =>
+  const renderDropdownItem = (items: DataProps[], parentTitle: string): JSX.Element | JSX.Element[] =>
     items.map((item) =>
       item.items.length === 0 ? (
         <SubA
@@ -120,17 +120,17 @@ const RecursiveDropdown = (p: RecursiveDropdownProps) => {
             {item.items.length > 0 ? <IconArrow isSelected={selectedSubSections.includes(item.title)} /> : null}
           </SubDropbtn>
           {selectedSubSections.includes(item.title) ? (
-            <SubDropDownContent style={{ top: 0, left: 280, display: "block" }} className="dropdown">
-              {renderDropDownItem(item.items, `${parentTitle}${FEATURE_SEPARATOR}${item.title}`)}
-            </SubDropDownContent>
+            <SubDropdownContent style={{ top: 0, left: 280, display: "block" }} className="dropdown">
+              {renderDropdownItem(item.items, `${parentTitle}${FEATURE_SEPARATOR}${item.title}`)}
+            </SubDropdownContent>
           ) : null}
         </div>
       )
     );
 
-  const renderDropDown = () => {
+  const renderDropdown = () => {
     const result = p.data.map((element, ind) => (
-      <DropDownLi key={element.title}>
+      <DropdownLi key={element.title}>
         <SubDropbtn
           onClick={() => {
             if (p.data[ind].items.length > 0) {
@@ -156,12 +156,12 @@ const RecursiveDropdown = (p: RecursiveDropdownProps) => {
           {element.items.length > 0 ? <IconArrow isSelected={selectedSection === element.title} /> : null}
         </SubDropbtn>
         {selectedSection === element.title ? (
-          <SubDropDownContent style={{ top: 0, display: "block" }} className="dropdown">
+          <SubDropdownContent style={{ top: 0, display: "block" }} className="dropdown">
             {" "}
-            {renderDropDownItem(element.items, element.title)}
-          </SubDropDownContent>
+            {renderDropdownItem(element.items, element.title)}
+          </SubDropdownContent>
         ) : null}
-      </DropDownLi>
+      </DropdownLi>
     ));
 
     return <ul style={{ padding: 0 }}> {result} </ul>;
@@ -169,7 +169,7 @@ const RecursiveDropdown = (p: RecursiveDropdownProps) => {
 
   return (
     <StyledUl style={{ justifyContent: "left", backgroundColor: "transparent", minWidth: "max-content", ...p.style }}>
-      <DropDownLi>
+      <DropdownLi>
         <Dropbtn
           style={{
             height: 40,
@@ -182,14 +182,14 @@ const RecursiveDropdown = (p: RecursiveDropdownProps) => {
         >
           {p.value.length > 0 ? p.value : "Select Field"}
         </Dropbtn>
-        <DropDownContent
+        <DropdownContent
           style={{
             display: p.show ? "block" : "",
           }}
         >
-          {renderDropDown()}
-        </DropDownContent>
-      </DropDownLi>
+          {renderDropdown()}
+        </DropdownContent>
+      </DropdownLi>
     </StyledUl>
   );
 };

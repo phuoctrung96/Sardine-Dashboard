@@ -393,3 +393,6 @@ export function convertDatastoreSessionsToCustomerResponse(sessions: Session[]):
     ),
   };
 }
+
+export const getLimitSessionKey = (text: string, limit: number): string =>
+  text.length > limit ? `${text.substring(0, limit)}...` : text;

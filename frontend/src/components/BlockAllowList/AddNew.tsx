@@ -7,10 +7,9 @@ import DatePicker from "react-datepicker";
 import { selectIsAdmin, useUserStore } from "store/user";
 import Layout from "../Layout/Main";
 import { StoreCtx } from "../../utils/store";
-import OrganisationDropDown from "../Dropdown/OrganisationDropDown";
 import { StyledNavTitle, StyledStickyNav, StyledTitleName } from "../Dashboard/styles";
 import { ActionTypes } from "../../utils/store/actionTypes";
-import { StyledMainDiv, BackgroundBox, StyledContainer, DropDownContent, HorizontalSpace, StyledUl } from "./styles";
+import { StyledMainDiv, BackgroundBox, StyledContainer, DropdownContent, HorizontalSpace, StyledUl } from "./styles";
 import RadioButton from "../Common/RadioButton";
 import icAdd from "../../utils/logo/add.svg";
 import icDelete from "../../utils/logo/delete.svg";
@@ -19,6 +18,7 @@ import { addBlocklist, addAllowlist, updateBlocklist, updateAllowlist } from "..
 import { ErrorText } from "../RulesModule/styles";
 import { BlockAllowlistProps } from "../../utils/store/interface";
 import { BlocklistProps } from "./RowItem";
+import OrganisationDropdown from "../Dropdown/OrganisationDropdown";
 
 interface IFieldProps {
   isLast: boolean;
@@ -228,7 +228,7 @@ const AddNew = () => {
                     <>
                       <StyledTitleName style={{ marginBottom: 10 }}> Organization</StyledTitleName>
                       <div style={{ zIndex: 20, marginBottom: 20, marginLeft: -20 }}>
-                        <OrganisationDropDown organisation={organisation} changeOrganisation={changeOrganisation} />
+                        <OrganisationDropdown organisation={organisation} changeOrganisation={changeOrganisation} />
                       </div>
                     </>
                   )}
@@ -314,7 +314,7 @@ const AddNew = () => {
                     <div style={{ color: "#325078" }}>{moment(selectedDate).format("MM-DD-YYYY")}</div>
                     <img alt="" src={icCalendar} />
                   </Button>
-                  <DropDownContent
+                  <DropdownContent
                     style={{
                       display: isDropdownVisible ? "block" : "none",
                       width: "max-content",
@@ -334,7 +334,7 @@ const AddNew = () => {
                       selected={selectedDate}
                       minDate={new Date()}
                     />
-                  </DropDownContent>
+                  </DropdownContent>
                 </div>
               </div>
             </div>

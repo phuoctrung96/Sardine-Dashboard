@@ -2,6 +2,7 @@ import { CSSProperties } from "react";
 import styled from "styled-components";
 import chartLogo from "../../utils/logo/chartsOnly.svg";
 import downLogo from "../../utils/logo/down.svg";
+import { DropdownItemProps } from "../Common/Dropdown/dropDownInterface";
 
 const StyledIcon = styled.div`
   display: flex;
@@ -37,9 +38,8 @@ const StyledDropdownButton = styled.div`
   border-radius: 4px;
   padding: 12px 8px;
   display: flex;
-  margin-left: 20px;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-between;
   border: 2px solid #eaedf2;
   box-sizing: border-box;
   border-radius: 4px;
@@ -49,19 +49,15 @@ const StyledDropdownButton = styled.div`
   }
 `;
 
-interface DropdownButtonItem {
-  icon?: string;
-  field?: number | string; // For some reason we have use number or string for field.
-  option: string;
-}
-
-const DropwdownButton = (props: {
+interface Props<T> {
   clicked: () => void;
-  item?: DropdownButtonItem;
+  item?: DropdownItemProps<T>;
   title?: string;
   id: string;
   style?: CSSProperties;
-}): JSX.Element => {
+}
+
+const DropdownButton = <T extends unknown>(props: Props<T>): JSX.Element => {
   const { clicked, item, title, id, style } = props;
   return (
     <StyledDropdownButton onClick={() => clicked()} data-tid={id} style={style}>
@@ -71,7 +67,7 @@ const DropwdownButton = (props: {
           <img alt="" src={chartLogo} />
         </StyledIcon>
       )}
-      <StyledOption>{item ? item.option : title}</StyledOption>
+      <StyledOption>{item?.option ? `${item.option}` : title}</StyledOption>
       <StyledIsSelected>
         <img alt="" src={downLogo} />
       </StyledIsSelected>
@@ -79,4 +75,4 @@ const DropwdownButton = (props: {
   );
 };
 
-export default DropwdownButton;
+export default DropdownButton;

@@ -12,7 +12,7 @@ import { selectIsAdmin, useUserStore } from "store/user";
 import { getClientFromQueryParams } from "utils/getClientFromQueryParams";
 import Layout from "../components/Layout/Main";
 import { StoreCtx } from "../utils/store";
-import OrganisationDropDown from "../components/Dropdown/OrganisationDropDown";
+import OrganisationDropdown from "../components/Dropdown/OrganisationDropdown";
 import { StyledDropdownDiv, StyledNavTitle, StyledStickyNav, StyledTitleName } from "../components/Dashboard/styles";
 import { ActionTypes } from "../utils/store/actionTypes";
 import { getCustomers, getClientIdObject, getSessions, getRules } from "../utils/api";
@@ -582,7 +582,7 @@ const Customers = (): JSX.Element => {
             <StyledDropdownDiv style={{ marginRight: "50px" }}>
               {isAdmin ? (
                 <div style={{ zIndex: 20 }}>
-                  <OrganisationDropDown changeOrganisation={changeOrganisation} organisation={organisation} />
+                  <OrganisationDropdown changeOrganisation={changeOrganisation} organisation={organisation} />
                 </div>
               ) : null}
             </StyledDropdownDiv>

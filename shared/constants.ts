@@ -66,3 +66,11 @@ export const CARD_TYPE = {
 } as const;
 
 export type CardType = typeof CARD_TYPE[keyof typeof CARD_TYPE];
+
+export const WEBHOOK_TYPE = {
+  CASE_STATUS: "case-status",
+  DOCUMENT_VERIFICATION: "document_verification",
+} as const;
+
+export type WebhookType = typeof WEBHOOK_TYPE[keyof typeof WEBHOOK_TYPE];
+export type WebhookTypeValues = keyof typeof WEBHOOK_TYPE;

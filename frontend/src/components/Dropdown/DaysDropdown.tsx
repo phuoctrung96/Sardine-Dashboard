@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef, CSSProperties } from "react";
 import styled from "styled-components";
 import { replaceAllSpacesWithUnderscores } from "utils/stringUtils";
 import dayjs, { Dayjs } from "dayjs";
-import DropwdownItem from "./DropdownItem";
-import DropdownButton from "./DropdownButton";
 import DateRange from "./DateRange";
 import { DatesProps } from "../../utils/store/interface";
 import { DATE_FORMATS } from "../../constants";
+import DropdownButton from "./DropdownButton";
+import DropdownItem from "./DropdownItem";
+import { DropdownItemProps } from "../Common/Dropdown/dropDownInterface";
 
 interface ChartDropdownElement {
   icon: string;
@@ -141,6 +142,30 @@ const DaysDropdown = (props: {
     }
   };
 
+  const getOption = () => {
+    if (date?.startDate) {
+      return `${dayjs(date.startDate).format(DATE_FORMATS.DATE)} - ${
+        dayjs(date.endDate).format(DATE_FORMATS.DATE) || dayjs(date.startDate).endOf("day").format(DATE_FORMATS.DATE)
+      }`;
+    }
+
+    return "Custom Date";
+  };
+
+  const getItemDropdownButton = (): DropdownItemProps<string> => {
+    if (selectedIndex === INDEX_CUSTOM_DATES) {
+      return {
+        icon: "../../utils/logo/chartsAndNumbers.svg",
+        option: getOption(),
+      };
+    }
+
+    return {
+      icon: CHARTS_DROPDOWN[selectedIndex].icon,
+      option: CHARTS_DROPDOWN[selectedIndex].option,
+    };
+  };
+
   useEffect(() => {
     document.addEventListener("mousedown", handleClick);
     return () => {
@@ -182,10 +207,10 @@ const DaysDropdown = (props: {
     <StyledDropdownDiv ref={daysDropdownRef} style={props.style}>
       <StyledDropdownList>
         {CHARTS_DROPDOWN.map((ele, index) => (
-          <DropwdownItem
+          <DropdownItem
             clicked={() => clickedItem(ele.field, index)}
             key={ele.option}
-            item={ele}
+            item={{ option: ele.option, icon: ele.icon }}
             isSelected={index === selectedIndex}
             id={`dropdown_item_days_${replaceAllSpacesWithUnderscores(ele.option)}`}
           />
@@ -196,26 +221,7 @@ const DaysDropdown = (props: {
       </StyledDropdownList>
     </StyledDropdownDiv>
   ) : (
-    <DropdownButton
-      id="dropdown_button_days"
-      clicked={() => setOpen(true)}
-      item={
-        selectedIndex === INDEX_CUSTOM_DATES
-          ? {
-              icon: "../../utils/logo/chartsAndNumbers.svg",
-              field: 0,
-              option:
-                date && date.startDate
-                  ? `${dayjs(date.startDate).format(DATE_FORMATS.DATE)} - ${
-                      dayjs(date.endDate).format(DATE_FORMATS.DATE) ||
-                      dayjs(date.startDate).endOf("day").format(DATE_FORMATS.DATE)
-                    }`
-                  : "Custom Date",
-            }
-          : CHARTS_DROPDOWN[selectedIndex]
-      }
-      style={props.style}
-    />
+    <DropdownButton id="dropdown_button_days" clicked={() => setOpen(true)} item={getItemDropdownButton()} />
   );
 };
 

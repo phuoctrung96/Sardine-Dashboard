@@ -143,7 +143,7 @@ export const SubDropbtn = styled.div`
   }
 `;
 
-export const DropDownContent = styled.div`
+export const DropdownContent = styled.div`
   display: none;
   position: absolute;
   background-color: #f9f9f9;

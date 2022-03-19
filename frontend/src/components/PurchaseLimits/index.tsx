@@ -9,8 +9,8 @@ import { addPurchaseLimit, deletePurchaseLimit, getPurchaseLimit, updatePurchase
 import { DataTable, DataColumnSimple, ToolBarWithTitle } from "../Common/DataTable";
 import { StyledMainDiv, TableWrapper } from "../FraudScore/styles";
 import { StyledDropdownDiv, StyledNavTitle, StyledStickyNav, StyledTitleName } from "../Dashboard/styles";
-import OrganisationDropDown from "../Dropdown/OrganisationDropDown";
 import Layout from "../Layout/Main";
+import OrganisationDropdown from "../Dropdown/OrganisationDropdown";
 
 interface PurchaseLimitRow {
   id: number;
@@ -150,7 +150,7 @@ const PurchaseLimitList = () => {
             <StyledDropdownDiv style={{ marginRight: "50px" }}>
               {role === SARDINE_ADMIN ? (
                 <div style={{ zIndex: 20 }}>
-                  <OrganisationDropDown organisation={organisation} changeOrganisation={changeOrganisation} />
+                  <OrganisationDropdown organisation={organisation} changeOrganisation={changeOrganisation} />
                 </div>
               ) : null}
             </StyledDropdownDiv>

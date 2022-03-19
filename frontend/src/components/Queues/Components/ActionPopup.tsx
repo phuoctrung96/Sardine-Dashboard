@@ -42,7 +42,7 @@ export const actions = [
   },
 ] as const;
 
-export const ActionsDropDown: React.FC<IActionsDropdownProps> = (props) => {
+export const ActionsDropdown: React.FC<IActionsDropdownProps> = (props) => {
   const { actionsValue, onValuesUpdated } = props;
   const result = actions.map((a, ind) => (
     <div style={{ display: "flex", alignItems: "center" }} key={a.key}>
@@ -151,7 +151,7 @@ const ActionPopup: React.FC<IPopupProps> = (props) => {
             width: "100%",
           }}
         >
-          <ActionsDropDown
+          <ActionsDropdown
             actionsValue={actionsValue}
             onValuesUpdated={(arr) => {
               setActionsValue(arr);

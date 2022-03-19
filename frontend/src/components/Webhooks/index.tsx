@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { H40Button } from "components/Button";
 import * as Sentry from "@sentry/react";
-import { AnyTodo } from "sardine-dashboard-typescript-definitions";
+import { AnyTodo, WebhookTypeValues } from "sardine-dashboard-typescript-definitions";
 import { getWebhooks, updateWebhook, deleteWebhook } from "../../utils/api";
 import { DataTable, DataColumnSimple, ToolBarWrapper } from "../Common/DataTable";
 import { StyledMainDiv, TableWrapper } from "../FraudScore/styles";
@@ -15,7 +15,7 @@ interface WebhooksRow {
   id: string;
   name: string;
   client_id: string;
-  type: string;
+  type: WebhookTypeValues;
   url: string;
   secret: string;
 }
@@ -77,6 +77,7 @@ const WebhooksList: React.FC = () => {
       updateWebhook(oldData.id, {
         organisation: newData.name,
         url: newData.url,
+        type: newData.type,
       })
         .then(() => {
           getData()

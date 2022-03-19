@@ -63,7 +63,7 @@ import {
   getAmlData,
   getFeedbacks,
 } from "../utils/api";
-import { actions, ActionsDropDown } from "../components/Queues/Components/ActionPopup";
+import { actions, ActionsDropdown } from "../components/Queues/Components/ActionPopup";
 import Badge from "../components/Common/Badge";
 import AccessControlPopUp from "../components/Customers/UserView/AccessControlPopUp";
 import { getRandomColor, timeDifferenceFromNow } from "../components/Common/Functions";
@@ -73,6 +73,7 @@ import {
   convertDatastoreSessionToCustomerResponse,
   getLatestAddressFromCustomerResponse,
   getLatestMapUrlFromCustomerResponse,
+  getLimitSessionKey,
 } from "../utils/customerSessionUtils";
 import CustomerDetails from "../components/Common/Customer/CustomerDetails";
 import CustomerLocation from "../components/Common/Customer/CustomerLocation";
@@ -80,7 +81,7 @@ import CustomerPhone from "../components/Common/Customer/CustomerPhone";
 import CustomerEmail from "../components/Common/Customer/CustomerEmail";
 import CustomerTaxDetails from "../components/Common/Customer/CustomerTaxDetails";
 import Transaction from "../components/Common/Transaction";
-import { KEY_EXECUTED_RULES } from "../constants";
+import { KEY_EXECUTED_RULES, SESSION_KEY_LIMIT } from "../constants";
 import { useDeviceProfileFetchResult } from "../hooks/fetchHooks";
 import FeedbackPopUp from "../components/Customers/UserView/FeedbackPopUp";
 import FeedbackList from "../components/Queues/Components/FeedbackList";
@@ -512,7 +513,9 @@ const SessionsDetails = (): JSX.Element => {
             <DetailsHeader
               name="Session Key"
               key="session_key"
-              childElement={<LinkElem text={customerData.session_key} path={deviceDetailsPath} />}
+              childElement={
+                <LinkElem text={getLimitSessionKey(customerData.session_key, SESSION_KEY_LIMIT)} path={deviceDetailsPath} />
+              }
             />,
             <DetailsHeader
               name="Customer Id"
@@ -683,7 +686,7 @@ const SessionsDetails = (): JSX.Element => {
               {customerData && customerData.queue_id && customerData.queue_id.length > 0 && (
                 <StyledButtonGroup>
                   <DetailsHeaderChild>
-                    <ActionsDropDown
+                    <ActionsDropdown
                       actionsValue={actionsValue}
                       onValuesUpdated={(arr) => {
                         setActionsValue(arr);
@@ -842,6 +845,8 @@ const SessionsDetails = (): JSX.Element => {
                     trueOs={deviceData?.true_os}
                     vpn={deviceData?.vpn}
                     location={deviceData?.location}
+                    clientId={customerData?.client_id}
+                    sessionKey={sessionKey}
                   />
                   <PaymentMethod
                     accountNumber={transactionData?.account_number || ""}

@@ -1,5 +1,5 @@
 import { useQuery as useReactQuery } from "react-query";
-import OrganisationDropDown from "components/Dropdown/OrganisationDropDown";
+import OrganisationDropdown from "components/Dropdown/OrganisationDropdown";
 import { StyledDropdownDiv, StyledMainDiv } from "styles/Layout";
 import { CLIENT_QUERY_FIELD } from "utils/constructFiltersQueryParams";
 import { getClientIdObject } from "utils/api";
@@ -45,7 +45,7 @@ const FlagPage = (): JSX.Element => {
             <StyledTitleName data-tid="title_flags">Flags</StyledTitleName>
             {isSuperAdmin && (
               <StyledDropdownDiv>
-                <OrganisationDropDown organisation={organisation} changeOrganisation={updateFilters} />
+                <OrganisationDropdown organisation={organisation} changeOrganisation={updateFilters} />
               </StyledDropdownDiv>
             )}
           </StyledNavTitle>

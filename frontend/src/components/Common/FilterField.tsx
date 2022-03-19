@@ -4,8 +4,8 @@ import { InputGroup, FormControl, Dropdown, Button, Row, Col } from "react-boots
 import { AnyTodo } from "sardine-dashboard-typescript-definitions";
 import { replaceAll, replaceAllSpacesWithUnderscores } from "utils/stringUtils";
 import { StyledDropdownDiv } from "../Dashboard/styles";
-import DaysDropdown from "../Dropdown/DaysDropdown";
 import { DatesProps } from "../../utils/store/interface";
+import DaysDropdown from "../Dropdown/DaysDropdown";
 
 const Container = styled.div`
   width: inherit;

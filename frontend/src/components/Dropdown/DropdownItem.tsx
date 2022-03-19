@@ -1,7 +1,7 @@
 import styled from "styled-components";
-
 import chartsLogo from "../../utils/logo/chartsOnly.svg";
 import selectedLogo from "../../utils/logo/selected.svg";
+import { DropdownItemProps } from "../Common/Dropdown/dropDownInterface";
 
 const StyledItem = styled.div`
   width: 100%;
@@ -19,10 +19,10 @@ const StyledItem = styled.div`
 `;
 
 const StyledIcon = styled.div`
-display : flex;
-height  16px;
-width : 16px;
-vertical-align : sub;
+  display: flex;
+  height: 16px;
+  width: 16px;
+  vertical-align: sub;
 `;
 
 const StyledOption = styled.div`
@@ -43,19 +43,21 @@ const StyledOption = styled.div`
 `;
 
 const StyledIsSelected = styled.div`
-display : flex;
-height  16px;
-width : 16px;
-vertical-align : sub;
-margin-left : auto;
+  display: flex;
+  height: 16px;
+  width: 16px;
+  vertical-align: sub;
+  margin-left: auto;
 `;
 
-const DropwdownItem = (props: {
+interface Props<T> {
   clicked: () => void;
-  item?: { icon?: string; option?: string };
+  item?: DropdownItemProps<T>;
   isSelected: boolean;
   id: string;
-}): JSX.Element => {
+}
+
+const DropdownItem = <T extends unknown>(props: Props<T>): JSX.Element => {
   const { clicked, item, isSelected, id } = props;
   return (
     <StyledItem onClick={() => clicked()} data-tid={id}>
@@ -75,4 +77,4 @@ const DropwdownItem = (props: {
   );
 };
 
-export default DropwdownItem;
+export default DropdownItem;

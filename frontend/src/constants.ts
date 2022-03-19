@@ -78,4 +78,6 @@ export const RISK_LEVELS = [
   "very high",
 ] as const;
 
+export const SESSION_KEY_LIMIT = 50;
+
 export { ADMIN_ROLES, DATASTORE_START_DATE, RULE_ADMIN_CLIENT_ID };

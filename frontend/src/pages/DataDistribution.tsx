@@ -19,7 +19,7 @@ import {
   Title,
   Container,
   Dropbtn,
-  DropDownContent,
+  DropdownContent,
   SubDropbtn,
   StyledUl,
   HorizontalSpace,
@@ -65,14 +65,14 @@ const DataDistributionChart = ({
   );
 };
 
-const DropDownContainer = ({
+const DropdownContainer = ({
   setIsDropdownVisible,
   isDropdownVisible,
   organisation,
   refOrgSearch,
   organisationSearch,
   setOrganisationSearch,
-  renderDropDown,
+  renderDropdown,
 }: {
   setIsDropdownVisible: React.Dispatch<React.SetStateAction<boolean>>;
   isDropdownVisible: boolean;
@@ -80,7 +80,7 @@ const DropDownContainer = ({
   refOrgSearch: React.MutableRefObject<null>;
   organisationSearch: string;
   setOrganisationSearch: React.Dispatch<React.SetStateAction<string>>;
-  renderDropDown: () => JSX.Element[];
+  renderDropdown: () => JSX.Element[];
 }): JSX.Element => (
   <StyledUl style={{ justifyContent: "flex-end", marginRight: 50 }}>
     <Title>Select Organization: </Title>
@@ -96,7 +96,7 @@ const DropDownContainer = ({
         {organisation !== undefined && organisation.name !== undefined ? organisation.name.toUpperCase() : "Organization"}
         <img src={downArrow} alt="Down arrow" style={{ marginLeft: 10, width: 12, height: 12, alignSelf: "center" }} />
       </Dropbtn>
-      <DropDownContent style={{ display: isDropdownVisible ? "block" : "", width: 200, maxHeight: 300, overflowY: "scroll" }}>
+      <DropdownContent style={{ display: isDropdownVisible ? "block" : "", width: 200, maxHeight: 300, overflowY: "scroll" }}>
         <FormControl
           ref={refOrgSearch}
           type="text"
@@ -107,8 +107,8 @@ const DropDownContainer = ({
             setOrganisationSearch(text);
           }}
         />
-        {renderDropDown()}
-      </DropDownContent>
+        {renderDropdown()}
+      </DropdownContent>
     </Container>
   </StyledUl>
 );
@@ -224,7 +224,7 @@ const DataDistribution = (): JSX.Element => {
     }
   }, [day, organisationFromUserStore, baseUrl, isAdmin, organisation, organisations.length]);
 
-  const renderDropDown = () =>
+  const renderDropdown = () =>
     organisations
       .filter((org) => org.name.toLowerCase().includes(organisationSearch.toLowerCase()))
       .map((element) => (
@@ -246,14 +246,14 @@ const DataDistribution = (): JSX.Element => {
   return (
     <Layout>
       {isAdmin ? (
-        <DropDownContainer
+        <DropdownContainer
           setIsDropdownVisible={setIsDropdownVisible}
           isDropdownVisible={isDropdownVisible}
           organisation={organisation}
           refOrgSearch={refOrgSearch}
           organisationSearch={organisationSearch}
           setOrganisationSearch={setOrganisationSearch}
-          renderDropDown={renderDropDown}
+          renderDropdown={renderDropdown}
         />
       ) : null}
       <div style={{ padding: 8 }}>
