@@ -219,6 +219,11 @@ export interface Transaction {
   first_6: string;
   card_hash: string;
   last_4: string;
+  issuer: string;
+  brand: string;
+  type: string;
+  level: string;
+  bin_country: string;
   routing_number: string;
   account_number: string;
   account_type: AccountType;
@@ -272,12 +277,13 @@ export interface FeedbackRequest {
 }
 
 export interface FeedbacksRequestBody {
-  startDate?: string;
-  endDate?: string;
-  page?: number;
-  rows?: number;
-  orderBy?: string;
-  order?: "asc" | "desc";
+  startDate: string;
+  endDate: string;
+  page: number;
+  rows: number;
+  orderBy: string;
+  order: "asc" | "desc";
+  organisation: string;
 }
 
 //----------- Audit Logs -------------------

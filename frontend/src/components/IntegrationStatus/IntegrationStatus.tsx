@@ -7,7 +7,7 @@ import { DetailsHeaderTile, TableWrapper } from "styles/EntityList";
 import FilterField, { getFilters } from "components/Common/FilterField";
 import { HandleInlineError } from "components/Error/InlineGenericError";
 import { useNavigate, useLocation } from "react-router-dom";
-import OrganisationDropdown from "components/Dropdown/OrganisationDropdown";
+import OrganizationDropdown from "components/Dropdown/OrganizationDropdown";
 import { useSearchQuery } from "hooks/useSearchQuery";
 import { useQuery as useReactQuery, UseQueryResult } from "react-query";
 import { constructFiltersQueryParams } from "utils/constructFiltersQueryParams";
@@ -209,7 +209,7 @@ export const IntegrationStatus: React.FC = () => {
           <StyledNavTitle className="w-100">
             <StyledTitleName data-tid="title_integration_status">Integration Status</StyledTitleName>
             <StyledDropdownDiv>
-              <OrganisationDropdown organisation={organisation} changeOrganisation={updateFilters} />
+              <OrganizationDropdown organisation={organisation} changeOrganisation={updateFilters} />
             </StyledDropdownDiv>
           </StyledNavTitle>
         </StyledStickyNav>

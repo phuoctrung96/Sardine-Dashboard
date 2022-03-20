@@ -12,7 +12,7 @@ import {
 import { mw } from "../../commons/middleware";
 import { RequestWithCurrentUser, RequestWithUser } from "../request-interface";
 import { captureException } from "../../utils/error-utils";
-import { Feedback } from "../../commons/models/datastore/feedback";
+import { getFeedbackList, getFeedbacks } from "../../commons/models/datastore/feedback";
 
 const router = express.Router();
 
@@ -24,7 +24,7 @@ const feedbacksRouter = () => {
     async (req: RequestWithUser, res: Response) => {
       const { sessionKey = "" } = req.query;
       try {
-        const feedbacks = await Feedback.getFeedbackList(sessionKey as string);
+        const feedbacks = await getFeedbackList(sessionKey as string);
         return res.json({
           result: feedbacks.reduce<GetFeedbacksResponse>((acc, feedback) => {
             acc.push({
@@ -55,7 +55,7 @@ const feedbacksRouter = () => {
     [mw.validateRequest, mw.requireLoggedIn],
     async (req: RequestWithCurrentUser<FeedbacksRequestBody>, res: Response) => {
       try {
-        const { feedbacks, isLast } = await Feedback.getFeedbacks(req.query);
+        const { feedbacks, isLast } = await getFeedbacks(req.query as FeedbacksRequestBody);
         return res.json({
           feedbacks: feedbacks.reduce<GetFeedbacksListResponse>((acc, feedback) => {
             acc.push({
@@ -73,6 +73,7 @@ const feedbacksRouter = () => {
           isLast,
         });
       } catch (err: unknown) {
+        console.log(err);
         captureException(err);
 
         if (err instanceof Error) {

@@ -11,7 +11,7 @@ import { CHECKPOINTS, SessionKind } from "sardine-dashboard-typescript-definitio
 import { replaceAllSpacesWithUnderscores } from "utils/stringUtils";
 import Layout from "../components/Layout/Main";
 import { StoreCtx } from "../utils/store";
-import OrganisationDropdown from "../components/Dropdown/OrganisationDropdown";
+import OrganizationDropdown from "../components/Dropdown/OrganizationDropdown";
 import { StyledDropdownDiv, StyledNavTitle, StyledStickyNav, StyledTitleName } from "../components/Dashboard/styles";
 import { ActionTypes } from "../utils/store/actionTypes";
 import {
@@ -314,7 +314,7 @@ const Queues: React.FC = () => {
           <StyledDropdownDiv>
             {isAdmin ? (
               <div style={{ zIndex: 20, marginRight: 20, minWidth: "max-content" }}>
-                <OrganisationDropdown organisation={organisation} changeOrganisation={changeOrganisation} />
+                <OrganizationDropdown organisation={organisation} changeOrganisation={changeOrganisation} />
               </div>
             ) : (
               <div style={{ paddingRight: 100 }} />

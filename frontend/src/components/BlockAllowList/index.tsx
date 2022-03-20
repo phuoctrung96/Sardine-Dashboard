@@ -5,7 +5,7 @@ import { captureException } from "utils/errorUtils";
 import { selectIsAdmin, useUserStore } from "store/user";
 import Layout from "../Layout/Main";
 import { StoreCtx } from "../../utils/store";
-import OrganisationDropdown from "../Dropdown/OrganisationDropdown";
+import OrganizationDropdown from "../Dropdown/OrganizationDropdown";
 import { StyledDropdownDiv, StyledNavTitle, StyledStickyNav, StyledTitleName } from "../Dashboard/styles";
 import { ActionTypes } from "../../utils/store/actionTypes";
 import { isWideScreen } from "../../utils/browserUtils";
@@ -396,7 +396,7 @@ const BlockAllowList = (): JSX.Element => {
                 <>
                   Organization:
                   <div style={{ zIndex: 20 }}>
-                    <OrganisationDropdown organisation={organisation} changeOrganisation={changeOrganisation} />
+                    <OrganizationDropdown organisation={organisation} changeOrganisation={changeOrganisation} />
                   </div>
                 </>
               ) : null}

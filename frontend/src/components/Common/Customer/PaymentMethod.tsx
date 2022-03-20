@@ -2,9 +2,8 @@ import { hideCharacters } from "sardine-dashboard-typescript-definitions";
 import { useState } from "react";
 import DataCard, { CardAttribute } from "../DataCard";
 import creditCardIcon from "../../../utils/logo/credit_card.svg";
-import { Link } from "../Links";
 
-const HEADER = "BIN";
+const HEADER = "Payment Method";
 
 interface PaymentMethodProps {
   paymentMethod: string;
@@ -12,6 +11,11 @@ interface PaymentMethodProps {
   cardHash: string;
   first6: string;
   last4: string;
+  issuerBank: string;
+  issuerCountry: string;
+  brand: string;
+  type: string;
+  level: string;
   routingNumber: string;
   accountNumber: string;
   recipientPaymentMethod: string;
@@ -34,6 +38,11 @@ const PaymentMethod = (props: PaymentMethodProps): JSX.Element => {
     cryptoCurrencyCode,
     first6,
     last4,
+    issuerBank,
+    issuerCountry,
+    brand,
+    type,
+    level,
     mcc,
     paymentMethod,
     recipientPaymentMethod,
@@ -76,11 +85,7 @@ const PaymentMethod = (props: PaymentMethodProps): JSX.Element => {
   if (first6) {
     attributes.push({
       key: "First 6",
-      value: (
-        <Link id="binSearchLink" href="https://binlist.net/" rel="noreferrer" target="_blank">
-          {first6}
-        </Link>
-      ),
+      value: first6,
       toolTip: "First 6 digit of card number",
     });
   }
@@ -90,6 +95,54 @@ const PaymentMethod = (props: PaymentMethodProps): JSX.Element => {
       key: "Last 4",
       value: last4,
       toolTip: "Last 4 digit of card number",
+    });
+  }
+
+  if (issuerBank) {
+    attributes.push({
+      key: "Issuer Bank",
+      value: issuerBank,
+      toolTip: "Bank Name",
+    });
+  }
+
+  if (issuerCountry) {
+    attributes.push({
+      key: "Issuer Country",
+      value: issuerCountry,
+      toolTip: "Issuer Country",
+    });
+  }
+
+  if (brand) {
+    attributes.push({
+      key: "Brand",
+      value: brand,
+      toolTip: "Brand",
+    });
+  }
+
+  if (type) {
+    attributes.push({
+      key: "Type",
+      value: type,
+      toolTip: "Type",
+    });
+  }
+
+  if (level) {
+    attributes.push({
+      key: "Level",
+      value: level,
+      toolTip: "Level",
+    });
+  }
+
+  if (level && level !== "PREPAID") {
+    attributes.push({
+      key: "Prepaid",
+      value: "false",
+      toolTip: "Prepaid",
     });
   }
 

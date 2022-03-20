@@ -9,7 +9,7 @@ import * as Sentry from "@sentry/react";
 import { useCookies } from "react-cookie";
 import { selectIsAdmin, useUserStore } from "store/user";
 import Layout from "../Layout/Main";
-import OrganisationDropdown from "../Dropdown/OrganisationDropdown";
+import OrganizationDropdown from "../Dropdown/OrganizationDropdown";
 import { StyledDropdownDiv, StyledNavTitle, StyledStickyNav, StyledTitleName } from "../Dashboard/styles";
 import { DatesProps } from "../../utils/store/interface";
 import { fetchTransactionsData } from "../../utils/api";
@@ -228,7 +228,7 @@ const Transactions: React.FC = () => {
             <StyledDropdownDiv style={{ marginRight: "50px" }}>
               {isAdmin ? (
                 <div style={{ zIndex: 20 }}>
-                  <OrganisationDropdown changeOrganisation={changeOrganisation} organisation={organisation} />
+                  <OrganizationDropdown changeOrganisation={changeOrganisation} organisation={organisation} />
                 </div>
               ) : null}
             </StyledDropdownDiv>

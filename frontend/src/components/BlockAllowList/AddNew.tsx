@@ -18,7 +18,7 @@ import { addBlocklist, addAllowlist, updateBlocklist, updateAllowlist } from "..
 import { ErrorText } from "../RulesModule/styles";
 import { BlockAllowlistProps } from "../../utils/store/interface";
 import { BlocklistProps } from "./RowItem";
-import OrganisationDropdown from "../Dropdown/OrganisationDropdown";
+import OrganizationDropdown from "../Dropdown/OrganizationDropdown";
 
 interface IFieldProps {
   isLast: boolean;
@@ -228,7 +228,7 @@ const AddNew = () => {
                     <>
                       <StyledTitleName style={{ marginBottom: 10 }}> Organization</StyledTitleName>
                       <div style={{ zIndex: 20, marginBottom: 20, marginLeft: -20 }}>
-                        <OrganisationDropdown organisation={organisation} changeOrganisation={changeOrganisation} />
+                        <OrganizationDropdown organisation={organisation} changeOrganisation={changeOrganisation} />
                       </div>
                     </>
                   )}
