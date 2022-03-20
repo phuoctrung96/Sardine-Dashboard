@@ -40,7 +40,7 @@ const DEFAULT_SELECTED_DATE_LABEL = "Last 24 hours";
 
 function constructQueryParams(client: string): string {
   const params: { [key: string]: string } = {};
-  params.clientId = client;
+  params.organization = client;
   return new URLSearchParams(params).toString();
 }
 
