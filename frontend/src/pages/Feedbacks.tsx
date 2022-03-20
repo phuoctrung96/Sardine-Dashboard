@@ -28,7 +28,7 @@ import readonlyIcon from "../utils/logo/readonly.svg";
 import upDownArrowIcon from "../utils/logo/up-down-arrow.svg";
 import { DatesProps } from "../utils/store/interface";
 import { useFeedbacksFetchResult } from "../hooks/fetchHooks";
-import OrganisationDropDown from "../components/Dropdown/OrganisationDropDown";
+import OrganizationDropDown from "../components/Dropdown/OrganisationDropDown";
 
 const DEFAULT_ROWS = 15;
 const DEFAULT_SELECTED_DATE_LABEL = "Last 24 hours";
@@ -164,7 +164,7 @@ export const Feedbacks = (): JSX.Element => {
             </span>
           </HorizontalContainer>
           <HorizontalContainer style={{ gap: 16 }}>
-            <OrganisationDropDown changeOrganisation={changeOrganisation} organisation={organisation} />
+            <OrganizationDropDown changeOrganisation={changeOrganisation} organisation={organisation} />
             <StyledButton
               style={{
                 padding: "10px 12px 10px 16px",

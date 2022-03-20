@@ -12,7 +12,7 @@ import { selectIsAdmin, useUserStore } from "store/user";
 import { getClientFromQueryParams } from "utils/getClientFromQueryParams";
 import Layout from "../components/Layout/Main";
 import { StoreCtx } from "../utils/store";
-import OrganisationDropdown from "../components/Dropdown/OrganisationDropdown";
+import OrganisationDropdown from "../components/Dropdown/OrganisationDropDown";
 import { StyledDropdownDiv, StyledNavTitle, StyledStickyNav, StyledTitleName } from "../components/Dashboard/styles";
 import { ActionTypes } from "../utils/store/actionTypes";
 import { getCustomers, getClientIdObject, getSessions, getRules } from "../utils/api";

@@ -10,7 +10,7 @@ import { DataTable, DataColumnSimple, ToolBarWithTitle } from "../Common/DataTab
 import { StyledMainDiv, TableWrapper } from "../FraudScore/styles";
 import { StyledDropdownDiv, StyledNavTitle, StyledStickyNav, StyledTitleName } from "../Dashboard/styles";
 import Layout from "../Layout/Main";
-import OrganisationDropdown from "../Dropdown/OrganisationDropdown";
+import OrganisationDropdown from "../Dropdown/OrganisationDropDown";
 
 interface PurchaseLimitRow {
   id: number;

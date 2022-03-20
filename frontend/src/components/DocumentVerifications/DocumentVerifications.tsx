@@ -8,7 +8,7 @@ import { useInfiniteQuery, useQuery as useReactQuery } from "react-query";
 import { DOCUMENT_VERIFICATIONS_PATH } from "modulePaths";
 import { getClientIdObject, getDocumentVerifications } from "utils/api";
 import { DocumentVerification } from "sardine-dashboard-typescript-definitions";
-import OrganisationDropdown from "components/Dropdown/OrganisationDropdown";
+import OrganisationDropdown from "components/Dropdown/OrganisationDropDown";
 import { useSearchQuery } from "hooks/useSearchQuery";
 import { openUrlNewTabWithHistoryState } from "utils/openUrlNewTabWithHistoryState";
 import { constructFiltersQueryParams } from "utils/constructFiltersQueryParams";

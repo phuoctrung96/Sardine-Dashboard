@@ -8,7 +8,7 @@ import { addWebhook } from "../../utils/api";
 import { ErrorText } from "../RulesModule/styles";
 import { FieldTitle } from "../Common/styles/titles/fieldTitleStyles";
 import SardineDropdown from "../Common/Dropdown/SardineDropdown";
-import OrganisationDropdown from "../Dropdown/OrganisationDropdown";
+import OrganisationDropdown from "../Dropdown/OrganisationDropDown";
 
 interface Props {
   show: boolean;

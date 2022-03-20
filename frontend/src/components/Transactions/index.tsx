@@ -9,7 +9,7 @@ import * as Sentry from "@sentry/react";
 import { useCookies } from "react-cookie";
 import { selectIsAdmin, useUserStore } from "store/user";
 import Layout from "../Layout/Main";
-import OrganisationDropdown from "../Dropdown/OrganisationDropdown";
+import OrganisationDropdown from "../Dropdown/OrganisationDropDown";
 import { StyledDropdownDiv, StyledNavTitle, StyledStickyNav, StyledTitleName } from "../Dashboard/styles";
 import { DatesProps } from "../../utils/store/interface";
 import { fetchTransactionsData } from "../../utils/api";

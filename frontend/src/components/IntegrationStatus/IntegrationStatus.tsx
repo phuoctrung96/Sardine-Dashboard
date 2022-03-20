@@ -7,7 +7,7 @@ import { DetailsHeaderTile, TableWrapper } from "styles/EntityList";
 import FilterField, { getFilters } from "components/Common/FilterField";
 import { HandleInlineError } from "components/Error/InlineGenericError";
 import { useNavigate, useLocation } from "react-router-dom";
-import OrganisationDropdown from "components/Dropdown/OrganisationDropdown";
+import OrganisationDropdown from "components/Dropdown/OrganisationDropDown";
 import { useSearchQuery } from "hooks/useSearchQuery";
 import { useQuery as useReactQuery, UseQueryResult } from "react-query";
 import { constructFiltersQueryParams } from "utils/constructFiltersQueryParams";

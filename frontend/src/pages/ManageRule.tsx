@@ -110,7 +110,7 @@ import CustomInput from "../components/RulesModule/Components/CustomInput";
 import BatchRuleView from "../components/RulesModule/Components/BatchRuleView";
 import { selectIsAdmin, selectIsSuperAdmin, useUserStore } from "../store/user";
 import { CACHE_KEYS, CHECKPOINT_QUERY_FIELD, RULE_ADMIN_CLIENT_ID } from "../constants";
-import OrganisationDropdown from "../components/Dropdown/OrganisationDropdown";
+import OrganisationDropdown from "../components/Dropdown/OrganisationDropDown";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 
 type DropdownTypeRulesOrCheckpoint = typeof DROPDOWN_TYPES.Rules | typeof DROPDOWN_TYPES.Checkpoint;

@@ -1,5 +1,5 @@
 import { useQuery as useReactQuery } from "react-query";
-import OrganisationDropdown from "components/Dropdown/OrganisationDropdown";
+import OrganisationDropdown from "components/Dropdown/OrganisationDropDown";
 import { StyledDropdownDiv, StyledMainDiv } from "styles/Layout";
 import { CLIENT_QUERY_FIELD } from "utils/constructFiltersQueryParams";
 import { getClientIdObject } from "utils/api";

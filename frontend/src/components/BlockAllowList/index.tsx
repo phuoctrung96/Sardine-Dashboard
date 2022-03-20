@@ -5,7 +5,7 @@ import { captureException } from "utils/errorUtils";
 import { selectIsAdmin, useUserStore } from "store/user";
 import Layout from "../Layout/Main";
 import { StoreCtx } from "../../utils/store";
-import OrganisationDropdown from "../Dropdown/OrganisationDropdown";
+import OrganisationDropdown from "../Dropdown/OrganisationDropDown";
 import { StyledDropdownDiv, StyledNavTitle, StyledStickyNav, StyledTitleName } from "../Dashboard/styles";
 import { ActionTypes } from "../../utils/store/actionTypes";
 import { isWideScreen } from "../../utils/browserUtils";

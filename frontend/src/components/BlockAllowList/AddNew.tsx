@@ -18,7 +18,7 @@ import { addBlocklist, addAllowlist, updateBlocklist, updateAllowlist } from "..
 import { ErrorText } from "../RulesModule/styles";
 import { BlockAllowlistProps } from "../../utils/store/interface";
 import { BlocklistProps } from "./RowItem";
-import OrganisationDropdown from "../Dropdown/OrganisationDropdown";
+import OrganisationDropdown from "../Dropdown/OrganisationDropDown";
 
 interface IFieldProps {
   isLast: boolean;
