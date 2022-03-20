@@ -853,6 +853,11 @@ const SessionsDetails = (): JSX.Element => {
                     cardHash={transactionData?.card_hash || ""}
                     first6={transactionData?.first_6 || ""}
                     last4={transactionData?.last_4 || ""}
+                    issuerBank={transactionData?.issuer || ""}
+                    issuerCountry={transactionData?.bin_country || ""}
+                    brand={transactionData?.brand || ""}
+                    type={transactionData?.type || ""}
+                    level={transactionData?.level || ""}
                     mcc={transactionData?.mcc || ""}
                     paymentMethod={transactionData?.payment_method || ""}
                     recipientPaymentMethod={transactionData?.recipient_payment_method || ""}

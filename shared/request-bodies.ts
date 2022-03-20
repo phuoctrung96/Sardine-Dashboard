@@ -219,6 +219,11 @@ export interface Transaction {
   first_6: string;
   card_hash: string;
   last_4: string;
+  issuer: string;
+  brand: string;
+  type: string;
+  level: string;
+  bin_country: string;
   routing_number: string;
   account_number: string;
   account_type: AccountType;

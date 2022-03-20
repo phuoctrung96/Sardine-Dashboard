@@ -10,7 +10,7 @@ import { DataTable, DataColumnSimple, ToolBarWithTitle } from "../Common/DataTab
 import { StyledMainDiv, TableWrapper } from "../FraudScore/styles";
 import { StyledDropdownDiv, StyledNavTitle, StyledStickyNav, StyledTitleName } from "../Dashboard/styles";
 import Layout from "../Layout/Main";
-import OrganisationDropdown from "../Dropdown/OrganisationDropDown";
+import OrganizationDropdown from "../Dropdown/OrganizationDropdown";
 
 interface PurchaseLimitRow {
   id: number;
@@ -150,7 +150,7 @@ const PurchaseLimitList = () => {
             <StyledDropdownDiv style={{ marginRight: "50px" }}>
               {role === SARDINE_ADMIN ? (
                 <div style={{ zIndex: 20 }}>
-                  <OrganisationDropdown organisation={organisation} changeOrganisation={changeOrganisation} />
+                  <OrganizationDropdown organisation={organisation} changeOrganisation={changeOrganisation} />
                 </div>
               ) : null}
             </StyledDropdownDiv>

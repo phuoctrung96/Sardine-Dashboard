@@ -4,7 +4,7 @@ const hide = (i: FeatureItem): FeatureItem => ({ ...i, isHidden: true });
 
 export const getSessionFeatures = (checkpoint: string): FeatureItem[] =>
   [
-    newChild("SessionKey", "", DATA_TYPES.string, "Session key", false),
+    newChild("SessionKey", "03bbe826-4201-438f-ac25-916ccb7f0952", DATA_TYPES.string, "Session key", false),
     newChild("RiskLevel", "high", DATA_TYPES.string, "Risk level for the session", false),
     newChild("AMLRiskLevel", "high", DATA_TYPES.string, "AML risk level for the session", false),
     newChild("OS", "iOS", DATA_TYPES.string, "user-reported OS for the session", false),
@@ -17,7 +17,6 @@ export const getSessionFeatures = (checkpoint: string): FeatureItem[] =>
       "Distance in miles between IP address  and GPS address city (only available if you use mobile SDKs and user grants GPS permission)"
     ),
     newChild("DeviceScore", "80", DATA_TYPES.int, "Session level device-riskiness Score (1 to 100)"),
-    newChild("SessionKey", "03bbe826-4201-438f-ac25-916ccb7f0952", DATA_TYPES.string, "SessionKey"),
     boolChild("IsChecksumInvalid", "client side event data had an invalid checksum, indicating payload was tampered", false),
     intChild("IPCount", "number of IP addresses tied to this session", false),
     intChild("IPCountryCount", "number of country (inferred from IP address) tied to this session", false),

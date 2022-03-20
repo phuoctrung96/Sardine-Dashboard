@@ -73,6 +73,7 @@ const feedbacksRouter = () => {
           isLast,
         });
       } catch (err: unknown) {
+        console.log(err);
         captureException(err);
 
         if (err instanceof Error) {

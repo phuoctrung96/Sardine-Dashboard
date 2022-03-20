@@ -8,7 +8,7 @@ import { addWebhook } from "../../utils/api";
 import { ErrorText } from "../RulesModule/styles";
 import { FieldTitle } from "../Common/styles/titles/fieldTitleStyles";
 import SardineDropdown from "../Common/Dropdown/SardineDropdown";
-import OrganisationDropdown from "../Dropdown/OrganisationDropDown";
+import OrganizationDropdown from "../Dropdown/OrganizationDropdown";
 
 interface Props {
   show: boolean;
@@ -86,7 +86,7 @@ const AddPopup: React.FC<Props> = (props: Props) => {
           </Row>
           <Row>
             <FieldTitle>Organization: </FieldTitle>
-            <OrganisationDropdown
+            <OrganizationDropdown
               changeOrganisation={(organisation: string) => setSelectedOrg(organisation)}
               organisation={selectedOrg}
             />

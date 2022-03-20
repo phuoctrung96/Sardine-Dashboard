@@ -110,7 +110,7 @@ import CustomInput from "../components/RulesModule/Components/CustomInput";
 import BatchRuleView from "../components/RulesModule/Components/BatchRuleView";
 import { selectIsAdmin, selectIsSuperAdmin, useUserStore } from "../store/user";
 import { CACHE_KEYS, CHECKPOINT_QUERY_FIELD, RULE_ADMIN_CLIENT_ID } from "../constants";
-import OrganisationDropdown from "../components/Dropdown/OrganisationDropDown";
+import OrganizationDropdown from "../components/Dropdown/OrganizationDropdown";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 
 type DropdownTypeRulesOrCheckpoint = typeof DROPDOWN_TYPES.Rules | typeof DROPDOWN_TYPES.Checkpoint;
@@ -2207,7 +2207,7 @@ const ManageRule: React.FC = () => {
                   >
                     Organization
                   </StyledSubHeading>
-                  <OrganisationDropdown organisation={organisation?.name || "all"} changeOrganisation={changeOrganisation} />
+                  <OrganizationDropdown organisation={organisation?.name || "all"} changeOrganisation={changeOrganisation} />
                 </Container>
               ) : null}
 

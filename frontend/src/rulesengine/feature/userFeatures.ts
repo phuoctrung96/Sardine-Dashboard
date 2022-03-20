@@ -200,7 +200,7 @@ export const userFeatures = [
 
   boolChild("IsBlocklisted", "User ID is blocklisted", false),
   boolChild("IsFraudulent", "True if fraud feedback is sent (Card Not Present or ACH) via our /feedbacks AP", false),
-  intChild("CountCryptoAddresses", "Count of all crypto addresses user has deposited from or withdrawn to"),
+  intChild("CountCryptoAddresses", "Count of all crypto addresses user has deposited from or withdrawn to", false),
   intChild("CountRiskyCryptoAddresses", "Count of risky crypto addresses that user has deposited from or withdrawn to", false),
   boolChild("IsSSNCompleted", "Has the SSN been completed as part of the identity completion.", false),
   boolChild("IsDOBCompleted", "Has the Date of Birth been completed as part of the identity completion", false),
