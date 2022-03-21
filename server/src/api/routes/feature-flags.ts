@@ -1,9 +1,9 @@
-import { UnleashService } from "src/commons/UnleashService";
+import { UnleashService } from "src/service/unleash-service";
 import { featureFlagUrls } from "sardine-dashboard-typescript-definitions";
 import express, { Response } from "express";
 import { db } from "../../commons/db";
 import { mw } from "../../commons/middleware";
-import { getFeaturesMatchEnv, getOrganisationIdsFromFeature } from "../utils/getOrganisationIdsFromFeature";
+import { getFeaturesMatchEnv, getOrganisationIdsFromFeature } from "../../utils/org-utils";
 
 const router = express.Router();
 

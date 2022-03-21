@@ -12,9 +12,9 @@ import { loadSecrets } from "../commons/secrets";
 import { logger } from "../commons/logger";
 import { db } from "../commons/db";
 import { mw } from "../commons/middleware";
-import { authService } from "../commons/AuthService";
-import { ruleService } from "../commons/RuleService";
-import { UnleashService } from "../commons/UnleashService";
+import { authService } from "../service/auth-service";
+import { ruleService } from "../service/rule-service";
+import { UnleashService } from "../service/unleash-service";
 import { captureException } from "../utils/error-utils";
 
 const env = process.env.SARDINE_ENV;

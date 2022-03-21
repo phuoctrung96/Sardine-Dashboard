@@ -1,6 +1,6 @@
-import { captureException } from "../../../utils/error-utils";
-import { RequestWithCurrentUser } from "../../request-interface";
-import { db } from "../../../commons/db";
+import { captureException } from "./error-utils";
+import { RequestWithCurrentUser } from "../api/request-interface";
+import { db } from "../commons/db";
 
 export const writeAuditLog = (req: RequestWithCurrentUser, clientID: string, targetId: number, type: string, data: string) => {
   const userId = parseInt(req.currentUser?.id || "", 10);

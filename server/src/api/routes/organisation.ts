@@ -13,13 +13,13 @@ import {
   isClientIdObject,
 } from "sardine-dashboard-typescript-definitions";
 import { query, body, param } from "express-validator";
-import { UnleashService } from "src/commons/UnleashService";
+import { UnleashService } from "src/service/unleash-service";
 import { db } from "../../commons/db";
 import { mw } from "../../commons/middleware";
 import { sendMultipleInviteEmail, sendInviteEamil, sendAdminBroadcast } from "../../commons/email";
 import { RequestWithCurrentUser } from "../request-interface";
 import { groupBy } from "../../commons/helpers";
-import { getFeaturesMatchEnv, getOrganisationIdsFromFeature } from "../utils/getOrganisationIdsFromFeature";
+import { getFeaturesMatchEnv, getOrganisationIdsFromFeature } from "../../utils/org-utils";
 import { captureException } from "../../utils/error-utils";
 
 const { getFeatureFlagsOfOrganisationRoute, getClientIdRoute } = organisationUrls.routes;

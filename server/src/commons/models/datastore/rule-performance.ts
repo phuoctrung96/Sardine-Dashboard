@@ -1,7 +1,7 @@
 import { Query } from "@google-cloud/datastore";
 import moment from "moment";
 import { RulePerformanceKind } from "sardine-dashboard-typescript-definitions";
-import { firebaseAdmin } from "../../firebase";
+import { firebaseAdmin } from "../../../service/firebase-service";
 import { RULE_PERFORMANCE_KIND } from "./common";
 
 const ds = firebaseAdmin.datastore;

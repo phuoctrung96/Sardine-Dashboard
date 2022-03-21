@@ -22,9 +22,9 @@ import {
   commentUrls,
   purchaseLimitUrls,
 } from "sardine-dashboard-typescript-definitions";
-import { AuthService } from "../commons/AuthService";
+import { AuthService } from "../service/auth-service";
 import { mw } from "../commons/middleware";
-import { RuleService } from "../commons/RuleService";
+import { RuleService } from "../service/rule-service";
 import authRouter from "./routes/auth";
 import rulesRouter from "./routes/rules";
 import customersRouter from "./routes/customers";
@@ -45,7 +45,7 @@ import allowlistRouter from "./routes/business/allowlist";
 import purchaseLimitsRouter from "./routes/business/purchase-limits";
 import transactionsRouter from "./routes/transactions";
 import featureFlagsRouter from "./routes/feature-flags";
-import { UnleashService } from "../commons/UnleashService";
+import { UnleashService } from "../service/unleash-service";
 import feedbacksRouter from "./routes/feedbacks";
 
 const createApiRouter = (authService: AuthService, ruleService: RuleService, unleashSevice: UnleashService) => {

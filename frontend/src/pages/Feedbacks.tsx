@@ -1,13 +1,16 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { MenuItem, Popover } from "@mui/material";
 import { StyledStickyNav } from "components/Dashboard/styles";
+import { FeedbackGraph } from "components/Feedbacks/FeedbackChart";
 import { FeedbackListTable } from "components/Feedbacks/FeedbackListTable";
 import {
   AddFeedbackDropdown,
   AddFilterBadge,
   StyledDaysDropdown,
+  FeedbackChartSwitch,
   SpaceBetweenContainer,
   StyledButton,
+  ChartTypeButton,
 } from "components/Feedbacks/styles";
 import { HorizontalContainer, StyledMainContentDiv, StyledMainDiv } from "components/Queues/styles";
 import { useEffect, useState } from "react";
@@ -28,14 +31,16 @@ import readonlyIcon from "../utils/logo/readonly.svg";
 import upDownArrowIcon from "../utils/logo/up-down-arrow.svg";
 import { DatesProps } from "../utils/store/interface";
 import { useFeedbacksFetchResult } from "../hooks/fetchHooks";
-import OrganizationDropdown from "../components/Dropdown/OrganisationDropdown";
+import OrganizationDropdown from "../components/Dropdown/OrganizationDropdown";
+import graphIcon from "../utils/logo/graph.svg";
+import mapIcon from "../utils/logo/map.svg";
 
 const DEFAULT_ROWS = 15;
 const DEFAULT_SELECTED_DATE_LABEL = "Last 24 hours";
 
 function constructQueryParams(client: string): string {
   const params: { [key: string]: string } = {};
-  params.clientId = client;
+  params.organization = client;
   return new URLSearchParams(params).toString();
 }
 
@@ -92,6 +97,8 @@ const AddFeedbackMenu = (): JSX.Element => {
 };
 
 export const Feedbacks = (): JSX.Element => {
+  const [chartGraphType, setChartGraphType] = useState(true);
+  const handleChartTypeSwitch = () => setChartGraphType((prevState) => !prevState);
   const { addToast } = useToasts();
   const navigate = useNavigate();
   const { search } = useLocation();
@@ -184,11 +191,11 @@ export const Feedbacks = (): JSX.Element => {
       </StyledStickyNav>
 
       <StyledMainContentDiv>
-        {/* ====== TODO: Add graph when ready 
         <StyledMainDiv style={{ backgroundColor: "#F2F6FF", padding: "16px 32px", minHeight: 320 }}>
           <div className="d-flex justify-content-end">
             <FeedbackChartSwitch value={chartGraphType} exclusive onChange={handleChartTypeSwitch}>
-              <ChartTypeButton value={true} style={{ textTransform: "none" }}>
+              {/* eslint-disable-next-line react/jsx-boolean-value */}
+              <ChartTypeButton value style={{ textTransform: "none" }}>
                 <img src={graphIcon} alt="Graph icon" style={{ marginRight: 8 }} />
                 Graph
               </ChartTypeButton>
@@ -199,7 +206,7 @@ export const Feedbacks = (): JSX.Element => {
             </FeedbackChartSwitch>
           </div>
           {chartGraphType && <FeedbackGraph />}
-        </StyledMainDiv> */}
+        </StyledMainDiv>
 
         <StyledMainDiv>
           <SpaceBetweenContainer style={{ margin: "16px 0" }}>

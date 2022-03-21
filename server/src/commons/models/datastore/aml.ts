@@ -1,7 +1,7 @@
 import { Query } from "@google-cloud/datastore";
 import { AmlKind } from "sardine-dashboard-typescript-definitions";
 import { CLIENT_ID_FIELD, CUSTOMER_ID_FIELD } from "../../../constants";
-import { firebaseAdmin } from "../../firebase";
+import { firebaseAdmin } from "../../../service/firebase-service";
 import { AML_KIND } from "./common";
 
 const ds = firebaseAdmin.datastore;

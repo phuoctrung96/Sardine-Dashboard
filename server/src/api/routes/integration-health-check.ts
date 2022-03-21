@@ -2,7 +2,7 @@ import express, { Response } from "express";
 import { query } from "express-validator";
 import { integrationHealthCheckUrls, AnyTodo } from "sardine-dashboard-typescript-definitions";
 import { mw } from "../../commons/middleware";
-import { IntegrationHealthCheckBigQuery } from "../../commons/BigQuery/integration-health-check";
+import { IntegrationHealthCheckBigQuery } from "../../service/bigquery-service/integration-health-check";
 import { RequestWithUser } from "../request-interface";
 
 const router = express.Router();

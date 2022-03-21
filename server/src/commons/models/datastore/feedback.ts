@@ -1,8 +1,8 @@
 import { Query } from "@google-cloud/datastore";
 import dayjs from "dayjs";
 import { FeedbackKind, FeedbacksRequestBody } from "sardine-dashboard-typescript-definitions";
-import { db } from "src/commons/db";
-import { firebaseAdmin } from "../../firebase";
+import { db } from "../../db";
+import { firebaseAdmin } from "../../../service/firebase-service";
 import { FEEDBACK_KIND } from "./common";
 
 const ds = firebaseAdmin.datastore;

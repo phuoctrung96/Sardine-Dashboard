@@ -119,7 +119,6 @@ const {
   fetchOrganisationRoute,
   fetchOrganisationDetailRoute,
   getUserRoute,
-  getUsersRoute,
   getAdminUsersRoute,
   deleteUserRoute,
   getOrganizeUsersRoute,
@@ -355,9 +354,6 @@ export const fetchOrganisationDetail = async (): Promise<Result<Organisation[], 
 };
 
 export const getUser = () => httpMethods[getUserRoute.httpMethod]({ url: getApiPath(authUrls.basePath, getUserRoute.path) });
-
-export const getAllUsers = () =>
-  httpMethods[getUsersRoute.httpMethod]({ url: getApiPath(authUrls.basePath, getUsersRoute.path) });
 
 export const getOrganizationUsers = async (organization: string): Promise<Result<OrganizationUsersResponse, Error>> => {
   try {

@@ -131,8 +131,8 @@ const authModel = (db: pgPromise.IDatabase<{}>) => {
     o.display_name as organisation
     FROM users u
     LEFT JOIN organisation o ON o.id = u.organisation_id
-    WHERE
-    firebase_user_id = $1`,
+    WHERE firebase_user_id = $1
+    AND u.deleted_at is NULL`,
       [uid]
     );
 
@@ -146,6 +146,7 @@ const authModel = (db: pgPromise.IDatabase<{}>) => {
       SELECT EXISTS (
         SELECT * FROM users 
         WHERE email = $1
+        AND deleted_at IS NULL
       ) as is_existing_user
     `,
       [email]
@@ -154,20 +155,11 @@ const authModel = (db: pgPromise.IDatabase<{}>) => {
     return is_existing_user;
   };
 
-  const getAllUsers = () =>
-    db.many(
-      `
-    SELECT u.name, u.email, u.organisation_id, o.display_name as organisation
-    FROM users u
-    INNER JOIN organisation o ON o.id = u.organisation_id
-    `,
-      []
-    );
-
   const getAllUsersData = () =>
     db.many(
       `
     SELECT id, name, email, organisation_id FROM users
+    WHERE deleted_at IS NULL
     `,
       []
     );
@@ -187,10 +179,13 @@ const authModel = (db: pgPromise.IDatabase<{}>) => {
     FROM users u
     INNER JOIN organisation o ON o.id = u.organisation_id
     WHERE ${isClientId ? "o.client_id = $1" : "o.display_name = $1"}
+    AND u.deleted_at IS NULL
     `,
       [value]
     );
 
+  // TODO: Stop soft deletion. Soft deletion is an anti-pattern.
+  // If we want to keep track of user deletion, we can use the audit-log.
   const deleteUser = (uid: string) =>
     db.none(
       `
@@ -209,7 +204,6 @@ const authModel = (db: pgPromise.IDatabase<{}>) => {
     checkInvitationToken,
     getUserByFirebaseUid,
     isExistingUser,
-    getAllUsers,
     getOrganizationUsers,
     getAllUsersData,
     isAdminUser,

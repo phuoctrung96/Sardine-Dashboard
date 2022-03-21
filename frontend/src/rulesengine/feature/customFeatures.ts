@@ -1,4 +1,4 @@
-import { FeatureItem, stringChild, newChild, DATA_TYPES } from "../featureItem";
+import { FeatureItem, stringChild, newChild, DATA_TYPES, intChild, boolChild } from "../featureItem";
 
 type MerchantFeatures = {
   merchants: string[];
@@ -15,6 +15,7 @@ export const getCustomFeatures = (organization?: string): FeatureItem[] => {
   const giveCrypto = ["trial.givecrypto.org", "dev.givecrypto.org", "givecrypto.org"];
   const vault = ["dev.vault", "vault"];
   const recur = ["recur", "dev.recur"];
+  const rally = ["rally", "dev.rally"];
   const featureLists: MerchantFeatures[] = [
     merchantFeatures(moonpay, [
       newChild(
@@ -90,6 +91,15 @@ export const getCustomFeatures = (organization?: string): FeatureItem[] => {
         "jumioPersonalIdentificationNumber",
       ].map((s) => stringChild(s, ""))
     ),
+    merchantFeatures(rally, [
+      intChild("currentRLYPriceInCents", "", false),
+      intChild("kycTier", "", false),
+      boolChild("watchList", "", false),
+      intChild("mfaType", "", false),
+      stringChild("roleType", ""),
+      intChild("amountOfCoin", "", false),
+      stringChild("actionType", ""),
+    ]),
   ];
   const org = (organization || "").toLowerCase();
   const features: FeatureItem[] = featureLists.find((f) => f.merchants.includes(org) || sardine.includes(org))?.features || [];

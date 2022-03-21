@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import { RulePayload, AnyTodo, RuleDetails } from "sardine-dashboard-typescript-definitions";
 import config from "config";
-import { assertDefined } from "../../utils/error-utils";
+import { assertDefined } from "../utils/error-utils";
 
 export class RuleService {
   axiosInstance: AxiosInstance;

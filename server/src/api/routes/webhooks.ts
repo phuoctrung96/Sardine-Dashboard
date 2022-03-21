@@ -6,8 +6,8 @@ import { CreateWebhookRequestBody, webhookUrls, WEBHOOK_TYPE } from "sardine-das
 import { mw } from "../../commons/middleware";
 import { db } from "../../commons/db";
 import { RequestWithCurrentUser, RequestWithUser } from "../request-interface";
-import { listWebhooks } from "../../repository/webhookRepository";
-import { listOrgs } from "../../repository/orgRepository";
+import { listWebhooks } from "../../repository/webhook-repository";
+import { listOrgs } from "../../repository/org-repository";
 
 const { createWebhookRoute, updateWebhookRoute, deleteWebhookRoute, getWebhookRoute } = webhookUrls.routes;
 
