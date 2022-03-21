@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import config from "config";
-import { assertDefined } from "../../utils/error-utils";
-import { paths } from "../../../api-schema/auth-service-api-schema";
+import { assertDefined } from "../utils/error-utils";
+import { paths } from "../../api-schema/auth-service-api-schema";
 
 export class AuthService {
   axiosInstance: AxiosInstance;

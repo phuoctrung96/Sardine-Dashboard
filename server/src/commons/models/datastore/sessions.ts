@@ -8,9 +8,9 @@ import {
   SessionList,
   CustomerProfileResponse,
 } from "sardine-dashboard-typescript-definitions";
-import { firebaseAdmin } from "../../firebase";
+import { firebaseAdmin } from "../../../service/firebase-service";
 import { constructCustomerKey, constructSessionKey, SESSION_KIND, TRANSACTION_KIND } from "./common";
-import { WebhookRequest, updateCaseStatus } from "../../pubsub/CaseManagement";
+import { WebhookRequest, updateCaseStatus } from "../../../service/pubsub-service";
 import { UpdateSessionRequest } from "../../../api/request-interface";
 import { DocumentVerficationDS } from "./document-verifications";
 import { fetchDocumentVerificatonsImages } from "../../../api/routes/document-verifications";

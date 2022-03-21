@@ -1,6 +1,6 @@
 import { AnyTodo } from "sardine-dashboard-typescript-definitions";
 
-const AllowListAttributes = (payload: { [key: string]: AnyTodo }, attributes: Array<string>): { [key: string]: AnyTodo } => {
+const allowListAttributes = (payload: { [key: string]: AnyTodo }, attributes: Array<string>): { [key: string]: AnyTodo } => {
   if (payload === null || payload === undefined) {
     return {};
   }
@@ -16,4 +16,4 @@ const AllowListAttributes = (payload: { [key: string]: AnyTodo }, attributes: Ar
   return allowlistedPayload;
 };
 
-export { AllowListAttributes };
+export { allowListAttributes };

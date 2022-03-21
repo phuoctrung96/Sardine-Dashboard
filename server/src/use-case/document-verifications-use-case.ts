@@ -1,7 +1,7 @@
 import { createFailure, createSuccess, DocumentVerification, Result } from "sardine-dashboard-typescript-definitions";
 import { Org, UserRole, User } from "@prisma/client";
-import { findUser } from "../repository/userRepository";
-import { findOrg } from "../repository/orgRepository";
+import { findUser } from "../repository/user-repository";
+import { findOrg } from "../repository/org-repository";
 import { DocumentVerficationDS } from "../commons/models/datastore/document-verifications";
 import { generateSignedDocumentVerificationImages } from "../commons/document-verifications";
 

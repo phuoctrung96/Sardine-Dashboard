@@ -18,12 +18,12 @@ import {
 import { helpers } from "../../commons/helpers";
 import { db } from "../../commons/db";
 import { mw } from "../../commons/middleware";
-import { firebaseAdmin } from "../../commons/firebase";
-import { AuthService } from "../../commons/AuthService";
+import { firebaseAdmin } from "../../service/firebase-service";
+import { AuthService } from "../../service/auth-service";
 import { captureException, getErrorMessage, isErrorWithSpecificCode } from "../../utils/error-utils";
 import { RegistrationRequest, GoogleSigninRequest, LoginRequest, RequestWithCurrentUser } from "../request-interface";
 import { resetPasswordRateLimitByEmailMw, resetPasswordRateLimitByIpMw } from "../middlewares/auth";
-import { writeAuditLog } from "../utils/routes/audit";
+import { writeAuditLog } from "../../utils/audit-utils";
 import { COOKIE_SESSION } from "../../constants";
 
 const milliSecondsInTwoWeeks = 1209600000;
@@ -35,7 +35,6 @@ const {
   createOrganisationRoute,
   fetchOrganisationRoute,
   fetchOrganisationDetailRoute,
-  getUsersRoute,
   getUserRoute,
   getAdminUsersRoute,
   deleteUserRoute,
@@ -339,21 +338,6 @@ const authRouter = (authService: AuthService) => {
       return res.status(500).json({ error: "internal error" });
     }
   });
-
-  router[getUsersRoute.httpMethod](
-    getUsersRoute.path,
-    mw.requireLoggedIn,
-    mw.requireSuperAdmin,
-    async (req: RequestWithCurrentUser, res: Response) => {
-      try {
-        const result = await db.auth.getAllUsers();
-        return res.json({ result });
-      } catch (e) {
-        captureException(e);
-        return res.status(500).json({ error: "internal error" });
-      }
-    }
-  );
 
   router[getAdminUsersRoute.httpMethod](
     getAdminUsersRoute.path,

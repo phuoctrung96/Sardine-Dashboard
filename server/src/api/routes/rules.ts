@@ -19,10 +19,10 @@ import { db } from "../../commons/db";
 import { mw } from "../../commons/middleware";
 import { logger } from "../../commons/logger";
 import { RequestWithCurrentUser } from "../request-interface";
-import { RuleService } from "../../commons/RuleService";
+import { RuleService } from "../../service/rule-service";
 import { getErrorMessage, isErrorWithResponse } from "../../utils/error-utils";
 import { RulePerformance } from "../../commons/models/datastore/rule-performance";
-import { writeAuditLog } from "../utils/routes/audit";
+import { writeAuditLog } from "../../utils/audit-utils";
 import { Session } from "../../commons/models/datastore/sessions";
 
 const {

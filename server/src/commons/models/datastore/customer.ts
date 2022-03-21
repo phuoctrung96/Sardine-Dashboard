@@ -12,7 +12,7 @@ import {
 } from "sardine-dashboard-typescript-definitions";
 import { RunQueryInfo } from "@google-cloud/datastore/build/src/query";
 import dayjs from "dayjs";
-import { firebaseAdmin } from "../../firebase";
+import { firebaseAdmin } from "../../../service/firebase-service";
 import { BANK_KIND, CARD_KIND, CRYPTO_KIND } from "./common";
 import { Transaction } from "./transaction";
 import { CLIENT_ID_FIELD, CUSTOMER_ID_FIELD } from "../../../constants";

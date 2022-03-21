@@ -2,7 +2,7 @@ import { SuperAdmin } from "@prisma/client";
 import { AUDIT_LOG_TYPES } from "sardine-dashboard-typescript-definitions";
 import { CurrentUser } from "src/api/request-interface";
 import { logger } from "../commons/logger";
-import { prisma } from "../repository/prismaClient";
+import { prisma } from "../repository/prisma-client";
 
 export const listSuperAdminEmails = (): Promise<SuperAdmin[]> => prisma.superAdmin.findMany();
 

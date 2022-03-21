@@ -1,6 +1,6 @@
 import { DocumentVerification } from "sardine-dashboard-typescript-definitions";
 import { Query } from "@google-cloud/datastore";
-import { firebaseAdmin } from "../../firebase";
+import { firebaseAdmin } from "../../../service/firebase-service";
 import { DOCUMENT_VERIFICATION_KIND } from "./common";
 
 export const ALLOWLISTED_FILTERS = [

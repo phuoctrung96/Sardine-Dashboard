@@ -127,7 +127,6 @@ export const authUrls = createUrls({
     logoutRoute: { path: "/logout", httpMethod: "post" },
     resetPasswordLinkRoute: { path: "/reset-password-link", httpMethod: "post" },
     registerRoute: { path: "/register", httpMethod: "post" },
-    getUsersRoute: { path: "/users", httpMethod: "get" },
     fetchOrganisationRoute: { path: "/fetch-organisation", httpMethod: "get" },
     fetchOrganisationDetailRoute: { path: "/fetch-organisation-detail", httpMethod: "get" },
     getAdminUsersRoute: { path: "/admin-users", httpMethod: "get" },

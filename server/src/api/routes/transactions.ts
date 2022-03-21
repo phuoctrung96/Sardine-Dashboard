@@ -6,7 +6,7 @@ import { captureException } from "../../utils/error-utils";
 import { mw } from "../../commons/middleware";
 import { db } from "../../commons/db";
 import { RequestWithUser } from "../request-interface";
-import { firebaseAdmin } from "../../commons/firebase";
+import { firebaseAdmin } from "../../service/firebase-service";
 
 const { getTransactionDetailsRoute, getTransactionsRoute } = transactionUrls.routes;
 

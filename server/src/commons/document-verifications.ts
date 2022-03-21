@@ -1,5 +1,8 @@
 import { DocumentVerification, DocumentVerificationImages, AnyTodo } from "sardine-dashboard-typescript-definitions";
-import { DOCUMENT_IMAGE_BUCKET_NAME, generateSignedUrl } from "./storage";
+import { generateSignedUrl } from "../service/storage-service";
+
+const DOCUMENT_IMAGE_BUCKET_NAME =
+  process.env.SARDINE_ENV === "production" ? "uploaded-files-sardine-ai-prod" : "uploaded-files-sardine-ai-dev";
 
 export const DOC_IMG_KEYS: readonly (keyof DocumentVerificationImages)[] = ["front_image_path", "back_image_path", "selfie_path"];
 

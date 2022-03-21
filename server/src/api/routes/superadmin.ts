@@ -4,7 +4,7 @@ import { superAdminUrls } from "sardine-dashboard-typescript-definitions";
 import { Prisma } from "@prisma/client";
 import { mw } from "../../commons/middleware";
 import { db } from "../../commons/db";
-import { AuthService } from "../../commons/AuthService";
+import { AuthService } from "../../service/auth-service";
 import { captureException, getErrorMessage, isErrorWithSpecificMessage } from "../../utils/error-utils";
 import { RevokeCredentialsRequest, GenerateCredentialRequest, RequestWithCurrentUser } from "../request-interface";
 import { addSuperAdminEmail, deleteSuperAdminEmail, listSuperAdminEmails } from "../../use-case/super-admin-use-case";

@@ -1,6 +1,6 @@
 import { Webhook } from "@prisma/client";
 import { captureException } from "../utils/error-utils";
-import { prisma } from "./prismaClient";
+import { prisma } from "./prisma-client";
 
 export const listWebhooks = (): Promise<Webhook[]> => {
   try {

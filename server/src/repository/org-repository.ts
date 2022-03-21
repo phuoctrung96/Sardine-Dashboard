@@ -1,6 +1,6 @@
 import { Org } from "@prisma/client";
 import { captureException } from "../utils/error-utils";
-import { prisma } from "./prismaClient";
+import { prisma } from "./prisma-client";
 
 export const findOrg = async ({ clientId }: { clientId: string }): Promise<Org | undefined> => {
   try {

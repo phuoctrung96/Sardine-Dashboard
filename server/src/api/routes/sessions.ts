@@ -11,10 +11,10 @@ import { mw } from "../../commons/middleware";
 import { db } from "../../commons/db";
 import { RequestWithUser, RequestWithCurrentUser, UpdateSessionRequest } from "../request-interface";
 import { Session } from "../../commons/models/datastore/sessions";
-import { AllowListAttributes } from "../utils";
+import { allowListAttributes } from "../../utils/allowlist-utils";
 import { Aml } from "../../commons/models/datastore/aml";
 import { captureException, getErrorMessage } from "../../utils/error-utils";
-import { writeAuditLog } from "../utils/routes/audit";
+import { writeAuditLog } from "../../utils/audit-utils";
 
 const router = express.Router();
 
@@ -250,7 +250,7 @@ const sessionsRouter = () => {
       const checkpoint: string = req.body.checkpoint as string;
       const queueName: string = req.body.queueName as string;
 
-      const actionPayload = AllowListAttributes(req.body.data, ["status", "owner_id", "decision"]);
+      const actionPayload = allowListAttributes(req.body.data, ["status", "owner_id", "decision"]);
 
       try {
         const clientId = hasAdminAccess(req.currentUser.user_role)

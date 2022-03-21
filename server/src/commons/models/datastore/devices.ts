@@ -2,7 +2,7 @@ import { Query } from "@google-cloud/datastore";
 import { entity } from "@google-cloud/datastore/build/src/entity";
 import { DeviceKind, DEVICE_WHITELISTED_FILTERS, UserAggregationKind } from "sardine-dashboard-typescript-definitions";
 import { CLIENT_ID_FIELD } from "../../../constants";
-import { firebaseAdmin } from "../../firebase";
+import { firebaseAdmin } from "../../../service/firebase-service";
 import { constructCustomerKey, constructDeviceKey, DEVICES_KIND, USER_AGGREGATIONS_KIND } from "./common";
 
 const ds = firebaseAdmin.datastore;

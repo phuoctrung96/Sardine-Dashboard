@@ -1,4 +1,4 @@
-import { BigQueryClient } from "./BigQuery";
+import { BigQueryClient } from "./bigquery";
 
 interface Params {
   clientId?: string;
@@ -6,7 +6,7 @@ interface Params {
 }
 
 export class IntegrationHealthCheckBigQuery {
-  public static async queryInboundRequests(params: Params) {
+  public static queryInboundRequests(params: Params) {
     const query = `
     SELECT * FROM structured_logs.request_responses 
 WHERE timestamp > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL @day DAY)
@@ -19,7 +19,7 @@ LIMIT 100
     return BigQueryClient.queryMany(query, params);
   }
 
-  public static async queryOutboundRequests(params: Params) {
+  public static queryOutboundRequests(params: Params) {
     const query = `
     SELECT * FROM structured_logs.outbound_request_responses 
 WHERE timestamp > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL @day DAY)
@@ -35,7 +35,7 @@ LIMIT 100
     return BigQueryClient.queryMany(query, params);
   }
 
-  public static async queryEvents(params: Params) {
+  public static queryEvents(params: Params) {
     const query = `
 SELECT device_token.os_family, client_metadata.flow, client_metadata.user_id_hash, server_metadata.time,server_metadata.remote_ip, source 
 FROM devices.events 

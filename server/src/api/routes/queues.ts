@@ -6,9 +6,9 @@ import { AnyTodo, AUDIT_LOG_TYPES, queueUrls } from "sardine-dashboard-typescrip
 import { mw } from "../../commons/middleware";
 import { db } from "../../commons/db";
 import { RequestWithUser } from "../request-interface";
-import { firebaseAdmin } from "../../commons/firebase";
-import { writeAuditLog } from "../utils/routes/audit";
-import { RuleService } from "../../commons/RuleService";
+import { firebaseAdmin } from "../../service/firebase-service";
+import { writeAuditLog } from "../../utils/audit-utils";
+import { RuleService } from "../../service/rule-service";
 import { CLIENT_ID_FIELD } from "../../constants";
 
 const { getListQueueRoute, addNewQueueRoute, deleteQueueRoute, getListSessionsInQueue, updateQueueRoute } = queueUrls.routes;

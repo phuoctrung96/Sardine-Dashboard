@@ -12,7 +12,7 @@ export class FirebaseClient {
     this.datastore = new Datastore();
   }
 
-  verifyIdToken = async (idToken: string) => this.auth.verifyIdToken(idToken);
+  verifyIdToken = (idToken: string) => this.auth.verifyIdToken(idToken);
 
   userInfo = () => this.auth.listUsers();
 
