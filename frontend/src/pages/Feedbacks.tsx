@@ -20,9 +20,10 @@ import { selectIsAdmin, selectIsSuperAdmin, UseUserStore, useUserStore } from "s
 import { useCookies } from "react-cookie";
 import { getClientFromQueryParams } from "utils/getClientFromQueryParams";
 import { FEEDBACKS_PATH } from "modulePaths";
-import { getDatesFromQueryParams } from "components/Transactions";
+import { getDatesFromQueryParams, getDefaultEndDate, getDefaultStartDate } from "components/Transactions";
 import { captureException } from "utils/errorUtils";
 import { formatDate } from "utils/timeUtils";
+import { CLIENT_QUERY_FIELD, END_DATE_QUERY_FIELD, START_DATE_QUERY_FIELD } from "utils/constructFiltersQueryParams";
 import { DATE_FORMATS, QUERY_STATUS } from "../constants";
 import columnsIcon from "../utils/logo/columns.svg";
 import Layout from "../components/Layout/Main";
@@ -36,11 +37,12 @@ import graphIcon from "../utils/logo/graph.svg";
 import mapIcon from "../utils/logo/map.svg";
 
 const DEFAULT_ROWS = 15;
-const DEFAULT_SELECTED_DATE_LABEL = "Last 24 hours";
 
-function constructQueryParams(client: string): string {
+function constructQueryParams(startDate: string, endDate: string, client: string): string {
   const params: { [key: string]: string } = {};
-  params.organization = client;
+  params[CLIENT_QUERY_FIELD] = client;
+  params[START_DATE_QUERY_FIELD] = startDate || getDefaultStartDate();
+  params[END_DATE_QUERY_FIELD] = endDate || getDefaultEndDate();
   return new URLSearchParams(params).toString();
 }
 
@@ -109,7 +111,7 @@ export const Feedbacks = (): JSX.Element => {
   const dates = getDatesFromQueryParams(search);
   const [startDate, setStartDate] = useState(dates.startDate);
   const [endDate, setEndDate] = useState(dates.endDate);
-  const [selectedDateLabel, setSelectedDateLabel] = useState(DEFAULT_SELECTED_DATE_LABEL);
+  const [selectedDateLabel, setSelectedDateLabel] = useState("");
 
   const [order, setOrder] = useState<"asc" | "desc">("asc");
   const [orderBy, setOrderBy] = useState("");
@@ -123,12 +125,13 @@ export const Feedbacks = (): JSX.Element => {
   const [cookies] = useCookies(["organization"]);
   const organisation = getClientFromQueryParams(search, isAdmin, userOrganization, cookies.organization);
   const changeOrganisation = (org: string) => {
-    navigate(`${FEEDBACKS_PATH}?${constructQueryParams(org)}`);
+    navigate(`${FEEDBACKS_PATH}?${constructQueryParams(startDate, endDate, org)}`);
   };
 
   const updateDate = (index: number, dateData: DatesProps) => {
     setStartDate(dateData.startDate);
     setEndDate(dateData.endDate);
+    navigate(`${FEEDBACKS_PATH}?${constructQueryParams(startDate, endDate, organisation)}`);
   };
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: string) => {
