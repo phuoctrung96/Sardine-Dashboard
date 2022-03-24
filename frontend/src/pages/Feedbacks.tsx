@@ -160,6 +160,7 @@ export const Feedbacks = (): JSX.Element => {
         >
           <HorizontalContainer>
             <span
+              data-tid="feedbacks_heading"
               style={{
                 color: "#141A39",
                 fontWeight: "500",

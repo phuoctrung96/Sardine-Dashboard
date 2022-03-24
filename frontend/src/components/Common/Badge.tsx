@@ -53,7 +53,9 @@ const Badge: React.FC<IProps> = (props) => {
 
   return (
     <Container style={{ backgroundColor: `${colorCode}10`, ...style }}>
-      <div style={{ marginLeft: 10, width: 8, height: 8, borderRadius: "50%", backgroundColor: colorCode }} />
+      {riskState === undefined && (
+        <div style={{ marginLeft: 10, width: 8, height: 8, borderRadius: "50%", backgroundColor: colorCode }} />
+      )}
       <Title style={{ color: colorCode }}>{riskState ? riskState.toString() : title}</Title>
     </Container>
   );

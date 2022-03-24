@@ -323,7 +323,7 @@ const Queues: React.FC = () => {
         </HorizontalContainer>
       </StyledStickyNav>
 
-      <StyledMainDiv style={{ height: "100vh", backgroundColor: "#FFF", width: "100%", margin: 0 }}>
+      <StyledMainDiv>
         <StyledNavTitle style={{ width: "100%", marginLeft: 30 }}>
           <StyledTitleName data-tid="title_queues" style={{ fontSize: 32, fontWeight: "normal", paddingTop: 20 }}>
             Queues

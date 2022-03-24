@@ -172,6 +172,7 @@ const TransactionDetails = (): JSX.Element => {
         ["first_6", "First 6 digit of card number"],
         ["last_4", "Last 4 digit of card number"],
         ["routing_number", "bank routing number"],
+        ["bank_name", "bank name"],
         ["account_number", "bank account number"],
         ["crypto_address", "crypto address"],
         ["address_risk_level", "Address risk level"],
@@ -185,7 +186,6 @@ const TransactionDetails = (): JSX.Element => {
       component: (
         <CardContentOrLoadingOrNoData
           isLoading={customerCryptoDetailsFetchResult.status === QUERY_STATUS.LOADING}
-          hasData={cryptoData.length > 0}
           name={KEY_CRYPTO_ADDRESSES}
           tableBodyElements={cryptoData.map((c) => (
             <TableBodyCrypto c={c} key={`${c.address}_${c.addressRiskScore}`} />

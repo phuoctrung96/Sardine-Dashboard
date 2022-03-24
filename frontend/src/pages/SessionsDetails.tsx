@@ -12,8 +12,6 @@ import {
   AnyTodo,
   CustomersResponse,
   SessionCustomKind,
-  SOURCE_QUERY_FIELD,
-  DATA_SOURCE,
   GetFeedbacksResponse,
   isFailure,
   getSuccessResult,
@@ -323,21 +321,13 @@ const SessionsDetails = (): JSX.Element => {
     orgName,
     enabled: sessionKey !== "",
     clientId,
-    source: DATA_SOURCE.DATASTORE,
   });
 
   useEffect(() => {
     if (deviceProfileFetchResult.data !== undefined) {
-      const { hits, profile } = deviceProfileFetchResult.data;
-      // eslint-disable-next-line no-underscore-dangle
+      const { profile } = deviceProfileFetchResult.data;
       if (profile) {
         setDeviceData(profile);
-      } else if (hits && hits.hits) {
-        const deviceProfileList = hits.hits.map((item) => item._source);
-        if (deviceProfileList.length > 0) {
-          const deviceProfile = deviceProfileList[0];
-          setDeviceData(deviceProfile);
-        }
       }
     }
   }, [deviceProfileFetchResult.data]);
@@ -501,8 +491,8 @@ const SessionsDetails = (): JSX.Element => {
   const transactionDetailsPath = `${TRANSACTION_DETAILS_PATH}?clientId=${clientId}&transactionId=${
     customerData?.transaction_id || ""
   }`;
-  const deviceDetailsPath = `${DEVICE_VIEW_PATH}?session=${customerData?.session_key || ""}&${SOURCE_QUERY_FIELD}=${
-    DATA_SOURCE.DATASTORE
+  const deviceDetailsPath = `${DEVICE_VIEW_PATH}?session=${
+    customerData?.session_key || ""
   }&${CLIENT_ID_QUERY_FIELD}=${encodeURIComponent(clientId)}`;
 
   const detailsHeaders = useMemo(
@@ -862,6 +852,7 @@ const SessionsDetails = (): JSX.Element => {
                     paymentMethod={transactionData?.payment_method || ""}
                     recipientPaymentMethod={transactionData?.recipient_payment_method || ""}
                     routingNumber={transactionData?.routing_number || ""}
+                    bankName={transactionData?.bank_name || ""}
                     addressRiskLevel={transactionData?.address_risk_level || ""}
                     cryptoAddress={transactionData?.crypto_address || ""}
                     cryptoCurrencyCode={transactionData?.crypto_currency_code || ""}

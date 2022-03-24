@@ -1,10 +1,10 @@
 import { Query } from "@google-cloud/datastore";
 import moment from "moment";
 import { RulePerformanceKind } from "sardine-dashboard-typescript-definitions";
-import { firebaseAdmin } from "../../../service/firebase-service";
+import { datastore } from "../../../service/datastore-service";
 import { RULE_PERFORMANCE_KIND } from "./common";
 
-const ds = firebaseAdmin.datastore;
+const ds = datastore;
 
 export class RulePerformance {
   static getLastUpdatedTimestamp(): number {

@@ -1,4 +1,4 @@
-import { arrayCustomerCheckpoints, FeatureItem, intChild, newChild, boolChild, DATA_TYPES } from "../featureItem";
+import { arrayCustomerCheckpoints, FeatureItem, intChild, newChild, boolChild, DATA_TYPES, stringChild } from "../featureItem";
 
 export const getDeviceFeatures = (checkpoint: string): FeatureItem[] =>
   [
@@ -34,6 +34,9 @@ export const getDeviceFeatures = (checkpoint: string): FeatureItem[] =>
       false
     ),
     newChild("Language", "en-US", DATA_TYPES.string, "Browser or device language", false),
+    newChild("Language", "en-US", DATA_TYPES.string, "Browser or device language", false),
+    stringChild("Timezone", "Timezone of the device"),
+    intChild("TimezoneOffset", "offset of timezone"),
     newChild("Browser", "Chrome", DATA_TYPES.string, "Browser", false),
     newChild("OS", "iOS", DATA_TYPES.string, "OS", false),
     newChild(
@@ -44,6 +47,8 @@ export const getDeviceFeatures = (checkpoint: string): FeatureItem[] =>
       false
     ),
     newChild("Model", "SM-G960W", DATA_TYPES.string, "Model of the device", false),
+    stringChild("MobileUserID", ""),
+    stringChild("StreamingKey", ""),
     boolChild("IsEmulator", "If device is a mobile emulator like BlueStacks", false),
     boolChild("IsRooted", "If device is rooted", false),
     newChild("IsTamperedApp", "true, false or unknown", DATA_TYPES.string, "If the app is tampered or not", false),

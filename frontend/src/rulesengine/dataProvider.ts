@@ -22,7 +22,17 @@ export const DATA_TYPES = DT;
 export type DataType = typeof DATA_TYPES[keyof typeof DATA_TYPES];
 
 export const JARO_WINKLER_DISTANCE = "Jaro-Winkler distance";
-export const EQUALS_TO_FUNCTION = "EqualsTo";
+export const RELATIONAL_FUNCTIONS = [
+  "GreaterThanEqualsTo",
+  "GreaterThan",
+  "LessThanEqualsTo",
+  "LessThan",
+  "NotEqualsTo",
+  "EqualsTo", // EqualsTo is intentionally at the end of the list as it can override >=, <= and != functions
+];
+
+export const ARITHMETIC_FUNCTIONS = ["AdditionOf", "SubtractionOf", "MultiplicationOf", "DivisionOf"];
+export const NUMERIC_FUNCTIONS_WITH_STRING_SUPPORTED = [JARO_WINKLER_DISTANCE, "NotEqualsTo", "EqualsTo"];
 
 export interface FunctionChild {
   title: string;
@@ -31,6 +41,7 @@ export interface FunctionChild {
   description: string;
   dataType: string;
   hasOperator: boolean;
+  functions: FunctionChild[];
 }
 
 export interface BatchRuleData {
@@ -44,7 +55,8 @@ const functionChild = (
   value: string,
   description: string,
   dataType: string,
-  hasOperator: boolean
+  hasOperator: boolean,
+  functions: FunctionChild[] = []
 ) => ({
   title,
   sample,
@@ -52,11 +64,54 @@ const functionChild = (
   description,
   dataType,
   hasOperator,
+  functions,
 });
 
 export const FUNCTIONS = "Functions";
-export const MULTI_FEATURE_FUNCTIONS: string[] = [JARO_WINKLER_DISTANCE, EQUALS_TO_FUNCTION];
+export const ARITHMETIC = "Arithmetic";
+export const RELATIONAL = "Relational";
+export const MULTI_FEATURE_FUNCTIONS: string[] = [
+  JARO_WINKLER_DISTANCE,
+  ...ARITHMETIC_FUNCTIONS.map((key) => `${ARITHMETIC}.${key}`),
+  ...RELATIONAL_FUNCTIONS.map((key) => `${RELATIONAL}.${key}`),
+];
 export const supportedFunctions: FunctionChild[] = [
+  functionChild(
+    ARITHMETIC,
+    "",
+    "",
+    "",
+    DATA_TYPES.float,
+    true,
+    ARITHMETIC_FUNCTIONS.map((operator) =>
+      functionChild(
+        operator,
+        `${operator}(x,y) == 1.0`,
+        operator,
+        `${operator} is the function to apply arithmetic operations`,
+        DATA_TYPES.float,
+        true
+      )
+    )
+  ),
+  functionChild(
+    RELATIONAL,
+    "",
+    "",
+    "",
+    DATA_TYPES.bool,
+    false,
+    RELATIONAL_FUNCTIONS.map((operator) =>
+      functionChild(
+        operator,
+        `${operator}(x,y) == true`,
+        operator,
+        `${operator} is the function to compare two values`,
+        DATA_TYPES.bool,
+        false
+      )
+    )
+  ),
   functionChild(
     JARO_WINKLER_DISTANCE,
     "0.3",
@@ -82,21 +137,19 @@ export const supportedFunctions: FunctionChild[] = [
     false
   ),
   functionChild("HasSuffix", "", "HasSuffix", "HasSuffix is the function to check suffix of the value", DATA_TYPES.string, false),
-  functionChild(
-    EQUALS_TO_FUNCTION,
-    "",
-    EQUALS_TO_FUNCTION,
-    "EqualsTo is the function to compare two values",
-    DATA_TYPES.bool,
-    true
-  ),
 ];
 
 export const getHasOperator = (val: string): boolean => {
   let hasOperator = true;
 
   supportedFunctions.forEach((f) => {
-    if (val.includes(f.value)) {
+    if (f.functions.length > 0) {
+      f.functions.forEach((subFunction) => {
+        if (val.includes(subFunction.value)) {
+          hasOperator = subFunction.hasOperator;
+        }
+      });
+    } else if (val.includes(f.value)) {
       hasOperator = f.hasOperator;
     }
   });
@@ -162,7 +215,7 @@ const filterVisibleFeatures = (items: FeatureItem[], isDemoMode: boolean, isSupe
   return liveFeatures;
 };
 
-// Fatures to prepare rule condition
+// Features to prepare rule condition
 export const getRulesData = (
   isDemoMode: boolean,
   checkpoint: string,
@@ -215,22 +268,22 @@ export const getRulesData = (
       intChild("CountSocialMediaLinks", "Count of Social Media like Github, Twitter, FB etc for the email", false),
       intChild(
         "CountUsers",
-        "Count of customer IDs using this email. This count is scoped to your acocunt, not across sardine network.",
+        "Count of customer IDs using this email. This count is scoped to your account, not across sardine network.",
         false
       ),
       intChild(
         "CountPhoneNumbers",
-        "Count of phone numbers using this email. This count is scoped to your acocunt, not across sardine network.",
+        "Count of phone numbers using this email. This count is scoped to your account, not across sardine network.",
         false
       ),
       intChild(
         "CountFirstNames",
-        "Count of first names using this email. This count is scoped to your acocunt, not across sardine network.",
+        "Count of first names using this email. This count is scoped to your account, not across sardine network.",
         false
       ),
       intChild(
         "CountLastNames",
-        "Count of last names using this email. This count is scoped to your acocunt, not across sardine network.",
+        "Count of last names using this email. This count is scoped to your account, not across sardine network.",
         false
       ),
       newChild("CountSocialMediaFriends", "20", DATA_TYPES.int, "Social media friends", false),
@@ -289,22 +342,22 @@ export const getRulesData = (
       newChild("ReasonCodes", `["PIV"]`, DATA_TYPES.stringarray, "ReasonCodes", false),
       intChild(
         "CountUsers",
-        "Count of users associated with this phone number. This count is scoped to your acocunt, not across sardine network.",
+        "Count of users associated with this phone number. This count is scoped to your account, not across sardine network.",
         false
       ),
       intChild(
         "CountEmails",
-        "Count of emails associated with this phone number. This count is scoped to your acocunt, not across sardine network.",
+        "Count of emails associated with this phone number. This count is scoped to your account, not across sardine network.",
         false
       ),
       intChild(
         "CountFirstNames",
-        "Count of first name associated with this phone number. This count is scoped to your acocunt, not across sardine network.",
+        "Count of first name associated with this phone number. This count is scoped to your account, not across sardine network.",
         false
       ),
       intChild(
         "CountLastNames",
-        "Count of last name associated with this phone number. This count is scoped to your acocunt, not across sardine network.",
+        "Count of last name associated with this phone number. This count is scoped to your account, not across sardine network.",
         false
       ),
       boolChild("DOBMatch", "DoB provided matched the DoB returned by phone intelligence provider", false),
@@ -339,7 +392,7 @@ export const getRulesData = (
         "PepLevel",
         "Politically Exposed Persons (PEP) level define person's identity based on a manually sourced agenda of worldwide elections"
       ),
-      stringChild("AdverseMediaLevel", "Adverse media level define person's visiblity on fraud/money laundering"),
+      stringChild("AdverseMediaLevel", "Adverse media level define person's visibility on fraud/money laundering"),
       newChild("ReasonCodes", `["SDN"]`, DATA_TYPES.stringarray, "ReasonCodes", false),
     ]),
 
@@ -382,7 +435,7 @@ export const getRulesData = (
     // Live modules with features
     new FeatureItem("TaxID", taxIdFeatures),
     new FeatureItem("CustomerSession", [
-      newChild("Flow", "onboarding", DATA_TYPES.string, "flow paramater given by you", false),
+      newChild("Flow", "onboarding", DATA_TYPES.string, "flow parameter given by you", false),
       newChild("PersonalCountryCode", "US", DATA_TYPES.string, "Country code", false),
       newChild("RiskScore", "80", DATA_TYPES.int, "Session risk score", false),
       newChild("IpCountryCodeMatch", "true", DATA_TYPES.bool, "If IP country matches address country", false),

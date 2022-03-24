@@ -5,7 +5,8 @@ import { Org } from "@prisma/client";
 import { CreateWebhookRequestBody, webhookUrls, WEBHOOK_TYPE } from "sardine-dashboard-typescript-definitions";
 import { mw } from "../../commons/middleware";
 import { db } from "../../commons/db";
-import { RequestWithCurrentUser, RequestWithUser } from "../request-interface";
+import { RequestWithCurrentUser } from "../request-interface";
+import { captureException } from "../../utils/error-utils";
 import { listWebhooks } from "../../repository/webhook-repository";
 import { listOrgs } from "../../repository/org-repository";
 
@@ -14,7 +15,7 @@ const { createWebhookRoute, updateWebhookRoute, deleteWebhookRoute, getWebhookRo
 const router = express.Router();
 
 const webhooksRouter = () => {
-  router[getWebhookRoute.httpMethod]("", [], mw.requireSuperAdmin, async (req: RequestWithUser, res: Response) => {
+  router[getWebhookRoute.httpMethod]("", [], mw.requireSuperAdmin, async (req: RequestWithCurrentUser, res: Response) => {
     const webhooks = await listWebhooks();
     const clientIds = webhooks.map((webhook) => webhook.clientId);
 
@@ -42,33 +43,38 @@ const webhooksRouter = () => {
     mw.validateRequest,
     mw.requireSuperAdmin,
     async (req: RequestWithCurrentUser<CreateWebhookRequestBody>, res: Response) => {
-      const { url, organisation, type } = req.body;
+      try {
+        const { url, organisation, type } = req.body;
 
-      const clientId = await db.superadmin.getClientId(organisation.toString());
+        const clientId = await db.superadmin.getClientId(organisation.toString());
 
-      const client = await db.webhooks.getSecretForClient(clientId);
-      const secret: string = client?.secret || uuidV4();
+        const client = await db.webhooks.getSecretForClient(clientId);
+        const secret: string = client?.secret || uuidV4();
 
-      const result = await db.webhooks.createWebhook(clientId, url, secret, WEBHOOK_TYPE[type]);
-      return res.status(200).json(result);
+        const result = await db.webhooks.createWebhook(clientId, url, secret, WEBHOOK_TYPE[type]);
+        return res.status(200).json(result);
+      } catch (e) {
+        captureException(e);
+        return res.status(500).json({ error: "internal error" });
+      }
     }
   );
 
   router[updateWebhookRoute.httpMethod](
     "",
-    [query("id").exists(), body(["url", "organisation"]).exists()],
+    [query("id").exists(), body(["url", "organisation"]).exists(), body("type").exists()],
     mw.validateRequest,
     mw.requireSuperAdmin,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<CreateWebhookRequestBody, { id: string }>, res: Response) => {
       const { id } = req.query;
-      const { url, organisation } = req.body as CreateWebhookRequestBody;
+      const { url, organisation, type } = req.body as CreateWebhookRequestBody;
 
       const clientId = await db.superadmin.getClientId(organisation.toString());
 
       if (!id) {
         return res.status(400).json({ error: `Please provide webhook id` });
       }
-      const result = await db.webhooks.updateWebhook(id!.toString(), clientId, url);
+      const result = await db.webhooks.updateWebhook(id!.toString(), clientId, url, WEBHOOK_TYPE[type]);
       return res.status(200).json(result);
     }
   );
@@ -78,13 +84,18 @@ const webhooksRouter = () => {
     [query("id").exists()],
     mw.validateRequest,
     mw.requireSuperAdmin,
-    async (req: RequestWithUser, res: Response) => {
+    async (req: RequestWithCurrentUser<{}, { id: string }>, res: Response) => {
       const { id } = req.query;
-      if (!id) {
-        return res.status(400).json({ error: `Please provide webhook id` });
+      try {
+        if (!id) {
+          return res.status(400).json({ error: `Please provide webhook id` });
+        }
+        const result = await db.webhooks.deleteWebhook(id);
+        return res.status(200).json(result);
+      } catch (e) {
+        captureException(e);
+        return res.status(500).json({ error: "internal error" });
       }
-      const result = await db.webhooks.deleteWebhook(id!.toString());
-      return res.status(200).json(result);
     }
   );
 

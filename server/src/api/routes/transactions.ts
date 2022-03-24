@@ -6,7 +6,7 @@ import { captureException } from "../../utils/error-utils";
 import { mw } from "../../commons/middleware";
 import { db } from "../../commons/db";
 import { RequestWithUser } from "../request-interface";
-import { firebaseAdmin } from "../../service/firebase-service";
+import { datastore } from "../../service/datastore-service";
 
 const { getTransactionDetailsRoute, getTransactionsRoute } = transactionUrls.routes;
 
@@ -14,7 +14,7 @@ const router = express.Router();
 
 const transactionsRouter = () => {
   const ENTITY_NAME = "transaction";
-  const getEntity = () => firebaseAdmin.datastore.createQuery(ENTITY_NAME);
+  const getEntity = () => datastore.createQuery(ENTITY_NAME);
 
   const loadTransactions = async (clientId: string, limit: number, filters: TransactionsRequestBody) => {
     const {
@@ -48,7 +48,7 @@ const transactionsRouter = () => {
 
     if (limit > 0) dsQuery.limit(limit);
 
-    const [entities, info] = await firebaseAdmin.datastore.runQuery(dsQuery);
+    const [entities, info] = await datastore.runQuery(dsQuery);
     const islast = info.moreResults === "NO_MORE_RESULTS";
 
     return { transactions: entities, islast };
@@ -89,7 +89,7 @@ const transactionsRouter = () => {
       try {
         const dsQuery = getEntity().filter("client_id", clientId.toString()).filter("id", transaction_id.toString()).limit(1);
 
-        const [entities] = await firebaseAdmin.datastore.runQuery(dsQuery);
+        const [entities] = await datastore.runQuery(dsQuery);
         const transactionData = entities.length > 0 ? entities[0] : null;
         let transactionsList: Transaction[] = [];
         if (transactionData && load_transactions) {

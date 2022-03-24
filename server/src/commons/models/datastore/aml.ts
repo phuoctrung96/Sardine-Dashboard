@@ -1,10 +1,10 @@
 import { Query } from "@google-cloud/datastore";
 import { AmlKind } from "sardine-dashboard-typescript-definitions";
 import { CLIENT_ID_FIELD, CUSTOMER_ID_FIELD } from "../../../constants";
-import { firebaseAdmin } from "../../../service/firebase-service";
+import { datastore } from "../../../service/datastore-service";
 import { AML_KIND } from "./common";
 
-const ds = firebaseAdmin.datastore;
+const ds = datastore;
 
 const SIGNAL_KEY_ID_TO_NAME: { [key: number]: string } = {
   0: "UNKNOWN",

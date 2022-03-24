@@ -64,8 +64,8 @@ const authRouter = (authService: AuthService) => {
     registerRoute.path,
     [(body("invitationToken").exists().optional(), body("idToken").exists())],
     mw.validateRequest,
-    async (req: RequestWithCurrentUser, res: Response) => {
-      const { name, email, idToken, invitationToken } = req.body as RegistrationRequest;
+    async (req: RequestWithCurrentUser<RegistrationRequest>, res: Response) => {
+      const { name, email, idToken, invitationToken } = req.body;
       let user;
       // eslint-disable-next-line @typescript-eslint/naming-convention
       const { email_verified = false, uid } = await firebaseAdmin.verifyIdToken(idToken);

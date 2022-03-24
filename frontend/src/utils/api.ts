@@ -964,10 +964,10 @@ export const updateWebhook = (id: string, data: CreateWebhookRequestBody) => {
   url.searchParams.append("id", id);
   return httpMethods[updateWebhookRoute.httpMethod]({ url: String(url), data });
 };
-export const deleteWebhook = (id: string) => {
+export const deleteWebhook = (id: string): Promise<void> => {
   const url = new URL(getApiPath(webhookUrls.basePath, deleteWebhookRoute.path), window.location.origin);
   url.searchParams.append("id", id);
-  return httpMethods[updateWebhookRoute.httpMethod]({ url: String(url) });
+  return httpMethods[deleteWebhookRoute.httpMethod]({ url: String(url) });
 };
 
 // Transactions Intelligence

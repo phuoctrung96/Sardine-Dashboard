@@ -16,7 +16,6 @@ import {
   ClientIdObject,
   Rule,
   OrgName,
-  DataSource,
   DashboardInvitation,
   DocumentVerification,
   EmailObject,
@@ -33,18 +32,16 @@ export const useDeviceProfileFetchResult = ({
   clientId,
   orgName,
   sessionKey,
-  source,
   enabled,
 }: {
   clientId: string | null;
   orgName: string;
   sessionKey: string;
-  source: DataSource;
   enabled: boolean;
 }): QueryResult<DeviceProfileResponse> => {
   const { data, error, status } = useQuery<{ result: DeviceProfileResponse }, Error>(
     [CACHE_KEYS.DEVICE_PROFILE, orgName, sessionKey],
-    () => fetchDeviceProfile({ organisation: orgName, sessionKey, source, clientId }),
+    () => fetchDeviceProfile({ organisation: orgName, sessionKey, clientId }),
     { enabled }
   );
   return {

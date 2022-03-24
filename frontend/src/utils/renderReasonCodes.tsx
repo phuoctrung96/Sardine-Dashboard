@@ -1,5 +1,6 @@
 import React from "react";
 import ReasonCodeList from "components/ReasonCodeList";
+import { dedupeArrayObject } from "sardine-dashboard-typescript-definitions";
 import { AllReasonCodes } from "./reasoncodes";
 
 export const ReasonCodesFromArray = ({ reasonCodeArray }: { reasonCodeArray: Array<string> }): JSX.Element => {
@@ -7,7 +8,7 @@ export const ReasonCodesFromArray = ({ reasonCodeArray }: { reasonCodeArray: Arr
     code,
     description: AllReasonCodes[code],
   }));
-  return <ReasonCodeList reason_codes={reasonCodes} />;
+  return <ReasonCodeList reason_codes={dedupeArrayObject(reasonCodes)} />;
 };
 
 export const renderReasonCodes = (reasonCodesArg: string): JSX.Element | "-" => {

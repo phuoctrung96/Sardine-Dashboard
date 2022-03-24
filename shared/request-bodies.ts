@@ -29,7 +29,6 @@ export interface PurchaseLimitRequestBody {
 export type FetchDeviceProfileRequestBody = {
   organisation: string;
   sessionKey: string;
-  source: string;
   clientId?: string | null;
 };
 
@@ -37,7 +36,6 @@ export interface SearchDetailsRequestBody {
   startTimestampSeconds: number;
   endTimestampSeconds: number;
   organisation: string;
-  source: string;
   offset: number;
   limit: number;
   filters?: { [key: string]: string };
@@ -226,6 +224,7 @@ export interface Transaction {
   bin_country: string;
   routing_number: string;
   account_number: string;
+  bank_name: string;
   account_type: AccountType;
   crypto_address: string;
   address_risk_level: string;

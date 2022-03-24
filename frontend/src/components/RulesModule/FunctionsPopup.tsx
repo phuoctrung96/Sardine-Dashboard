@@ -10,6 +10,7 @@ import {
   FunctionChild,
   DATA_TYPES,
   MULTI_FEATURE_FUNCTIONS,
+  NUMERIC_FUNCTIONS_WITH_STRING_SUPPORTED,
 } from "../../rulesengine/dataProvider";
 import { FeatureItem } from "../../rulesengine/featureItem";
 import RecursiveDropdown, { DataProps } from "../Common/RecursiveDropdown";
@@ -74,8 +75,16 @@ export const getSampleValue = (sec: string, value: string): { sample: string; da
     }
   } else {
     const filtered = supportedFunctions.filter((f) => sec.includes(f.value));
+    const filteredSubFunctions = supportedFunctions
+      .map((f) => f.functions)
+      .flat()
+      .filter((f) => sec.includes(f.value));
+
     if (filtered.length > 0) {
       return { sample: filtered[0].sample, datatype: filtered[0].dataType };
+    }
+    if (filteredSubFunctions.length > 0) {
+      return { sample: filteredSubFunctions[0].sample, datatype: filteredSubFunctions[0].dataType };
     }
   }
 
@@ -94,18 +103,29 @@ const FunctionsPopup: React.FC<Props> = (props) => {
   const loadRulesData = () =>
     getRulesData(isDemoMode, CHECKPOINTS.Customer, isSuperAdmin, organisation).filter((r) => r.title !== FUNCTIONS);
 
+  const isNumericFunction = (val: string): boolean => ([DATA_TYPES.float, DATA_TYPES.int, ""] as string[]).includes(val);
   const getDropdownData = (_data: FeatureItem[]) => {
     const data: DataProps[] = [];
+
+    // Excluding some functions as they are numeric but needs string as features
+    const isNumeric =
+      isNumericFunction(functionData?.dataType || "") &&
+      NUMERIC_FUNCTIONS_WITH_STRING_SUPPORTED.includes(functionData?.title || "");
+
     _data.forEach((r) => {
-      data.push({
-        title: r.title,
-        items: r.items.length > 0 ? getDropdownData(r.items) : [],
-        datatype: r.dataType,
-      });
+      if ((isNumeric && isNumericFunction(r.dataType)) || !isNumeric) {
+        data.push({
+          title: r.title,
+          items: r.items.length > 0 ? getDropdownData(r.items) : [],
+          datatype: r.dataType,
+        });
+      }
     });
 
     return data;
   };
+
+  const dropdownData = getDropdownData(loadRulesData()).filter((d) => d.items.length > 0);
 
   return (
     <Modal
@@ -129,13 +149,30 @@ const FunctionsPopup: React.FC<Props> = (props) => {
             setFeature2("");
             setVisibleDropdown("");
 
-            const functionsChild = supportedFunctions.filter((f) => f.title === val);
+            const functionsChild = supportedFunctions.filter(
+              (f) => f.title === val || f.functions.map((subFunction) => `${f.title}.${subFunction.title}`).includes(val)
+            );
             if (functionsChild.length > 0) {
-              setFunctionData(functionsChild[0]);
+              const functionItem = functionsChild[0];
+              if (functionItem.functions.length > 0) {
+                const filteredFunctionItem = functionItem.functions.filter((f) => val.includes(f.title));
+                if (filteredFunctionItem.length > 0) {
+                  setFunctionData(filteredFunctionItem[0]);
+                }
+              } else {
+                setFunctionData(functionItem);
+              }
             }
           }}
           value={selectedFunction}
-          data={supportedFunctions.map((f) => ({ title: f.title, datatype: f.dataType, items: [] }))}
+          data={supportedFunctions.map((f) => ({
+            title: f.title,
+            datatype: f.dataType,
+            items:
+              f.functions.length > 0
+                ? f.functions.map((subFunction) => ({ title: subFunction.title, datatype: subFunction.dataType, items: [] }))
+                : [],
+          }))}
         />
       </Modal.Header>
       <Modal.Body>
@@ -155,7 +192,7 @@ const FunctionsPopup: React.FC<Props> = (props) => {
                   setVisibleDropdown("");
                 }}
                 value={feature1}
-                data={getDropdownData(loadRulesData())}
+                data={dropdownData}
               />
               {functionData && !functionData?.hasOperator && !MULTI_FEATURE_FUNCTIONS.includes(selectedFunction) ? (
                 <FormControl
@@ -183,7 +220,7 @@ const FunctionsPopup: React.FC<Props> = (props) => {
                     setVisibleDropdown("");
                   }}
                   value={feature2}
-                  data={getDropdownData(loadRulesData())}
+                  data={dropdownData}
                 />
               </StyledUl>
             ) : null}

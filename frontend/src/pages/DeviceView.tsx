@@ -5,12 +5,12 @@ import { Card, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { GrLocation } from "react-icons/gr";
 import { HeaderOnlyError } from "components/Error/HeaderOnlyError";
 import { BehaviorBiometricsPerFlow, DeviceProfile, AnyTodo } from "sardine-dashboard-typescript-definitions";
-import { DeviceProfileHit } from "utils/api_response/deviceResponse";
 import BehaviorBiometrics from "components/BehaviorBiometrics";
 import { replaceAllUnderscoresWithSpaces } from "utils/stringUtils";
 import { getLimitSessionKey } from "utils/customerSessionUtils";
 import { RULE_DETAILS_PATH, SEARCH_PARAM_KEYS } from "modulePaths";
 import { selectIsSuperAdmin, useUserStore } from "store/user";
+import dayjs from "dayjs";
 import Layout from "../components/Layout/Main";
 import Loader from "../components/Common/Loader";
 import { CustomerProfileLink, Link } from "../components/Common/Links";
@@ -28,7 +28,6 @@ import {
 import CircularRiskLevel from "../components/Common/CircularRiskLevel";
 import Badge from "../components/Common/Badge";
 import ExecutedRulesList from "../components/Common/ExecutedRulesList";
-import { getSourceFromQueryParams } from "./DeviceIntelligence";
 import { getClientFromQueryParams } from "../utils/getClientFromQueryParams";
 import { CLIENT_ID_QUERY_FIELD } from "../utils/constructFiltersQueryParams";
 import deviceIcon from "../utils/logo/device.svg";
@@ -36,7 +35,7 @@ import executedRulesIcon from "../utils/logo/executed_rules.svg";
 import cloudIcon from "../utils/logo/cloud.svg";
 import osIcon from "../utils/logo/os.svg";
 import { useDeviceProfileFetchResult } from "../hooks/fetchHooks";
-import { QUERY_STATUS, SESSION_KEY_LIMIT } from "../constants";
+import { DATE_FORMATS, QUERY_STATUS, SESSION_KEY_LIMIT } from "../constants";
 
 const PARAM_KEYS = SEARCH_PARAM_KEYS[RULE_DETAILS_PATH];
 
@@ -117,6 +116,8 @@ const FEATURES_WITH_LEVEL = [
   "behavior_biometric_level",
 ] as const;
 
+const FEATURES_HAVING_RISK = ["emulator", "rooted", "remote_software"] as const;
+
 const generateDeviceProps = (d: DeviceProfile): DeviceObject[] =>
   DEFINITIONS.map((def) => {
     const name = def.key;
@@ -145,7 +146,7 @@ const DeviceView: React.FC = () => {
   const [deviceData, setDeviceData] = useState<DeviceObject[]>([]);
   const [userId, setUserId] = useState("");
   const [sessionRisk, setSessionRisk] = useState("");
-  const [createdAt, setCreatedAt] = useState("");
+  const [sessionDate, setSessionDate] = useState("");
   const [clientID, setClientID] = useState("");
 
   const { organisationFromUserStore, isSuperAdmin } = useUserStore((state) => {
@@ -161,7 +162,6 @@ const DeviceView: React.FC = () => {
   const [searchPath] = useSearchParams();
   const sessionKey = searchPath.get("session") || "";
   const [behaviorBiometrics, setBehaviorBiometrics] = useState<Array<BehaviorBiometricsPerFlow>>([]);
-  const dbSource = getSourceFromQueryParams(search, isSuperAdmin);
 
   const [cookies] = useCookies(["organization"]);
   const organisation = getClientFromQueryParams(search, isSuperAdmin, organisationFromUserStore, cookies.organization);
@@ -172,7 +172,6 @@ const DeviceView: React.FC = () => {
     clientId,
     orgName: organisation,
     enabled: sessionKey !== "",
-    source: dbSource,
   });
 
   useEffect(() => {
@@ -180,7 +179,7 @@ const DeviceView: React.FC = () => {
     const setUpData = (d: DeviceProfile) => {
       if (d) {
         setUserId(d.user_id_hash);
-        setCreatedAt(d.created_at.split(" ")[0] || "");
+        setSessionDate(dayjs(d.timestamp || 0).format(DATE_FORMATS.DATETIME));
         setClientID(d.client_id || "");
         setSessionRisk(d.session_risk || "");
 
@@ -194,15 +193,9 @@ const DeviceView: React.FC = () => {
     };
 
     if (deviceProfileFetchResult.data !== undefined) {
-      const { hits, profile } = deviceProfileFetchResult.data;
-
+      const { profile } = deviceProfileFetchResult.data;
       if (profile) {
         setUpData(profile);
-      } else if (hits && Array.isArray(hits.hits)) {
-        const data: Array<DeviceProfile> = hits.hits.map((item: DeviceProfileHit) => item._source);
-        if (data.length > 0) {
-          setUpData(data[0]);
-        }
       }
     }
   }, [deviceProfileFetchResult.data]);
@@ -289,7 +282,7 @@ const DeviceView: React.FC = () => {
               {data.name.toLowerCase().includes("rules") ? (
                 <ExecutedRulesList
                   sessionKey={sessionKey}
-                  date={createdAt}
+                  date={sessionDate}
                   clientID={clientID}
                   onClick={(id) => {
                     navigate(`${RULE_DETAILS_PATH}?${PARAM_KEYS.RULE_ID}=${id}&${PARAM_KEYS.CLIENT_ID}=${clientID}`);
@@ -339,6 +332,8 @@ const DeviceView: React.FC = () => {
                           </Link>
                         ) : (FEATURES_WITH_LEVEL as ReadonlyArray<string>).includes(d.name) ? (
                           <Badge title={d.value.toString()} style={{ marginLeft: -10, marginTop: 5 }} />
+                        ) : (FEATURES_HAVING_RISK as ReadonlyArray<string>).includes(d.name) ? (
+                          <Badge title={d.value.toString()} riskState={d.value} style={{ marginLeft: -10, marginTop: 5 }} />
                         ) : (
                           d.value.toString() || "-"
                         )}{" "}

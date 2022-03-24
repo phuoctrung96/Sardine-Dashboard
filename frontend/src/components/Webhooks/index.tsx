@@ -41,7 +41,7 @@ const WebhooksList: React.FC = () => {
     {
       title: "Webhook Type",
       field: "type",
-      editable: "never",
+      lookup: { CASE_STATUS: "CASE_STATUS", DOCUMENT_VERIFICATION: "DOCUMENT_VERIFICATION" },
     },
     {
       title: "Webhook URL",

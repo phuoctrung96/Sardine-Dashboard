@@ -983,7 +983,7 @@ const ManageRule: React.FC = () => {
   const [environment, setEnvironment] = useState<RuleEnvMode>(RULE_ENV_MODES.Shadow);
   const [isActive, setIsActive] = useState(true);
   const [actions, setActions] = useState<RuleActionTag[]>([]);
-  const [dataLoaded, setdDataLoaded] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false);
   const [organisations, setOrganisations] = useState<OrgName[]>([]);
   const [organisation, setOrganisation] = useState<OrgName | null>(null);
 
@@ -1061,7 +1061,7 @@ const ManageRule: React.FC = () => {
   //  1. Feature (selected from feature dropdown)
   //  2. Operator (like ==, >=, <= etc.)
   //  3. Value (can be string, bool, array etc. depends on the selected operator)
-  const setRulesFromConidtion = (condition: AnyTodo) => {
+  const setRulesFromCondition = (condition: AnyTodo) => {
     if (condition) {
       // We have 2 outer operators i.e. &&, ||
       // Splitting rule with first one i.e. AND (&&)
@@ -1097,8 +1097,8 @@ const ManageRule: React.FC = () => {
       // For inner conditions we have space (" ") to split the feature, operator and value
       const joiners = strData.split(" ").filter((d: AnyTodo) => d.length > 0 && (d.includes("||") || d.includes("&&")));
       let rulesFromDetail: AnyTodo[] = [];
-      let childEndBreaket = false;
-      let childStartBreaket = false;
+      let childEndBracket = false;
+      let childStartBracket = false;
       let lastParentIndex = 0;
 
       // Looping ruleData (inner condition values) to prepare RULE object for UI
@@ -1113,18 +1113,35 @@ const ManageRule: React.FC = () => {
 
         // check if the param (feature) has any custom functions in it or not
         supportedFunctions.forEach((functionData: FunctionChild) => {
-          const val = functionData.value;
-          const regex = new RegExp(val, "g");
-          p = p.replace(regex, `${val}(`);
-          if (param.includes(val)) {
-            hasFunction = true;
-            hasOperator = functionData.hasOperator;
+          if (!hasFunction) {
+            const val = functionData.value;
+            const subVals = functionData.functions.map((f) => f.value);
+
+            if (subVals.length > 0) {
+              subVals.forEach((v) => {
+                const regexForChild = new RegExp(`\\b${v}\\b`, "g");
+                p = param.replace(regexForChild, `${v}(`);
+              });
+            } else {
+              const regex = new RegExp(val, "g");
+              p = param.replace(regex, `${val}(`);
+            }
+
+            const filteredChildFunction = functionData.functions.filter((v) => param.includes(v.value));
+            if (param.includes(val) || filteredChildFunction.length > 0) {
+              hasFunction = true;
+              hasOperator = filteredChildFunction.length > 0 ? filteredChildFunction[0].hasOperator : functionData.hasOperator;
+            }
           }
         });
 
         // Custom functions will have additional brackets so managing it.
         if (hasFunction && p.includes("))")) {
           p = replaceAll(p, "))", ")");
+        }
+
+        if (p.charAt(0) === "(") {
+          p = p.slice(1);
         }
 
         if (!hasFunction) {
@@ -1172,18 +1189,18 @@ const ManageRule: React.FC = () => {
         };
 
         // If it's the child then add it in the RULES array of previous object
-        if (childStartBreaket && !childEndBreaket) {
+        if (childStartBracket && !childEndBracket) {
           rulesFromDetail[lastParentIndex].rules = [...rulesFromDetail[lastParentIndex].rules, newRule];
         } else {
           rulesFromDetail = [...rulesFromDetail, newRule];
         }
 
         // Condition to decide is it child rule or not
-        if (param.charAt(0) === "(") {
-          childStartBreaket = true;
+        if (param.charAt(0) === "(" || param.charAt(0) === "((") {
+          childStartBracket = true;
           lastParentIndex = rulesFromDetail.length - 1;
-        } else if (val.includes(")") || (!hasOperator && param.includes("))"))) {
-          childEndBreaket = true;
+        } else if (val.includes(")") || (hasFunction && param.includes("))"))) {
+          childEndBracket = true;
         }
       });
 
@@ -1202,9 +1219,9 @@ const ManageRule: React.FC = () => {
         setReasonCodes(ruleDetails.reasonCodesExpr);
         setEnvironment(ruleDetails.isShadow ? RULE_ENV_MODES.Shadow : RULE_ENV_MODES.Live);
         setIsActive(!ruleDetails.depreciated);
-        setdDataLoaded(true);
+        setDataLoaded(true);
 
-        setRulesFromConidtion(ruleDetails.condition);
+        setRulesFromCondition(ruleDetails.condition);
 
         if (ruleDetails.action && ruleDetails.action.tags) {
           setActions(ruleDetails.action.tags);

@@ -1,5 +1,5 @@
 import { getDeviceFeatures } from "./deviceFeatures";
-import { FeatureItem, intChild, newChild, boolChild, DATA_TYPES } from "../featureItem";
+import { FeatureItem, intChild, newChild, boolChild, DATA_TYPES, stringChild, floatChild } from "../featureItem";
 import { getSessionFeatures } from "./sessionFeatures";
 import { deviceUserFeatures } from "./userFeatures";
 
@@ -24,11 +24,18 @@ export const getDeviceRelatedFeaturesList = (checkpoint: string): FeatureItem[] 
     newChild("Region", "CA", DATA_TYPES.string, "Region from IP Address", false),
     newChild("Country", "US", DATA_TYPES.string, "2 digit Country Code from IP Address", false),
     newChild("UsageType", "COM", DATA_TYPES.string, "UsageType from IP2Location i.e. COM, ORG, GOV, EDU etc", false),
+    stringChild("Timezone", "timezone of ip address"),
+    stringChild("ISP", "internet service provider"),
+    floatChild("Latitude", "", false),
+    floatChild("Longitude", "", false),
+    stringChild("NetSpeed", "description of internet speed"),
   ]),
   new FeatureItem("GPS", [
     newChild("City", "San Francisco", DATA_TYPES.string, "City from GPS co-ordinates", false),
     newChild("Region", "CA", DATA_TYPES.string, "Region from GPS co-ordinates", false),
     newChild("Country", "US", DATA_TYPES.string, "2 digit Country Code from GPS co-ordinates", false),
     newChild("MockLevel", "low", DATA_TYPES.string, "Likelihood of GPS coordinate being mocked - low, medium or high", false),
+    floatChild("Latitude", "", false),
+    floatChild("Longitude", "", false),
   ]),
 ];

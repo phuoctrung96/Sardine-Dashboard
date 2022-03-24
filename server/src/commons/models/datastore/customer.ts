@@ -12,12 +12,12 @@ import {
 } from "sardine-dashboard-typescript-definitions";
 import { RunQueryInfo } from "@google-cloud/datastore/build/src/query";
 import dayjs from "dayjs";
-import { firebaseAdmin } from "../../../service/firebase-service";
+import { datastore } from "../../../service/datastore-service";
 import { BANK_KIND, CARD_KIND, CRYPTO_KIND } from "./common";
 import { Transaction } from "./transaction";
 import { CLIENT_ID_FIELD, CUSTOMER_ID_FIELD } from "../../../constants";
 
-const ds = firebaseAdmin.datastore;
+const ds = datastore;
 
 export class Customer {
   public static async getBanksCustomer(clientId: string, customerId: string): Promise<BankKind[]> {
@@ -62,13 +62,11 @@ export class Customer {
       });
     });
 
-    return dedupeArrayObject<CryptoDetailsResponse>(result, [
-      "currency_code",
-      "address",
-      "addressRiskScore",
-      "userRiskScore",
-      "categories",
-    ]);
+    return dedupeArrayObject<CryptoDetailsResponse>(
+      result,
+      ["currency_code", "address", "addressRiskScore", "userRiskScore", "categories"],
+      true
+    );
   }
 
   public static async getCardDetailsCustomer(clientId: string, customerId: string): Promise<CardDetailsResponse[]> {

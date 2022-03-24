@@ -2,10 +2,10 @@ import { Query } from "@google-cloud/datastore";
 import { RunQueryInfo } from "@google-cloud/datastore/build/src/query";
 import { TransactionKind } from "sardine-dashboard-typescript-definitions";
 import { CLIENT_ID_FIELD, CUSTOMER_ID_FIELD } from "../../../constants";
-import { firebaseAdmin } from "../../../service/firebase-service";
+import { datastore } from "../../../service/datastore-service";
 import { TRANSACTION_KIND } from "./common";
 
-const ds = firebaseAdmin.datastore;
+const ds = datastore;
 
 export class Transaction {
   public static async getTransactionsCustomer(clientId: string, customerId: string, limit = 10): Promise<TransactionKind[]> {

@@ -3,7 +3,7 @@ import { Modal, Button, FormControl, Spinner, Row } from "react-bootstrap";
 import { useToasts } from "react-toast-notifications";
 import { isUrlValid } from "components/Common/Functions";
 import { WebhookTypeValues, WEBHOOK_TYPE } from "sardine-dashboard-typescript-definitions";
-import { Box } from "@material-ui/core";
+import { Box } from "@mui/material";
 import { addWebhook } from "../../utils/api";
 import { ErrorText } from "../RulesModule/styles";
 import { FieldTitle } from "../Common/styles/titles/fieldTitleStyles";
