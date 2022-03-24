@@ -1,8 +1,10 @@
-import { CircularProgress, TableBody, TableCell, TableRow, TableSortLabel } from "@mui/material";
+import { MenuItem, Select, TableBody, TableCell, TableRow, TableSortLabel } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { Form } from "react-bootstrap";
 import { FEEDBACK_DETAILS_PATH } from "modulePaths";
 import { FeedbackRow, GetFeedbacksListResponse } from "sardine-dashboard-typescript-definitions";
+import LoadingText from "components/Common/LoadingText";
+import { DivNoDataAvailable } from "components/Customers/UserView";
+import { toInteger } from "lodash-es";
 import {
   BorderedTCell,
   TextWithStatus,
@@ -28,7 +30,7 @@ export const FeedbackTableRow = (props: { data: FeedbackRow }): JSX.Element => {
   const navigate = useNavigate();
 
   return (
-    <TableRow onClick={() => navigate(FEEDBACK_DETAILS_PATH)} style={{ cursor: "pointer" }}>
+    <TableRow onClick={() => navigate(FEEDBACK_DETAILS_PATH)} className="cursor-pointer">
       <BorderedTCell>
         <StyledTCell>{data.sessionKey}</StyledTCell>
       </BorderedTCell>
@@ -100,12 +102,12 @@ export const FeedbackListTable = (props: FeedbackListTableProps): JSX.Element =>
       value: 15,
     },
     {
-      title: "20 rows",
-      value: 20,
-    },
-    {
       title: "30 rows",
       value: 30,
+    },
+    {
+      title: "60 rows",
+      value: 60,
     },
   ];
 
@@ -119,17 +121,16 @@ export const FeedbackListTable = (props: FeedbackListTableProps): JSX.Element =>
 
   if (isLoading) {
     return (
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 16 }}>
-        <CircularProgress color="inherit" />
-        <span>Loading...</span>
+      <div style={{ height: "50vh", marginTop: 64 }}>
+        <LoadingText />;
       </div>
     );
   }
 
   if (!feedbacks.length) {
     return (
-      <div style={{ height: "50vh", marginTop: 64, display: "flex", justifyContent: "center" }}>
-        <span>No data found</span>
+      <div style={{ height: "50vh", marginTop: 64 }}>
+        <DivNoDataAvailable />
       </div>
     );
   }
@@ -149,38 +150,37 @@ export const FeedbackListTable = (props: FeedbackListTableProps): JSX.Element =>
                   Session Key
                 </TableSortLabel>
               </BorderedTCell>
-              {tableHeadCells.map((cell) => (
-                <TableCell key={cell.id} sortDirection={orderBy === cell.id ? order : false}>
-                  <TableSortLabel
-                    active={orderBy === cell.id}
-                    direction={orderBy === cell.id ? order : undefined}
-                    onClick={createSortHandler(cell.id)}
-                  >
-                    {cell.label}
-                  </TableSortLabel>
-                </TableCell>
-              ))}
+              {tableHeadCells.map((cell) => {
+                const { id, label } = cell;
+                return (
+                  <TableCell key={id} sortDirection={orderBy === id ? order : false}>
+                    <TableSortLabel
+                      active={orderBy === id}
+                      direction={orderBy === id ? order : undefined}
+                      onClick={createSortHandler(id)}
+                    >
+                      {label}
+                    </TableSortLabel>
+                  </TableCell>
+                );
+              })}
             </TableRow>
           </StyledTHead>
           <TableBody>
-            {feedbacks.map((data, index) => (
-              <FeedbackTableRow
-                // eslint-disable-next-line react/no-array-index-key
-                key={`${data.sessionKey}_${data.userId}_${index}`}
-                data={data}
-              />
+            {feedbacks.map((data) => (
+              <FeedbackTableRow key={`${data.sessionKey}_${data.userId}_${data.time}`} data={data} />
             ))}
           </TableBody>
         </StyledTable>
       </StyledTableContainer>
       <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 16 }}>
-        <Form.Select style={{ maxWidth: 110 }} value={rows} onChange={(e) => setRows(+e.target.value)}>
+        <Select style={{ maxWidth: 110 }} label="Rows" value={rows} onChange={(e) => setRows(toInteger(e.target.value))}>
           {options.map((option) => (
-            <option key={option.value} value={option.value}>
+            <MenuItem key={option.value} value={option.value}>
               {option.title}
-            </option>
+            </MenuItem>
           ))}
-        </Form.Select>
+        </Select>
         <StyledPagination count={12} page={page} onChange={handleChange} showFirstButton showLastButton />
       </div>
     </div>
