@@ -41,6 +41,8 @@ import {
 } from "../utils/constructFiltersQueryParams";
 import { RuleStatsTable } from "../components/RulesModule/RuleStatsTable";
 import DuplicateRule from "../components/RulesModule/DuplicateRule";
+import useDebounce from "../hooks/useDebounce";
+import LoadingText from "../components/Common/LoadingText";
 
 const PARAM_KEYS = SEARCH_PARAM_KEYS[RULE_DETAILS_PATH];
 
@@ -93,6 +95,8 @@ const RuleDetails = (): JSX.Element => {
   const queryClient = useQueryClient();
   const [statsData, setStatsData] = useState<GetRuleStatsResponse[]>([]);
 
+  const debouncedStatDays = useDebounce<number>(statDays, 500);
+
   const { addToast } = useToasts();
 
   const [params] = useSearchParams();
@@ -133,7 +137,7 @@ const RuleDetails = (): JSX.Element => {
         captureException(e);
       }
     }
-  }, [ruleID, clientId, organisationFromUserStore, statDays, emptyChart, org]);
+  }, [ruleID, clientId, organisationFromUserStore, debouncedStatDays, emptyChart, org]);
 
   useEffect(() => {
     if (error.length > 0) {
@@ -464,58 +468,61 @@ const RuleDetails = (): JSX.Element => {
 
                 <HorizontalSpace style={{ marginTop: 50 }} />
 
-                {isLoading ? (
-                  <Title style={{ margin: 20, fontSize: 17, textAlign: "center" }}>Loading Stats...⏳</Title>
-                ) : chartData.yaxisData.reduce((a, b) => a + b, 0) === 0 ? (
-                  <div style={{ alignItems: "center", margin: 20 }}>
-                    <Image src={imgStats} style={{ width: "100%", height: 100, marginBottom: 10 }} />
-                    <Title style={{ margin: 20, fontSize: 17, textAlign: "center", color: "grey" }}>No Stats Available!!</Title>
-                  </div>
-                ) : (
-                  <Container>
-                    <StyledUl style={{ justifyContent: "flex-end" }}>
-                      <TextNormal style={{ fontSize: 15 }}> Day(s): </TextNormal>
-                      <HorizontalSpace />
-                      <StyledInput
-                        type="number"
-                        style={{ width: 80 }}
-                        value={statDays}
-                        onChange={(event) => {
-                          setStatDays(parseInt(event.target.value, 10));
-                        }}
-                        onKeyPress={(event) => {
-                          if (event.key === "Enter" && statDays > 0) {
-                            loadChartData()
-                              .then()
-                              .catch((e) => {
-                                captureException(e);
-                              });
-                          }
-                        }}
-                      />
-                    </StyledUl>
-
-                    <ChartAndTable
-                      id="stats"
-                      chartType={isWideScreen() ? "large" : "small"}
-                      showChart
-                      showTable={false}
-                      data={chartData}
-                      title="Usage"
-                    />
-
-                    <RuleStatsTable
-                      statsData={statsData}
-                      onSessionClick={(session) => {
-                        const { sessionKey, customerId } = session;
-                        const sessionPath = `${SESSION_DETAILS_PATH}?${CLIENT_ID_QUERY_FIELD}=${encodeURIComponent(
-                          clientId
-                        )}&sessionKey=${encodeURIComponent(sessionKey)}&customerId=${encodeURIComponent(customerId)}`;
-                        navigate(sessionPath);
+                <Container>
+                  <StyledUl style={{ justifyContent: "flex-end", backgroundColor: "transparent" }}>
+                    <TextNormal style={{ fontSize: 15 }}> Day(s): </TextNormal>
+                    <HorizontalSpace />
+                    <StyledInput
+                      type="number"
+                      style={{ width: 80 }}
+                      value={statDays}
+                      min={1}
+                      onChange={(event) => {
+                        setStatDays(parseInt(event.target.value, 10) || 1);
+                      }}
+                      onKeyPress={(event) => {
+                        if (event.key === "Enter" && statDays > 0) {
+                          loadChartData()
+                            .then()
+                            .catch((e) => {
+                              captureException(e);
+                            });
+                        }
                       }}
                     />
-                  </Container>
-                )}
+                  </StyledUl>
+
+                  {isLoading ? (
+                    <LoadingText title="Loading Stats...⏳" />
+                  ) : chartData.yaxisData.reduce((a, b) => a + b, 0) === 0 ? (
+                    <div style={{ alignItems: "center", margin: 20 }}>
+                      <Image src={imgStats} style={{ width: "100%", height: 100, marginBottom: 10 }} />
+                      <LoadingText title="No Stats Available!!" />
+                    </div>
+                  ) : (
+                    <>
+                      <ChartAndTable
+                        id="stats"
+                        chartType={isWideScreen() ? "large" : "small"}
+                        showChart
+                        showTable={false}
+                        data={chartData}
+                        title="Usage"
+                      />
+
+                      <RuleStatsTable
+                        statsData={statsData}
+                        onSessionClick={(session) => {
+                          const { sessionKey, customerId } = session;
+                          const sessionPath = `${SESSION_DETAILS_PATH}?${CLIENT_ID_QUERY_FIELD}=${encodeURIComponent(
+                            clientId
+                          )}&sessionKey=${encodeURIComponent(sessionKey)}&customerId=${encodeURIComponent(customerId)}`;
+                          navigate(sessionPath);
+                        }}
+                      />
+                    </>
+                  )}
+                </Container>
                 <HorizontalSpace style={{ marginTop: 50 }} />
               </StyledContainer>
             </div>

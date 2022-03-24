@@ -29,7 +29,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@elastic/elasticsearch": "^7.17.0",
     "@google-cloud/bigquery": "^5.10.0",
     "@google-cloud/datastore": "^6.6.2",
     "@google-cloud/pubsub": "^2.18.5",

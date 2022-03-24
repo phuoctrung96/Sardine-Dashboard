@@ -4,7 +4,11 @@ import { prisma } from "./prisma-client";
 
 export const listWebhooks = (): Promise<Webhook[]> => {
   try {
-    return prisma.webhook.findMany({});
+    return prisma.webhook.findMany({
+      where: {
+        deletedAt: null,
+      },
+    });
   } catch (e) {
     captureException(e);
     return Promise.resolve([]);

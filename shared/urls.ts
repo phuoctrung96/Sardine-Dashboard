@@ -188,7 +188,7 @@ export const webhookUrls = createUrls({
   routes: {
     getWebhookRoute: { path: "/", httpMethod: "get" },
     createWebhookRoute: { path: "/", httpMethod: "post" },
-    updateWebhookRoute: { path: "/", httpMethod: "post" },
+    updateWebhookRoute: { path: "/", httpMethod: "put" },
     deleteWebhookRoute: { path: "/", httpMethod: "delete" },
   },
 });

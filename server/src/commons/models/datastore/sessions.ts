@@ -8,7 +8,7 @@ import {
   SessionList,
   CustomerProfileResponse,
 } from "sardine-dashboard-typescript-definitions";
-import { firebaseAdmin } from "../../../service/firebase-service";
+import { datastore } from "../../../service/datastore-service";
 import { constructCustomerKey, constructSessionKey, SESSION_KIND, TRANSACTION_KIND } from "./common";
 import { WebhookRequest, updateCaseStatus } from "../../../service/pubsub-service";
 import { UpdateSessionRequest } from "../../../api/request-interface";
@@ -16,7 +16,7 @@ import { DocumentVerficationDS } from "./document-verifications";
 import { fetchDocumentVerificatonsImages } from "../../../api/routes/document-verifications";
 import { CLIENT_ID_FIELD, CUSTOMER_ID_FIELD } from "../../../constants";
 
-const ds = firebaseAdmin.datastore;
+const ds = datastore;
 
 const DATA_TYPES = {
   STRING: "string",

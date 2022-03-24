@@ -18,6 +18,7 @@ interface PaymentMethodProps {
   level: string;
   routingNumber: string;
   accountNumber: string;
+  bankName: string;
   recipientPaymentMethod: string;
   cryptoAddress: string;
   addressRiskLevel: string;
@@ -47,6 +48,7 @@ const PaymentMethod = (props: PaymentMethodProps): JSX.Element => {
     paymentMethod,
     recipientPaymentMethod,
     routingNumber,
+    bankName,
     cryptoCategories,
     recipientAddressRiskLevel,
     recipientCryptoAddress,
@@ -151,6 +153,14 @@ const PaymentMethod = (props: PaymentMethodProps): JSX.Element => {
       key: "Routing Number",
       value: routingNumber,
       toolTip: "Bank routing number",
+    });
+  }
+
+  if (bankName) {
+    attributes.push({
+      key: "Bank Name",
+      value: bankName,
+      toolTip: "Bank Name",
     });
   }
 

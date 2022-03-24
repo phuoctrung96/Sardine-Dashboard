@@ -29,21 +29,7 @@ async function loadSecrets() {
   // NOTE: when you add new secret, make sure to update terraform for google_secret_manager_secret_iam_member.
 }
 
-async function getEsUrl() {
-  if (process.env.ES_URL) {
-    return process.env.ES_URL;
-  }
-
-  const esHost = await getSecretValue("elasticsearch-host");
-  const esPass = await getSecretValue("elasticsearch-password");
-  const esUser = await getSecretValue("elasticsearch-user");
-  process.env.ES_URL = `https://${esUser}:${esPass}@${esHost.split("https://")[1]}`;
-
-  return process.env.ES_URL;
-}
-
 module.exports = {
   getSecretValue,
   loadSecrets,
-  getEsUrl,
 };

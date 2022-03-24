@@ -7,12 +7,7 @@ import { HandleInlineError } from "components/Error/InlineGenericError";
 import { isErrorWithResponseStatus } from "utils/errorUtils";
 import { replaceAllUnderscoresWithSpaces } from "utils/stringUtils";
 import * as Sentry from "@sentry/react";
-import {
-  DATA_SOURCE,
-  DeviceProfile,
-  DEVICE_WHITELISTED_FILTERS,
-  SOURCE_QUERY_FIELD,
-} from "sardine-dashboard-typescript-definitions";
+import { DeviceProfile, DEVICE_WHITELISTED_FILTERS } from "sardine-dashboard-typescript-definitions";
 import { useCookies } from "react-cookie";
 import { selectIsAdmin, selectIsSuperAdmin, UseUserStore, useUserStore } from "store/user";
 import { getClientFromQueryParams } from "utils/getClientFromQueryParams";
@@ -44,13 +39,7 @@ function getDefaultEndDate(): string {
 }
 
 // Construct query params from filters
-function constructQueryParams(
-  dataFilters: Array<FilterData>,
-  startDate: string,
-  endDate: string,
-  client: string,
-  source: string
-): string {
+function constructQueryParams(dataFilters: Array<FilterData>, startDate: string, endDate: string, client: string): string {
   const params: { [key: string]: string } = {};
   dataFilters.forEach((filter) => {
     if (filter.apply) {
@@ -63,7 +52,6 @@ function constructQueryParams(
   params[START_DATE_QUERY_FIELD] = start;
   params[END_DATE_QUERY_FIELD] = end;
   params[CLIENT_QUERY_FIELD] = client;
-  params[SOURCE_QUERY_FIELD] = source;
   return new URLSearchParams(params).toString();
 }
 
@@ -75,10 +63,6 @@ function getDatesFromQueryParams(pathSearch: string): DatesProps {
   return { startDate, endDate, selectedDateIndex: 3 };
 }
 
-export function getSourceFromQueryParams(pathSearch: string, isSuperAdmin: boolean): string {
-  const searchParams = new URLSearchParams(pathSearch);
-  return searchParams.get(SOURCE_QUERY_FIELD) || (isSuperAdmin ? DATA_SOURCE.DATASTORE : DATA_SOURCE.ELASTIC_SEARCH);
-}
 const DeviceIntelligence = (): JSX.Element => {
   const limit = 100;
   const { state, dispatch } = useContext(StoreCtx);
@@ -94,7 +78,7 @@ const DeviceIntelligence = (): JSX.Element => {
 
   const { addToast } = useToasts();
 
-  const { isSuperAdmin, isAdmin, userOrganization } = useUserStore((state: UseUserStore) => ({
+  const { isAdmin, userOrganization } = useUserStore((state: UseUserStore) => ({
     userOrganization: state.organisation,
     isSuperAdmin: selectIsSuperAdmin(state),
     isAdmin: selectIsAdmin(state),
@@ -102,7 +86,6 @@ const DeviceIntelligence = (): JSX.Element => {
 
   const { search } = useLocation();
   const [filters, setFilters] = useState(getFilters(search, DEVICE_WHITELISTED_FILTERS));
-  const dbSource = getSourceFromQueryParams(search, isSuperAdmin);
 
   const dates = getDatesFromQueryParams(search);
   const [startDate, setStartDate] = useState(dates.startDate);
@@ -113,7 +96,7 @@ const DeviceIntelligence = (): JSX.Element => {
   const organisation = getClientFromQueryParams(search, isAdmin, userOrganization, cookies.organization);
 
   const changeOrganisation = (org: string) => {
-    navigate(`${DEVICE_INTELLIGENCE_PATH}?${constructQueryParams(filters, startDate, endDate, org, dbSource)}`);
+    navigate(`${DEVICE_INTELLIGENCE_PATH}?${constructQueryParams(filters, startDate, endDate, org)}`);
     navigate(0); // Refresh the page. TODO: Change the way to update the filter.
   };
 
@@ -274,7 +257,6 @@ const DeviceIntelligence = (): JSX.Element => {
         startTimestampSeconds,
         endTimestampSeconds,
         organisation,
-        source: dbSource,
         offset,
         limit,
         filters: prepareFiltersForAPI(filters),
@@ -289,14 +271,6 @@ const DeviceIntelligence = (): JSX.Element => {
           setDeviceData(result);
         } else {
           setDeviceData(deviceData.concat(result));
-        }
-      } else if (result.hits && Array.isArray(result.hits.hits)) {
-        const res = result.hits.hits.map((hit) => hit._source);
-        setIsLastPage(res.length === 0);
-        if (offset === 0) {
-          setDeviceData(res);
-        } else {
-          setDeviceData(deviceData.concat(res));
         }
       }
     } catch (error) {
@@ -361,9 +335,7 @@ const DeviceIntelligence = (): JSX.Element => {
         }));
 
   const pushToDetails = (event: React.KeyboardEvent, rowData: DeviceProfile) => {
-    const pathSearch = `session=${encodeURIComponent(
-      rowData.session_key
-    )}&${SOURCE_QUERY_FIELD}=${dbSource}&${CLIENT_QUERY_FIELD}=${organisation}`;
+    const pathSearch = `session=${encodeURIComponent(rowData.session_key)}&${CLIENT_QUERY_FIELD}=${organisation}`;
     const historyState = { data: rowData, payload: manageStoreBeforePush() };
 
     if (event.metaKey) {
@@ -410,7 +382,7 @@ const DeviceIntelligence = (): JSX.Element => {
           dividerIndex={4}
           onFiltersUpdate={setFilters}
           onApply={() => {
-            navigate(`${DEVICE_INTELLIGENCE_PATH}?${constructQueryParams(filters, startDate, endDate, organisation, dbSource)}`);
+            navigate(`${DEVICE_INTELLIGENCE_PATH}?${constructQueryParams(filters, startDate, endDate, organisation)}`);
             navigate(0); // Refresh the page. TODO: Change the way to update the filter.
           }}
         />

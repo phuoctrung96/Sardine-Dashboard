@@ -1,6 +1,6 @@
 import { DocumentVerification } from "sardine-dashboard-typescript-definitions";
 import { Query } from "@google-cloud/datastore";
-import { firebaseAdmin } from "../../../service/firebase-service";
+import { datastore } from "../../../service/datastore-service";
 import { DOCUMENT_VERIFICATION_KIND } from "./common";
 
 export const ALLOWLISTED_FILTERS = [
@@ -15,7 +15,7 @@ export const ALLOWLISTED_FILTERS = [
   "document_match_level",
 ] as const;
 
-const ds = firebaseAdmin.datastore;
+const ds = datastore;
 
 export class DocumentVerficationDS {
   public static async queryById(id: string): Promise<DocumentVerification | null> {

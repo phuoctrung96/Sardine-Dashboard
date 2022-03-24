@@ -6,7 +6,7 @@ import { AnyTodo, AUDIT_LOG_TYPES, queueUrls } from "sardine-dashboard-typescrip
 import { mw } from "../../commons/middleware";
 import { db } from "../../commons/db";
 import { RequestWithUser } from "../request-interface";
-import { firebaseAdmin } from "../../service/firebase-service";
+import { datastore } from "../../service/datastore-service";
 import { writeAuditLog } from "../../utils/audit-utils";
 import { RuleService } from "../../service/rule-service";
 import { CLIENT_ID_FIELD } from "../../constants";
@@ -17,7 +17,7 @@ const router = express.Router();
 
 const queuesRouter = (ruleService: RuleService) => {
   const ENTITY_NAME = "queues";
-  const getEntity = () => firebaseAdmin.datastore.createQuery(ENTITY_NAME);
+  const getEntity = () => datastore.createQuery(ENTITY_NAME);
 
   router[getListQueueRoute.httpMethod](
     getListQueueRoute.path,
@@ -36,12 +36,12 @@ const queuesRouter = (ruleService: RuleService) => {
           listQuery.filter("checkpoint", checkpoint.toString());
         }
 
-        const result = await firebaseAdmin.datastore.runQuery(listQuery);
-        const data = result[0].map((r: AnyTodo) => {
+        const result = await datastore.runQuery(listQuery);
+        const data = result[0].map((r) => {
           const filteredUsers = users.filter((u) => u.id === r.owner_id);
           return {
             ...r,
-            id: r[firebaseAdmin.datastore.KEY].id,
+            id: r[datastore.KEY].id,
             owner: filteredUsers.length > 0 ? filteredUsers[0] : {},
             hits: 0,
           };
@@ -80,7 +80,7 @@ const queuesRouter = (ruleService: RuleService) => {
         const users = await db.auth.getOrganizationUsers(organisation.toString());
         const clientID = await db.organisation.getClientId(organisation.toString());
 
-        const ds = firebaseAdmin.datastore;
+        const ds = datastore;
 
         const key = ds.key([ENTITY_NAME, parseInt(queueId.toString(), 10)]);
 
@@ -166,16 +166,16 @@ const queuesRouter = (ruleService: RuleService) => {
       try {
         const clientId = await db.superadmin.getClientId(organisation.toString());
 
-        const queueKey = firebaseAdmin.datastore.key(ENTITY_NAME);
+        const queueKey = datastore.key(ENTITY_NAME);
 
         const findQuery = getEntity().filter(CLIENT_ID_FIELD, clientId).filter("name", name).limit(1);
-        const [entities] = await firebaseAdmin.datastore.runQuery(findQuery);
+        const [entities] = await datastore.runQuery(findQuery);
         if (entities.length > 0) {
           const obj = entities[0];
           return res.json(obj[Datastore.KEY].id || "");
         }
 
-        await firebaseAdmin.datastore.save({
+        await datastore.save({
           key: queueKey,
           data: {
             client_id: clientId,
@@ -215,9 +215,9 @@ const queuesRouter = (ruleService: RuleService) => {
       try {
         const clientId = await db.superadmin.getClientId(organisation.toString());
 
-        const queueKey = firebaseAdmin.datastore.key([ENTITY_NAME, parseInt(id, 10)]);
+        const queueKey = datastore.key([ENTITY_NAME, parseInt(id, 10)]);
 
-        await firebaseAdmin.datastore.update({
+        await datastore.update({
           key: queueKey,
           data: {
             client_id: clientId,
@@ -251,7 +251,7 @@ const queuesRouter = (ruleService: RuleService) => {
       if (!id) {
         return res.status(400).json({ error: `Please provide id` });
       }
-      const ds = firebaseAdmin.datastore;
+      const ds = datastore;
       const key = ds.key([ENTITY_NAME, +id]);
       try {
         await ruleService.deleteQueueFromRules(id.toString());

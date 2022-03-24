@@ -1,12 +1,12 @@
 import express, { Response } from "express";
 import { query, body } from "express-validator";
 import moment from "moment";
-import { AddNewCommentRequestBody, AnyTodo, commentUrls } from "sardine-dashboard-typescript-definitions";
+import { AddNewCommentRequestBody, commentUrls } from "sardine-dashboard-typescript-definitions";
 import { captureException } from "../../utils/error-utils";
 import { mw } from "../../commons/middleware";
 import { db } from "../../commons/db";
 import { RequestWithCurrentUser } from "../request-interface";
-import { firebaseAdmin } from "../../service/firebase-service";
+import { datastore } from "../../service/datastore-service";
 
 const { addNewCommentRoute, getListCommentRoute } = commentUrls.routes;
 
@@ -14,7 +14,7 @@ const router = express.Router();
 
 const commentsRouter = () => {
   const ENTITY_NAME = "comments";
-  const getEntity = () => firebaseAdmin.datastore.createQuery(ENTITY_NAME);
+  const getEntity = () => datastore.createQuery(ENTITY_NAME);
 
   router[getListCommentRoute.httpMethod](
     getListCommentRoute.path,
@@ -28,15 +28,15 @@ const commentsRouter = () => {
             ? await db.auth.getAllUsersData()
             : await db.auth.getOrganizationUsers(clientId.toString(), true);
 
-        const query = getEntity().filter("sessionKey", sessionKey.toString());
+        const datastoreQuery = getEntity().filter("sessionKey", sessionKey.toString());
 
-        const result = await firebaseAdmin.datastore.runQuery(query);
-        const data = result[0].map((r: AnyTodo) => {
-          const _users = users.filter((u) => u.id === r.owner_id);
+        const result = await datastore.runQuery(datastoreQuery);
+        const data = result[0].map((r) => {
+          const filteredUsers = users.filter((u) => u.id === r.owner_id);
           return {
             ...r,
-            id: r[firebaseAdmin.datastore.KEY].id,
-            owner: _users.length > 0 ? _users[0] : {},
+            id: r[datastore.KEY].id,
+            owner: filteredUsers.length > 0 ? filteredUsers[0] : {},
           };
         });
 
@@ -63,10 +63,10 @@ const commentsRouter = () => {
           return res.status(404).json({ error: `Failed to add comment` });
         }
 
-        const _key = firebaseAdmin.datastore.key(ENTITY_NAME);
+        const datastoreKey = datastore.key(ENTITY_NAME);
 
-        await firebaseAdmin.datastore.save({
-          key: _key,
+        await datastore.save({
+          key: datastoreKey,
           data: {
             clientId,
             sessionKey,
@@ -76,8 +76,8 @@ const commentsRouter = () => {
           },
         });
 
-        return res.json(_key.id || "");
-      } catch (e: unknown) {
+        return res.json(datastoreKey.id || "");
+      } catch (e) {
         captureException(e);
         return res.status(404).json({ error: `Failed to add comment` });
       }

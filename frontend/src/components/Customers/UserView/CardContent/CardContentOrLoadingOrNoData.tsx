@@ -4,18 +4,16 @@ import LoadingText from "components/Common/LoadingText";
 
 const CardContentOrLoadingOrNoData = ({
   isLoading,
-  hasData,
   name,
   tableBodyElements,
 }: {
   isLoading: boolean;
-  hasData: boolean;
   name: CardNameWithHeaders;
   tableBodyElements: JSX.Element[];
 }): JSX.Element =>
   isLoading ? (
     <LoadingText />
-  ) : !hasData ? (
+  ) : !tableBodyElements?.length ? (
     <DivNoDataAvailable />
   ) : (
     <CardContentFilled name={name} tableBodyElements={tableBodyElements} />

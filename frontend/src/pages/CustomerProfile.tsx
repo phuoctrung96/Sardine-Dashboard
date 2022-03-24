@@ -82,11 +82,11 @@ const AddressContainer = ({ addresses }: { addresses: string[] }): JSX.Element =
   <>
     {addresses && (
       <BulletContainer>
-        {dedupeArrayObject(addresses).map((address, index) => (
+        {dedupeArrayObject(addresses).map((address) => (
           <div key={address}>
             <div>
               <Link id="address_link" href={generateGoogleMapsUrlFromAddress(address)} rel="noreferrer" target="_blank">
-                {addresses[index] || "-"}
+                {address || "-"}
               </Link>
             </div>
           </div>
@@ -150,7 +150,9 @@ const CustomerProfile: React.FC = () => {
             customerData === undefined ? (
               <>-</>
             ) : (
-              <AddressContainer addresses={customerData === undefined ? [] : getAddressListFromCustomerResponse(customerData)} />
+              <AddressContainer
+                addresses={customerData === undefined ? [] : dedupeArrayObject(getAddressListFromCustomerResponse(customerData))}
+              />
             ),
         },
         {
@@ -297,10 +299,9 @@ const CustomerProfile: React.FC = () => {
       component: (
         <CardContentOrLoadingOrNoData
           isLoading={isLoading}
-          hasData={transactionData.length > 0}
           name={KEY_CARD_DETAILS}
-          tableBodyElements={cardData.map((c) => (
-            <TableBodyOther c={c} key={c.last4} />
+          tableBodyElements={dedupeArrayObject(cardData).map((c) => (
+            <TableBodyOther c={c} key={`${c.first6}${c.last4}`} />
           ))}
         />
       ),
@@ -311,9 +312,8 @@ const CustomerProfile: React.FC = () => {
       component: (
         <CardContentOrLoadingOrNoData
           isLoading={isLoading}
-          hasData={bankData.length > 0}
           name={KEY_BANK_DETAILS}
-          tableBodyElements={bankData.map((b) => (
+          tableBodyElements={dedupeArrayObject(bankData).map((b) => (
             <TableBodyBank b={b} key={`${b.account_number}_${b.routing_number}`} />
           ))}
         />
@@ -325,7 +325,6 @@ const CustomerProfile: React.FC = () => {
       component: (
         <CardContentOrLoadingOrNoData
           isLoading={isLoading}
-          hasData={transactionData.length > 0}
           name={KEY_TRANSACTIONS}
           tableBodyElements={dedupeArrayObject(transactionData).map((t) => (
             <TableBodyTransactions t={t} key={Object.values(t).join("_")} />
@@ -339,7 +338,6 @@ const CustomerProfile: React.FC = () => {
       component: (
         <CardContentOrLoadingOrNoData
           isLoading={isLoading}
-          hasData={cryptoData.length > 0}
           name={KEY_CRYPTO_ADDRESSES}
           tableBodyElements={cryptoData.map((c) => (
             <TableBodyCrypto c={c} key={`${c.address}_${c.currency_code}_${c.addressRiskScore}`} />
@@ -545,8 +543,8 @@ const CustomerProfile: React.FC = () => {
               <DetailsHeaderTile id="customer_risk_reason_codes_title">Customer Risk ReasonCodes</DetailsHeaderTile>
               <DetailsHeaderValue id="customer_risk_reason_codes_value">
                 {" "}
-                {customerData && customerData.reason_codes.length > 0 ? (
-                  <ReasonCodesFromArray reasonCodeArray={customerData.reason_codes} />
+                {customerData && customerData.reason_codes.filter((item) => !!item).length > 0 ? (
+                  <ReasonCodesFromArray reasonCodeArray={customerData.reason_codes.filter((item) => !!item)} />
                 ) : (
                   "-"
                 )}{" "}

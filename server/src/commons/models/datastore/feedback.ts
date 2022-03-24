@@ -2,10 +2,10 @@ import { Query } from "@google-cloud/datastore";
 import dayjs from "dayjs";
 import { FeedbackKind, FeedbacksRequestBody } from "sardine-dashboard-typescript-definitions";
 import { db } from "../../db";
-import { firebaseAdmin } from "../../../service/firebase-service";
+import { datastore } from "../../../service/datastore-service";
 import { FEEDBACK_KIND } from "./common";
 
-const ds = firebaseAdmin.datastore;
+const ds = datastore;
 
 export const getFeedbackList = async (sessionKey: string): Promise<Array<FeedbackKind>> => {
   const dataStoreQuery: Query = ds.createQuery(FEEDBACK_KIND).filter("SessionKey", sessionKey).limit(100);

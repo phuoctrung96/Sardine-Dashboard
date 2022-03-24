@@ -47,8 +47,9 @@ export interface DataColumn<RowData> {
   grouping?: boolean;
   render?: (data: RowData, type?: "row" | "group") => React.ReactNode;
   title?: string;
-  type?: "numeric";
+  type?: "string" | "boolean" | "numeric" | "date" | "datetime" | "time" | "currency";
   editable?: "never";
+  lookup?: Record<string, unknown>;
 }
 
 // Subset of DataColumn. It does not have <RowData>
@@ -57,6 +58,7 @@ export interface DataColumnSimple {
   title?: string;
   type?: "numeric";
   editable?: "never";
+  lookup?: Record<string, unknown>;
 }
 
 // If you want to use another RowData type, feel free to add like this: export type RowData = DocumentVerification | NewRowDataType;

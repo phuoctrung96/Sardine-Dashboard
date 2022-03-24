@@ -1,15 +1,11 @@
 import admin from "firebase-admin";
-import { Datastore } from "@google-cloud/datastore";
 
 export class FirebaseClient {
   auth: admin.auth.Auth;
 
-  datastore: Datastore;
-
   constructor() {
     admin.initializeApp();
     this.auth = admin.auth();
-    this.datastore = new Datastore();
   }
 
   verifyIdToken = (idToken: string) => this.auth.verifyIdToken(idToken);

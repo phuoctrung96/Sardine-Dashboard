@@ -1,6 +1,5 @@
 import { KEY_DEVICE_DETAILS } from "components/Customers/UserView";
 import { DEVICE_VIEW_PATH } from "modulePaths";
-import { SOURCE_QUERY_FIELD, DATA_SOURCE } from "sardine-dashboard-typescript-definitions";
 import { CLIENT_ID_QUERY_FIELD } from "utils/constructFiltersQueryParams";
 import DataCard, { CardAttribute } from "../DataCard";
 import { Link } from "../Links";
@@ -51,9 +50,9 @@ const DeviceInfo = (props: DeviceInfoProps): JSX.Element => {
     sessionKey,
   } = props;
 
-  const deviceDetailsPath = `${DEVICE_VIEW_PATH}?session=${sessionKey || ""}&${SOURCE_QUERY_FIELD}=${
-    DATA_SOURCE.DATASTORE
-  }&${CLIENT_ID_QUERY_FIELD}=${encodeURIComponent(clientId || "")}`;
+  const deviceDetailsPath = `${DEVICE_VIEW_PATH}?session=${sessionKey || ""}&${CLIENT_ID_QUERY_FIELD}=${encodeURIComponent(
+    clientId || ""
+  )}`;
 
   const attributes: CardAttribute[] = [];
 
