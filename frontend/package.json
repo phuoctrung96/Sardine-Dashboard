@@ -47,7 +47,7 @@
     "react-json-view": "^1.21.3",
     "react-leaflet": ">=3.1.0 <3.3.0 || ^3.2.1",
     "react-papaparse": "^3.18.1",
-    "react-query": "^3.32.3",
+    "react-query": "^3.39.1",
     "react-router-dom": "^6.2.2",
     "react-show-more-text": "^1.5.2",
     "react-sortable-hoc": "^2.0.0",
